@@ -1,0 +1,141 @@
+
+#     /$$      /$$
+#    | $$$    /$$$
+#    | $$$$  /$$$$  /$$$$$$   /$$$$$$$ /$$$$$$$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+#    | $$ $$/$$ $$ /$$__  $$ /$$_____//$$_____/ |____  $$ /$$__  $$ /$$__  $$ /$$_____/
+#    | $$  $$$| $$| $$$$$$$$|  $$$$$$|  $$$$$$   /$$$$$$$| $$  \ $$| $$$$$$$$|  $$$$$$
+#    | $$\  $ | $$| $$_____/ \____  $$\____  $$ /$$__  $$| $$  | $$| $$_____/ \____  $$
+#    | $$ \/  | $$|  $$$$$$$ /$$$$$$$//$$$$$$$/|  $$$$$$$|  $$$$$$$|  $$$$$$$ /$$$$$$$/
+#    |__/     |__/ \_______/|_______/|_______/  \_______/ \____  $$ \_______/|_______/  by Drygo
+#                                                         /$$  \ $$
+#             SpeedrunBoss plugin's message config.      |  $$$$$$/
+#                                                         \______/
+
+# Welcome to the messages configuration file. Here you can change every in-game message of the plugin, prefix and kick messages.
+
+prefix: "&r&lSpeedrun#fd3c9e&lBoss &8»&r"
+
+compass:
+  item:
+    name: "#fff18d&lBrujula de Rastreo&r&8: &r%structure%"
+    lore:
+      - "Usa esta brujula para "
+    custom_model_data: 1
+    enchanted: true
+  structure:
+    ancient_city: "#43BEC3&lAncient City"
+    monument: "#85D2FF&lMonument"
+  use:
+    update:
+      success: "%prefix% #a0ff72✔ Now you are tracking the structure '%structure%'."
+      not_found: "%prefix% #FF0000🚫 Cannot find this structure within a reasonable distance."
+commands:
+  compass:
+    give:
+      success_other: "%prefix% #a0ff72✔ Successfully given the compass to player '%player%'"
+      success:  "%prefix% #a0ff72✔ You have successfully received the compass."
+#events:
+broadcast:
+  boss_kill:
+    warden: "#ffd659🔔 &8» #3bebbc⚔️ The player '#ffffff%player%#3bebbc' from team '#ffffff%team%#3bebbc' killed the #16705d&lWarden #3bebbcin: #ffffff%time%" # NAME: #16705d  HIGHLIGHT: #ffffff  BASE: #3bebbc
+    wither: "#ffd659🔔 &8» #7d5454⚔️ The player '#ffffff%player%#7d5454' from team '#ffffff%team%#7d5454' killed the #4a2d2d&lWither Boss #7d5454in: #ffffff%time%" # NAME: #4a2d2d  HIGHLIGHT: #ffffff  BASE: #7d5454
+    elder_guardian: "#ffd659🔔 &8» #ffbf80⚔️ The player '#ffffff%player%#ffbf80' from team '#ffffff%team%#ffbf80' killed the #D98E44&lElder Guardian #ffbf80in: #ffffff%time%" # NAME: #D98E44  HIGHLIGHT: #ffffff  BASE: #ffbf80
+    ender_dragon: "#ffd659🔔 &8» #d191ff⚔️ The player '#ffffff%player%#d191ff' from team '#ffffff%team%#d191ff' killed the #a745ed&lEnder Dragon in: #ffffff%time%" # NAME: #a745ed  HIGHLIGHT: #ffffff  BASE: #d191ff
+  pvp:
+    enable: "#ffd659🔔 &8» #ff4f7eThe &lPvP &r#ff4f7ehas been &lENABLED&r#ff4f7e."
+    disable: "#ffd659🔔 &8» #ff4f7eThe &lPvP &r#ff4f7ehas been &lDISABLED&r#ff4f7e."
+  graceperiod_ended: "#ffd659🔔 &8» #bafffdThe Grace Period has &lENDED&r#bafffd."
+cinematics:
+  start:
+    titles:
+      countdown:
+        10:
+          title: "#FD3C9E&l🢒 10 🢐"
+        9:
+          title: "#FD49A5&l🢒 9 🢐"
+        8:
+          title: "#FD56AB&l🢒 8 🢐"
+        7:
+          title: "#FE63B2&l🢒 7 🢐"
+        6:
+          title: "#FE70B8&l🢒 6 🢐"
+        5:
+          title: "#FE7DBF&l🢒 5 🢐"
+        4:
+          title: "#FE8AC5&l🢒 4 🢐"
+        3:
+          title: "#FF97CC&l🢒 3 🢐"
+        2:
+          title: "#FFA4D2&l🢒 2 🢐"
+        1:
+          title: "#FFB1D9&l🢒 1 🢐"
+    go:
+      title: "#ffd659&lᴀ ᴄᴏʀʀᴇʀ!"
+      string:
+      - " "
+      - "&r&lSpeedrun#fd3c9e&lBoss &8» #ff99cd&lComenzó la carrera!"
+      - "#ffe3f1Haz que tu equipo sea el primero en matar a todos"
+      - "#ffe3f1los bosses del juego para ganar."
+      - " "
+      - "&7‣ &fBosses a derrotar:"
+      - "#16705d  &lWarden"
+      - "#4a2d2d  &lWither"
+      - "#D98E44  &lElder Guardian"
+      - "#a745ed  &lEnder Dragon"
+      - " "
+      - "#dbdbdb&oMira los bosses asesinados por tu equipo con /spb"
+      - "#858585ℹDesarrollado por @eldrygo"
+      - " "
+    bossbar_countdown:
+      string: "#cccccc🢒 &fIniciando en #fff18d%time% #cccccc🢐"
+playerutils:
+  spbinfo:
+    no_members: "#FF4444No members."
+    members: "#fff18d%member_name%"
+    members_separator: "&7, "
+    string:
+      - " "
+      - "&r&lSpeedrun#fd3c9e&lBoss &8- #fff18dTeam: &r%team_display_name% &7(&r%team_name%&7)"
+      - " "
+      - "&7‣ &fKilled Bosses:"
+      - "#16705d  &lWarden %warden_killed%"
+      - "#4a2d2d  &lWither %wither_killed%"
+      - "#D98E44  &lElder Guardian %elderguardian_killed%"
+      - "#a745ed  &lEnder Dragon %enderdragon_killed%"
+      - " "
+      - "&7‣ &fMembers:"
+      - "  %team_members%"
+      - " "
+administration:
+  event:
+    start:
+      already_started: "%prefix% #FF0000🚫 The event is already started."
+      success: "%prefix% #a0ff72✔ The event has been started."
+    pause:
+      success: "%prefix% #ff7272❌ The event has been paused."
+    resume:
+      success: "%prefix% #a0ff72✔ The event has been resumed."
+    end:
+      success: "%prefix% #ff7272❌ The event ended."
+  graceperiod:
+    forcestart:
+      already: "%prefix% #FF0000🚫 The Grace Period is already active."
+      success: "%prefix% #a0ff72✔ Successfully force-started Grace Period."
+    forcestop:
+      already: "%prefix% #FF0000🚫 The Grace Period is not active."
+      success: "%prefix% #a0ff72✔ Successfully force-stopped Grace Period."
+  pvp:
+    enable: "%prefix% #a0ff72✔ PvP has been enabled."
+    disable: "%prefix% #ff7272❌ PvP has been disabled."
+  broadcast_command:
+    prefix: "#ffd659🔔 &8» "
+warning:
+  try_enter_end_without_required_bosses: "#FF0000🚫 You need to kill all bosses before entering to the end."
+error:
+  no_permission: "%prefix% #FF0000🚫 You have no permission to use this command."
+  unknown_command: "%prefix% #FF0000🚫 Unknown command. &7Use &f/spb help &7to see the list of commands."
+  invalid_usage: "%prefix% #FF0000🚫 Incorrect usage. &7Use &f/spb help &7to see the usages of all commands."
+  player_not_found: "%prefix% #FF0000🚫 Can't find player '%player%'."
+  no_spb_info: "%prefix% #FF0000🚫 SPB String List not found."
+
+# #FF0000🚫 #ff7272❌ #fff18d📰 #a0ff72✔
