@@ -24,16 +24,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandHandler implements CommandExecutor {
-    private ChatUtils chatUtils;
-    private XTeamsAPI xTeamsAPI;
-    private TeamDataManager teamDataManager;
-    private ConfigManager configManager;
-    private GracePeriodManager gracePeriodManager;
-    private ModifierManager modifierManager;
-    private SpeedrunBoss plugin;
-    private EventManager eventManager;
-    private PVPManager pvpManager;
-    private BroadcastManager broadcastManager;
+    private final ChatUtils chatUtils;
+    private final XTeamsAPI xTeamsAPI;
+    private final TeamDataManager teamDataManager;
+    private final ConfigManager configManager;
+    private final GracePeriodManager gracePeriodManager;
+    private final ModifierManager modifierManager;
+    private final SpeedrunBoss plugin;
+    private final EventManager eventManager;
+    private final PVPManager pvpManager;
+    private final BroadcastManager broadcastManager;
+
+    public CommandHandler(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, ConfigManager configManager, GracePeriodManager gracePeriodManager, ModifierManager modifierManager, SpeedrunBoss plugin, EventManager eventManager, PVPManager pvpManager, BroadcastManager broadcastManager) {
+        this.chatUtils = chatUtils;
+        this.xTeamsAPI = xTeamsAPI;
+        this.teamDataManager = teamDataManager;
+        this.configManager = configManager;
+        this.gracePeriodManager = gracePeriodManager;
+        this.modifierManager = modifierManager;
+        this.plugin = plugin;
+        this.eventManager = eventManager;
+        this.pvpManager = pvpManager;
+        this.broadcastManager = broadcastManager;
+    }
 
 
     @Override
@@ -45,15 +58,11 @@ public class CommandHandler implements CommandExecutor {
 
         String subcommand = args[0].toLowerCase();
 
-        switch (subcommand) {
-            case "admin" -> {
-                return handleAdmin(sender, args);
-            }
-            default -> {
-                sender.sendMessage(chatUtils.getMessage("error.unknown_command", (Player) sender));
-                return false;
-            }
+        if (subcommand.equals("admin")) {
+            return handleAdmin(sender, args);
         }
+        sender.sendMessage(chatUtils.getMessage("error.unknown_command", (Player) sender));
+        return false;
     }
 
     private void handleSPBInfo(CommandSender sender) {
@@ -102,14 +111,6 @@ public class CommandHandler implements CommandExecutor {
         String action = args[1].toLowerCase();
 
         switch (action) {
-            /* case "subcommand" -> {
-                if (!sender.hasPermission("spb.admin.method") && !sender.hasPermission("spb.admin")) {
-                    sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
-                    return true;
-                } else {
-                    //return handleMethod(sender, args);
-                }
-            } */
             case "graceperiod" -> {
                 if (!sender.hasPermission("spb.admin.graceperiod") && !sender.hasPermission("spb.admin")) {
                     sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
@@ -177,18 +178,10 @@ public class CommandHandler implements CommandExecutor {
         }
         String action = args[2].toLowerCase();
         switch (action) {
-            case "start" -> {
-                eventManager.startEvent((Player) sender);
-            }
-            case "end" -> {
-                eventManager.endEvent((Player) sender);
-            }
-            case "pause" -> {
-                eventManager.pauseEvent((Player) sender);
-            }
-            case "resume" -> {
-                eventManager.resumeEvent((Player) sender);
-            }
+            case "start" -> eventManager.startEvent((Player) sender);
+            case "end" -> eventManager.endEvent((Player) sender);
+            case "pause" -> eventManager.pauseEvent((Player) sender);
+            case "resume" -> eventManager.resumeEvent((Player) sender);
         }
         return false;
     }
@@ -204,14 +197,14 @@ public class CommandHandler implements CommandExecutor {
             case "enable" -> {
                 pvpManager.forceStartPvP();
                 sender.sendMessage(chatUtils.getMessage("administration.pvp.enable", (Player) sender));
-                if (!(args[3] == "silent")) {
+                if (!(args[3].equals("silent"))) {
                     broadcastManager.sendPVPEnableMessage();
                 }
             }
             case "disable" -> {
                 pvpManager.stopPvP();
                 sender.sendMessage(chatUtils.getMessage("administration.pvp.disable", (Player) sender));
-                if (!(args[3] == "silent")) {
+                if (!(args[3].equals("silent"))) {
                     broadcastManager.sendPVPDisableMessage();
                 }
             }
@@ -236,7 +229,7 @@ public class CommandHandler implements CommandExecutor {
                         sender.sendMessage(chatUtils.getMessage("administration.graceperiod.forcestart.already", (Player) sender));
                     } else {
                         long duration = Integer.parseInt(args[3]);
-                        GracePeriodManager gracePeriodManager = new GracePeriodManager(modifierManager, duration, plugin, xTeamsAPI);
+                        GracePeriodManager gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager);
                         gracePeriodManager.startGracePeriod();
                         sender.sendMessage(chatUtils.getMessage("administration.graceperiod.forcestart.success", (Player) sender));
                     }

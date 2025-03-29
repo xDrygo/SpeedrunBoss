@@ -14,6 +14,10 @@ public class WitherSkullListener implements Listener {
     private SpeedrunBoss plugin;
     private final double probabilityMultiplier = plugin.getConfig().getDouble("configuration.wither_skull_multiplier");
 
+    public WitherSkullListener(SpeedrunBoss plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         Entity entity = event.getEntity();
@@ -24,8 +28,7 @@ public class WitherSkullListener implements Listener {
             double baseDropChance = 0.025;
 
             // Si el asesino es un jugador, podemos aplicar la probabilidad modificada por Looting
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingEntity = (LivingEntity) entity;
+            if (entity instanceof LivingEntity livingEntity) {
                 Player killer = livingEntity.getKiller(); // Obtenemos el killer (jugador que mató al mob)
 
                 if (killer != null) {
@@ -55,8 +58,8 @@ public class WitherSkullListener implements Listener {
 
     // Método que obtiene el nivel de Looting de la espada del jugador
     private int getLootingLevel(Player player) {
-        if (player.getInventory().getItemInMainHand() != null &&
-                player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD) {
+        player.getInventory().getItemInMainHand();
+        if (player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD) {
 
             ItemStack weapon = player.getInventory().getItemInMainHand();
             if (weapon.hasItemMeta() && weapon.getItemMeta().hasEnchant(Enchantment.LOOTING)) {

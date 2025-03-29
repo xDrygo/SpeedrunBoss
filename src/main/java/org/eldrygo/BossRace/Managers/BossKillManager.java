@@ -34,24 +34,19 @@ public class BossKillManager {
             if (bossName != null) {
                 // Registrar el boss asesinado en el archivo de datos
                 teamDataManager.addKilledBoss(teamName, bossName);
-                broadcastManager.sendBossKilledMessage(teamName, bossName, player);
+                broadcastManager.sendBossKilledMessage(bossName, player);
             }
         }
     }
 
     // Método auxiliar para obtener el nombre del boss según el tipo de entidad
     private String getBossName(EntityType type) {
-        switch (type) {
-            case ENDER_DRAGON:
-                return "ender_dragon";
-            case WITHER:
-                return "wither";
-            case WARDEN:
-                return "warden";
-            case ELDER_GUARDIAN:
-                return "elder_guardian";
-            default:
-                return null; // No es un boss relevante
-        }
+        return switch (type) {
+            case ENDER_DRAGON -> "ender_dragon";
+            case WITHER -> "wither";
+            case WARDEN -> "warden";
+            case ELDER_GUARDIAN -> "elder_guardian";
+            default -> null; // No es un boss relevante
+        };
     }
 }

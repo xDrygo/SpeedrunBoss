@@ -11,17 +11,17 @@ import org.eldrygo.Utils.ChatUtils;
 public class PortalEnterListener implements Listener {
     private final TeamDataManager teamDataManager;
     private final XTeamsAPI xTeamsAPI;
-    private ChatUtils chatUtils;
+    private final ChatUtils chatUtils;
 
-    public PortalEnterListener(TeamDataManager teamDataManager, XTeamsAPI xTeamsAPI) {
+    public PortalEnterListener(TeamDataManager teamDataManager, XTeamsAPI xTeamsAPI, ChatUtils chatUtils) {
         this.teamDataManager = teamDataManager;
         this.xTeamsAPI = xTeamsAPI;
+        this.chatUtils = chatUtils;
     }
 
     @EventHandler
     public void onPortalEnter(EntityPortalEnterEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+        if (event.getEntity() instanceof Player player) {
 
             // Verificar si el jugador intenta entrar al portal del End
             if (event.getLocation().getWorld().getName().equals("world_end")) {

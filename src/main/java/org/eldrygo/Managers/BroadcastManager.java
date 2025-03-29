@@ -9,7 +9,7 @@ import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.Utils.ChatUtils;
 
 public class BroadcastManager {
-    private ChatUtils chatUtils;
+    private final ChatUtils chatUtils;
     private final XTeamsAPI xTeamsAPI;
 
     public BroadcastManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI) {
@@ -17,7 +17,7 @@ public class BroadcastManager {
         this.xTeamsAPI = xTeamsAPI;
     }
 
-    public void sendBossKilledMessage(String teamName, String bossName, Player player) {
+    public void sendBossKilledMessage(String bossName, Player player) {
         for (Player players : Bukkit.getServer().getOnlinePlayers()) {
             players.sendMessage(chatUtils.getMessage("broadcast.boss_kill." + bossName, player)
                     .replace("%team%", (xTeamsAPI.getPlayerTeamDisplayName(player)))

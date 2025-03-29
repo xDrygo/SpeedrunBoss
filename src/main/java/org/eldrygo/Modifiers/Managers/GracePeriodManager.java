@@ -14,23 +14,21 @@ import java.util.List;
 
 public class GracePeriodManager {
     private int gracePeriodDuration = 20 * 60; // Duración del tiempo de gracia en ticks (ej. 20 ticks = 1 segundo)
-    private boolean isGracePeriodActive = false;
-    private SpeedrunBoss plugin;
+    private boolean isGracePeriodActive;
+    private final SpeedrunBoss plugin;
     private final DepUtils depUtils;
     private final XTeamsAPI xTeamsAPI;
-    private final ModifierManager modifierManager;
     public BukkitRunnable gracePeriodTask;
     private boolean gracePeriodPaused;
     private long remainingTime;
     private long startTime;
-    private BroadcastManager broadcastManager;
+    private final BroadcastManager broadcastManager;
 
-    public GracePeriodManager(ModifierManager modifierManager, long gracePeriod, SpeedrunBoss plugin, XTeamsAPI XTeamsAPI) {
+    public GracePeriodManager(SpeedrunBoss plugin, XTeamsAPI XTeamsAPI, BroadcastManager broadcastManager) {
+        this.broadcastManager = broadcastManager;
         this.isGracePeriodActive =  false;
         this.gracePeriodPaused = false;
-        this.gracePeriodDuration = (int) gracePeriodDuration;
         this.remainingTime = gracePeriodDuration;
-        this.modifierManager = modifierManager;
         this.plugin = plugin;
         this.depUtils = new DepUtils();
         this.xTeamsAPI = XTeamsAPI;

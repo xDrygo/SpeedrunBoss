@@ -5,10 +5,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.eldrygo.Modifiers.Managers.ModifierManager;
-import org.eldrygo.Utils.ChatUtils;
 
 public class PvpListener implements Listener {
-    private ModifierManager modifierManager;
+    private final ModifierManager modifierManager;
+
+    public PvpListener(ModifierManager modifierManager) {
+        this.modifierManager = modifierManager;
+    }
 
     @EventHandler
     public void onPlayerHit(EntityDamageByEntityEvent event) {

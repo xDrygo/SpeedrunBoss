@@ -5,42 +5,61 @@ import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.BossRace.Listeners.BossKillListener;
 import org.eldrygo.BossRace.Listeners.PortalEnterListener;
 import org.eldrygo.BossRace.Managers.BossKillManager;
+import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Compass.Listeners.CompassListener;
-import org.eldrygo.Compass.Managers.CompassManager;
 import org.eldrygo.Event.Managers.EventDataManager;
 import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Handlers.CommandHandler;
 import org.eldrygo.Managers.BroadcastManager;
+import org.eldrygo.Managers.Files.ConfigManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.Modifiers.Listeners.PvpListener;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
+import org.eldrygo.Modifiers.Managers.ModifierManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.XTeams;
-import org.json.simple.JSONObject;
 
 import java.util.Set;
 import java.util.UUID;
 
 public class LoadUtils {
     private final SpeedrunBoss plugin;
-    private XTeamsAPI xTeamsAPI;
-    private BossKillManager bossKillManager;
-    private BroadcastManager broadcastManager;
-    private ChatUtils chatUtils;
-    private CompassManager compassManager;
-    private EventManager eventManager;
-    private EventDataManager eventDataManager;
-    private GracePeriodManager gracePeriodManager;
-    private PVPManager pvpManager;
-    private TeamDataManager teamDataManager;
-    private XTeamsAPI XTeamsAPI;
-    private EventManager.EventState state;
-    private Set<UUID> participants;
-    private JSONObject json;
+    private final XTeamsAPI xTeamsAPI;
+    private final BossKillManager bossKillManager;
+    private final BroadcastManager broadcastManager;
+    private final ChatUtils chatUtils;
+    private final EventManager eventManager;
+    private final EventDataManager eventDataManager;
+    private final GracePeriodManager gracePeriodManager;
+    private final PVPManager pvpManager;
+    private final TeamDataManager teamDataManager;
+    private final XTeamsAPI XTeamsAPI;
+    private final EventManager.EventState state;
+    private final Set<UUID> participants;
+    private final DepUtils depUtils;
+    private final CinematicManager cinematicManager;
+    private final ModifierManager modifierManager;
+    private final ConfigManager configManager;
 
-    public LoadUtils(SpeedrunBoss plugin) {
+    public LoadUtils(SpeedrunBoss plugin, org.eldrygo.API.XTeamsAPI xTeamsAPI, BossKillManager bossKillManager, BroadcastManager broadcastManager, ChatUtils chatUtils, EventManager eventManager, EventDataManager eventDataManager, GracePeriodManager gracePeriodManager, PVPManager pvpManager, TeamDataManager teamDataManager, org.eldrygo.API.XTeamsAPI xTeamsAPI1, EventManager.EventState state, Set<UUID> participants, DepUtils depUtils, CinematicManager cinematicManager, ModifierManager modifierManager, ConfigManager configManager) {
         this.plugin = plugin;
+        this.xTeamsAPI = xTeamsAPI;
+        this.bossKillManager = bossKillManager;
+        this.broadcastManager = broadcastManager;
+        this.chatUtils = chatUtils;
+        this.eventManager = eventManager;
+        this.eventDataManager = eventDataManager;
+        this.gracePeriodManager = gracePeriodManager;
+        this.pvpManager = pvpManager;
+        this.teamDataManager = teamDataManager;
+        XTeamsAPI = xTeamsAPI1;
+        this.state = state;
+        this.participants = participants;
+        this.depUtils = depUtils;
+        this.cinematicManager = cinematicManager;
+        this.modifierManager = modifierManager;
+        this.configManager = configManager;
     }
     public void loadFeatures() {
         loadXTeamsAPI();
@@ -54,7 +73,7 @@ public class LoadUtils {
 
     private void loadEvent() {
         EventDataManager eventDataManager = new EventDataManager(plugin);
-        EventManager eventManager = new EventManager(eventDataManager, XTeamsAPI, plugin);
+        EventManager eventManager = new EventManager(chatUtils, xTeamsAPI, depUtils, cinematicManager, eventDataManager, modifierManager, XTeamsAPI, plugin);
         eventDataManager.loadEventState(eventManager);
     }
     public void unloadEvent() {
@@ -71,12 +90,12 @@ public class LoadUtils {
     }
     private void loadListeners() {
         plugin.getServer().getPluginManager().registerEvents(new CompassListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PvpListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PortalEnterListener(teamDataManager, xTeamsAPI), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new BossKillListener(plugin, bossKillManager), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new PvpListener(modifierManager), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new PortalEnterListener(teamDataManager, xTeamsAPI, chatUtils), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new BossKillListener(bossKillManager), plugin);
     }
     private void loadCommands() {
-        plugin.getCommand("speedrunboss").setExecutor(new CommandHandler());
+        plugin.getCommand("speedrunboss").setExecutor(new CommandHandler(chatUtils, xTeamsAPI, teamDataManager, configManager, gracePeriodManager, modifierManager, plugin, eventManager, pvpManager, broadcastManager));
     }
 
     // loadFeature Methods:

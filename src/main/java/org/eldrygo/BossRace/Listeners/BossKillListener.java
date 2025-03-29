@@ -7,13 +7,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.eldrygo.BossRace.Managers.BossKillManager;
-import org.eldrygo.SpeedrunBoss;
 
 public class BossKillListener implements Listener {
     private final BossKillManager bossKillManager;
 
     // Constructor que recibe el BossKillManager
-    public BossKillListener(SpeedrunBoss plugin, BossKillManager bossKillManager) {
+    public BossKillListener(BossKillManager bossKillManager) {
         this.bossKillManager = bossKillManager;
     }
 

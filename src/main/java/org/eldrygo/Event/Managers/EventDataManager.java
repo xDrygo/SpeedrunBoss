@@ -44,7 +44,6 @@ public class EventDataManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(dataFile, StandardCharsets.UTF_8))) {
             JSONObject json = (JSONObject) new org.json.simple.parser.JSONParser().parse(reader);
 
-            EventState state = EventState.valueOf((String) json.get("state"));
             JSONArray participantArray = (JSONArray) json.get("participants");
 
             Set<UUID> participants = new HashSet<>();

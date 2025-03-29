@@ -18,7 +18,6 @@ public class ConfigManager {
     public void loadConfig() {
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
-        FileConfiguration config = plugin.getConfig();
     }
     public String getPrefix() { return plugin.prefix; }
     public FileConfiguration getMessageConfig() { return plugin.messagesConfig; }

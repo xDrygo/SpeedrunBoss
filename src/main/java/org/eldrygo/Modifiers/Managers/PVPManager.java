@@ -1,7 +1,5 @@
 package org.eldrygo.Modifiers.Managers;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.SpeedrunBoss;
@@ -9,11 +7,12 @@ import org.eldrygo.SpeedrunBoss;
 public class PVPManager {
     private boolean pvpEnabled;
     private final long pvpStartDelay; // El delay en ticks
-    private BukkitRunnable pvpTask;
-    private SpeedrunBoss plugin;
-    private BroadcastManager broadcastManager;
+    private final SpeedrunBoss plugin;
+    private final BroadcastManager broadcastManager;
 
-    public PVPManager(long pvpStartDelay) {
+    public PVPManager(long pvpStartDelay, SpeedrunBoss plugin, BroadcastManager broadcastManager) {
+        this.plugin = plugin;
+        this.broadcastManager = broadcastManager;
         this.pvpEnabled = false;
         this.pvpStartDelay = pvpStartDelay;
     }
@@ -22,12 +21,14 @@ public class PVPManager {
     public void startPvPWithDelay() {
         if (pvpEnabled) return; // Si PvP ya está habilitado, no hacer nada
 
-        pvpTask = new BukkitRunnable() {
+        // Aquí se ejecuta el código cuando se activa el PVP después del delay
+        // Si tienes efectos específicos para el PVP, agrégalos aquí
+        BukkitRunnable pvpTask = new BukkitRunnable() {
             @Override
             public void run() {
                 // Aquí se ejecuta el código cuando se activa el PVP después del delay
                 pvpEnabled = true;
-                applyPvPEffects(); // Si tienes efectos específicos para el PVP, agrégalos aquí
+                //applyPvPEffects(); // Si tienes efectos específicos para el PVP, agrégalos aquí
                 broadcastManager.sendPVPEnableMessage();
             }
         };
@@ -57,6 +58,7 @@ public class PVPManager {
         return pvpEnabled;
     }
 
+    /*
     // Método para aplicar efectos PvP (agrega tu lógica)
     private void applyPvPEffects() {
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -71,5 +73,5 @@ public class PVPManager {
             // Aquí podrías quitar efectos aplicados en PvP, como daño aumentado, etc.
             player.sendMessage("¡PVP desactivado!");
         }
-    }
+    }*/
 }

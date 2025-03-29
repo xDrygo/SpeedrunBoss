@@ -4,7 +4,6 @@ public class ModifierManager {
     private boolean pvpEnabled;
     private long gracePeriod;
     private long gracePeriodStartTime;
-    private long pvpStartDelay;
 
     // Constructor
     public ModifierManager(boolean pvpEnabled, long gracePeriod) {

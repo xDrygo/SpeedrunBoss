@@ -10,6 +10,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class TeamDataManager {
@@ -69,7 +70,7 @@ public class TeamDataManager {
         List<String> killedBosses = getKilledBosses(teamName);
 
         // Verifica si el equipo ha matado todos los bosses requeridos
-        return killedBosses.containsAll(requiredBosses);
+        return new HashSet<>(killedBosses).containsAll(requiredBosses);
     }
     public boolean hasKilledBoss(String teamName, String bossName) {
         // Obtener los bosses asesinados por el equipo
