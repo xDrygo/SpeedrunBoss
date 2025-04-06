@@ -1,12 +1,12 @@
 name: SpeedrunBoss
 main: org.eldrygo.SpeedrunBoss
-version: 0.0.01
+version: 0.0.13
 api-version: 1.21
 authors: [Drygo]
-depend:
+softdepend:
+  - xTeams
   - PlaceholderAPI
   - Vault
-  - xTeams
 commands:
   speedrunboss:
     aliases:

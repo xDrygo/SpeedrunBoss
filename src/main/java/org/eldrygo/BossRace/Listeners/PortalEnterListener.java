@@ -4,9 +4,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.entity.Player;
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.Utils.ChatUtils;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 
 public class PortalEnterListener implements Listener {
     private final TeamDataManager teamDataManager;

@@ -8,9 +8,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.DepUtils;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.HashSet;
 import java.util.Set;

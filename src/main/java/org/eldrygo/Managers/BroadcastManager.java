@@ -5,8 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.Utils.ChatUtils;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 
 public class BroadcastManager {
     private final ChatUtils chatUtils;

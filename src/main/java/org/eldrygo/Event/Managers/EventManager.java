@@ -3,14 +3,15 @@ package org.eldrygo.Event.Managers;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
+import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.ModifierManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.DepUtils;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,10 +19,11 @@ import java.util.UUID;
 
 public class EventManager {
     private final ChatUtils chatUtils;
-    private final XTeamsAPI xTeamsAPI;
     private final DepUtils depUtils;
     private final SpeedrunBoss plugin;
     private final CinematicManager cinematicManager;
+    private final XTeamsAPI xTeamsAPI;
+    private BroadcastManager broadcastManager;
 
     public enum EventState { NOT_STARTED, RUNNING, PAUSED, ENDED }
     private EventState state;
@@ -31,17 +33,17 @@ public class EventManager {
     private final GracePeriodManager gracePeriodManager;
     private final PVPManager pvpManager;
 
-    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, DepUtils depUtils, CinematicManager cinematicManager, EventDataManager eventDataManager, ModifierManager modifierManager, XTeamsAPI XTeamsAPI, SpeedrunBoss plugin) {
+    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, DepUtils depUtils, CinematicManager cinematicManager, EventDataManager eventDataManager, ModifierManager modifierManager, SpeedrunBoss plugin) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
         this.depUtils = depUtils;
-        this.plugin = plugin1;
+        this.plugin = plugin;
         this.cinematicManager = cinematicManager;
         this.eventDataManager = eventDataManager;
         this.modifierManager = modifierManager;
         this.state = EventState.NOT_STARTED;
         this.participants = new HashSet<>();
-        this.gracePeriodManager = new GracePeriodManager(plugin, XTeamsAPI, broadcastManager);
+        this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager);
         this.pvpManager = new PVPManager(10 * 20L, plugin, broadcastManager);
     }
 

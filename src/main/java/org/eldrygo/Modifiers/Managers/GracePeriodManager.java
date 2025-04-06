@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.DepUtils;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.List;
 

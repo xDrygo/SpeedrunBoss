@@ -9,15 +9,16 @@ import java.io.File;
 
 public class ConfigManager {
     private final SpeedrunBoss plugin;
+    private org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
 
     public ConfigManager(SpeedrunBoss plugin) {
         this.plugin = plugin;
-        loadConfig();
     }
 
     public void loadConfig() {
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
+        teamConfigManager.saveTeamsToConfig();
     }
     public String getPrefix() { return plugin.prefix; }
     public FileConfiguration getMessageConfig() { return plugin.messagesConfig; }
@@ -32,6 +33,7 @@ public class ConfigManager {
             plugin.getLogger().info("✅ The messages.yml file has been loaded successfully.");
         }
         plugin.prefix = ChatUtils.formatColor(getMessageConfig().getString("prefix", "&r&lSpeedrun#fd3c9e&lBoss &cDefault Prefix &8»&r"));
+        plugin.xTeamsPrefix = ChatUtils.formatColor(getMessageConfig().getString("xteams.prefix", "#ffbaff&lx&r&lTeams &cDefault Prefix &8»&r"));
         plugin.messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
     }
     public String getMessageString(String messageId) {

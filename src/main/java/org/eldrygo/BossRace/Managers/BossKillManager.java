@@ -3,15 +3,15 @@ package org.eldrygo.BossRace.Managers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
-import org.eldrygo.Models.Team;
+import org.eldrygo.XTeams.API.XTeamsAPI;
+import org.eldrygo.XTeams.Models.Team;
 
 public class BossKillManager {
-    private final XTeamsAPI xTeamsAPI;
     private final TeamDataManager teamDataManager;
     private final BroadcastManager broadcastManager;
+    private XTeamsAPI xTeamsAPI;
 
     // Constructor que recibe las dependencias necesarias
     public BossKillManager(XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, BroadcastManager broadcastManager) {

@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.Compass.Managers.CompassManager;
 import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Managers.BroadcastManager;
@@ -18,6 +17,7 @@ import org.eldrygo.Modifiers.Managers.ModifierManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

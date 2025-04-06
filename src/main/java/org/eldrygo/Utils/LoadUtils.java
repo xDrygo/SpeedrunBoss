@@ -1,7 +1,6 @@
 package org.eldrygo.Utils;
 
 import org.bukkit.Bukkit;
-import org.eldrygo.API.XTeamsAPI;
 import org.eldrygo.BossRace.Listeners.BossKillListener;
 import org.eldrygo.BossRace.Listeners.PortalEnterListener;
 import org.eldrygo.BossRace.Managers.BossKillManager;
@@ -18,14 +17,16 @@ import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.ModifierManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
-import org.eldrygo.XTeams;
+import org.eldrygo.XTeams.API.XTeamsAPI;
+import org.eldrygo.XTeams.Command.XTeamsCommand;
+import org.eldrygo.XTeams.Command.XTeamsTabCompleter;
+import org.eldrygo.XTeams.Managers.TeamManager;
 
 import java.util.Set;
 import java.util.UUID;
 
 public class LoadUtils {
     private final SpeedrunBoss plugin;
-    private final XTeamsAPI xTeamsAPI;
     private final BossKillManager bossKillManager;
     private final BroadcastManager broadcastManager;
     private final ChatUtils chatUtils;
@@ -34,17 +35,17 @@ public class LoadUtils {
     private final GracePeriodManager gracePeriodManager;
     private final PVPManager pvpManager;
     private final TeamDataManager teamDataManager;
-    private final XTeamsAPI XTeamsAPI;
     private final EventManager.EventState state;
     private final Set<UUID> participants;
     private final DepUtils depUtils;
     private final CinematicManager cinematicManager;
     private final ModifierManager modifierManager;
     private final ConfigManager configManager;
+    private XTeamsAPI xTeamsAPI;
+    private org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
 
-    public LoadUtils(SpeedrunBoss plugin, org.eldrygo.API.XTeamsAPI xTeamsAPI, BossKillManager bossKillManager, BroadcastManager broadcastManager, ChatUtils chatUtils, EventManager eventManager, EventDataManager eventDataManager, GracePeriodManager gracePeriodManager, PVPManager pvpManager, TeamDataManager teamDataManager, org.eldrygo.API.XTeamsAPI xTeamsAPI1, EventManager.EventState state, Set<UUID> participants, DepUtils depUtils, CinematicManager cinematicManager, ModifierManager modifierManager, ConfigManager configManager) {
+    public LoadUtils(SpeedrunBoss plugin, BossKillManager bossKillManager, BroadcastManager broadcastManager, ChatUtils chatUtils, EventManager eventManager, EventDataManager eventDataManager, GracePeriodManager gracePeriodManager, PVPManager pvpManager, TeamDataManager teamDataManager, EventManager.EventState state, Set<UUID> participants, DepUtils depUtils, CinematicManager cinematicManager, ModifierManager modifierManager, ConfigManager configManager) {
         this.plugin = plugin;
-        this.xTeamsAPI = xTeamsAPI;
         this.bossKillManager = bossKillManager;
         this.broadcastManager = broadcastManager;
         this.chatUtils = chatUtils;
@@ -53,7 +54,6 @@ public class LoadUtils {
         this.gracePeriodManager = gracePeriodManager;
         this.pvpManager = pvpManager;
         this.teamDataManager = teamDataManager;
-        XTeamsAPI = xTeamsAPI1;
         this.state = state;
         this.participants = participants;
         this.depUtils = depUtils;
@@ -62,7 +62,8 @@ public class LoadUtils {
         this.configManager = configManager;
     }
     public void loadFeatures() {
-        loadXTeamsAPI();
+        loadConfigs();
+        loadXTeams();
         loadPlaceholderAPI();
         loadVault();
         loadEvent();
@@ -71,17 +72,38 @@ public class LoadUtils {
         loadCommands();
     }
 
+    private void loadConfigs() {
+        configManager.loadConfig();
+        configManager.loadMessages();
+        teamConfigManager.loadTeamsFromConfig();
+    }
+
     private void loadEvent() {
         EventDataManager eventDataManager = new EventDataManager(plugin);
-        EventManager eventManager = new EventManager(chatUtils, xTeamsAPI, depUtils, cinematicManager, eventDataManager, modifierManager, XTeamsAPI, plugin);
+        EventManager eventManager = new EventManager(chatUtils, xTeamsAPI, depUtils, cinematicManager, eventDataManager, modifierManager, plugin);
         eventDataManager.loadEventState(eventManager);
     }
     public void unloadEvent() {
-        if (eventManager.getState() == EventManager.EventState.RUNNING || eventManager.getState() == EventManager.EventState.PAUSED) {
-            eventDataManager.saveEventState(eventManager.getState(), eventManager.getParticipants());
+        if (eventManager != null) {
+            if (eventManager.getState() == EventManager.EventState.RUNNING || eventManager.getState() == EventManager.EventState.PAUSED) {
+                eventDataManager.saveEventState(eventManager.getState(), eventManager.getParticipants());
+            }
+            eventDataManager.saveEventState(state, participants);
+            teamDataManager.saveJsonFile(teamDataManager.readJsonFile());
         }
-        eventDataManager.saveEventState(state, participants);
-        teamDataManager.saveJsonFile(teamDataManager.readJsonFile());
+    }
+    private void loadXTeams() {
+        TeamManager teamManager = new TeamManager(plugin, teamConfigManager);
+        teamConfigManager.loadTeamsFromConfig();
+        loadXTeamsCmd();
+    }
+    private void loadXTeamsCmd() {
+        if (plugin.getCommand("xteams") == null) {
+            plugin.getLogger().severe("❌ Error: xTeams command is not registered in plugin.yml");
+        } else {
+            plugin.getCommand("xteams").setExecutor(new XTeamsCommand(plugin, chatUtils, teamConfigManager));
+            plugin.getCommand("xteams").setTabCompleter(new XTeamsTabCompleter(plugin, chatUtils));
+        }
     }
 
     private void loadManagers() {
@@ -112,16 +134,6 @@ public class LoadUtils {
             plugin.getLogger().info("✅ Vault detected. Vault dependency successfully loaded.");
         } else {
             plugin.getLogger().warning("⚠ Vault not detected. Disabling plugin...");
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
-        }
-    }
-    private void loadXTeamsAPI() {
-        if (Bukkit.getPluginManager().getPlugin("xTeams") != null) {
-            XTeams xTeams = (XTeams) Bukkit.getPluginManager().getPlugin("xTeams");
-            plugin.xTeamsAPI = new XTeamsAPI(xTeams);
-            plugin.getLogger().info("✅ xTeams detected. API successfully loaded.");
-        } else {
-            plugin.getLogger().severe("⚠ xTeams not detected. Disabling plugin...");
             plugin.getServer().getPluginManager().disablePlugin(plugin);
         }
     }

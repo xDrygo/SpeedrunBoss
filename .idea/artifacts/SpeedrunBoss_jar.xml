@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="SpeedrunBoss:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/SpeedrunBoss_jar</output-path>
+    <output-path>$USER_HOME$/Documents/David/WORKTABLE/Servers/Speedrun Boss/Servidor/plugins</output-path>
     <root id="archive" name="SpeedrunBoss.jar">
       <element id="module-output" name="SpeedrunBoss" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/eldrygo/xTeams/1.1.2/xTeams-1.1.2.jar" path-in-jar="/" />

@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class ChatUtils {
     private final SpeedrunBoss plugin;
     private final ConfigManager configManager;
+    private org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
 
     public ChatUtils(SpeedrunBoss plugin, ConfigManager configManager) {
         this.plugin = plugin;
@@ -69,6 +70,35 @@ public class ChatUtils {
         }
 
         message = message.replace("%prefix%", configManager.getPrefix());
+
+        return ChatUtils.formatColor(message);
+    }
+    public String xTeamsGetMessage(String path, Player player) {
+        if (configManager == null) {
+            throw new IllegalStateException("ConfigManager is not initialized.");
+        }
+
+        String message = getMessageConfig().isList(path)
+                ? String.join("\n", getMessageConfig().getStringList(path))
+                : getMessageConfig().getString(path);
+
+        if (message == null || message.isEmpty()) {
+            plugin.getLogger().warning("[WARNING] Message not found: " + path);
+            return ChatUtils.formatColor("&r" + configManager.getPrefix() + " #FF0000&l[ERROR] #FF3535Message not found: " + path);
+        }
+
+        // Reemplazar placeholders
+        if (player != null) {
+            message = message.replace("%player%", player.getName());
+        } else {
+            message = message.replace("%player%", "Unknown");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            message = PlaceholderAPI.setPlaceholders(player, message);
+        }
+
+        message = message.replace("%prefix%", teamConfigManager.getPrefix());
 
         return ChatUtils.formatColor(message);
     }

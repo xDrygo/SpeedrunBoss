@@ -129,6 +129,109 @@ administration:
     disable: "%prefix% #ff7272❌ PvP has been disabled."
   broadcast_command:
     prefix: "#ffd659🔔 &8» "
+xteams:
+  prefix: "#ffbaff&lx&r&lTeams &8»&r"
+  commands:
+    create:
+      success: "%prefix% #a0ff72✔ You created the '%team%' team."
+    delete:
+      success: "%prefix% #a0ff72✔ You have deleted team '%team%'."
+      successall: "%prefix% #a0ff72✔ You have deleted all the teams."
+    setdisplay:
+      success: "%prefix% #a0ff72✔ Successfully changed the displayname of '%team%' to \"%display_name%\"."
+    join:
+      other:
+        success: "%prefix% #a0ff72✔ Player '%player%' joined the %team% team."
+        successall: "%prefix% #a0ff72✔ Player '%player%' joined all teams."
+      self:
+        success: "%prefix% #a0ff72✔ You joined the '%team%' team."
+        successall: "%prefix% #a0ff72✔ You joined all the teams."
+    leave:
+      other:
+        success: "%prefix% #a0ff72✔ Player '%player%' left the %team% team."
+        successall: "%prefix% #a0ff72✔ Player %player% left all teams."
+      self:
+        success: "%prefix% #a0ff72✔ You left the '%team%' team."
+        successall: "%prefix% #a0ff72✔ You left all the teams."
+    list:
+      empty: "%prefix% #FF0000🚫 Can't find any team."
+      string:
+        header: "%prefix% #fff18d📰 List of teams:"
+        row: "&7  - &r%display_name% &7(%team%) &8- #ccccccPriority: #fff18d%priority%"
+    teaminfo:
+      string:
+        header:
+          - " "
+          - "%prefix% #ffdcff'%team%' team information:"
+          - " "
+          - "&8▪ #fff18dDisplay Name: &r%display_name%"
+          - "&8▪ #fff18dPriority: &r%priority%"
+          - " "
+        members_header: "&8▪ #fff18dMembers:"
+        no_members: "&8▪ #fff18dMembers: #FF4444None"
+        members_row: "&7  - &f%member%"
+        footer:
+          - " "
+          - "#c490c4SPB'S xTeams version developed by @eldrygo"
+          - " "
+    playerinfo:
+      string:
+        header:
+          - " "
+          - "%prefix% #ffdcff'%player%' player information:"
+          - " "
+        main_team: "&8▪ #fff18dMain Team: &r%display_name% &7(%team%)"
+        team_list_header: "&8▪ #fff18dHis Teams:"
+        team_list_row: "&7  - &r%display_name% &7(%team%) &8- #ccccccPriority: #fff18d%priority%"
+        no_teams: "#ff4444Player '%player%' is not on a team."
+        footer:
+          - " "
+          - "#c490c4SPB'S xTeams version developed by @eldrygo"
+          - " "
+  tab_complete:
+    create:
+      team: "Team"
+      priority: "Priority"
+    setdisplay:
+      display_name: "Display Name"
+  error:
+    commands:
+      unknown_command: "%prefix% #FF0000🚫 Unknown command. &7Use &f/xteams help &7to see the list of commands."
+      no_permission: "%prefix% #FF0000🚫 You have no permission to use this command."
+      player_not_found: "%prefix% #FF0000🚫 Can't find player '%player%'."
+      team_not_found: "%prefix% #FF0000🚫 Can't find team '%team%'."
+      anyteam_not_found: "%prefix% #FF0000🚫 Can't find any team."
+      team_already_exists: "%prefix% #FF0000🚫 Team '%team%' already exists."
+      invalid_priority: "%prefix% #FF0000🚫 Priority must be a valid integer."
+      team_not_specified:
+        create: "%prefix% #FF0000🚫 Need to specify a team. &7Use &f/xteams create <team> <priority>"
+        delete: "%prefix% #FF0000🚫 Need to specify a team. &7Use &f/xteams delete <team or *>"
+        setdisplay: "%prefix% #FF0000🚫 Need to specify a team. &7Use &f/xteams setdisplay <team> [New Display Name]"
+        leave: "%prefix% #FF0000🚫 Need to specify a team. &7Use &f/xteams leave <team or *> <player or leave blank for you>"
+        join: "%prefix% #FF0000🚫 Need to specify a team. &7Use &f/xteams join <team or *> <player or leave blank for you>"
+        teaminfo: "%prefix% #FF0000🚫 Need to specify a team. &7Use &f/xteams info <team>"
+      only_player:
+        leave: "%prefix% #FF0000🚫 When executed by console, need to specify a player. &7Use &f/xteams leave <team or *> <player>"
+        join: "%prefix% #FF0000🚫 When executed by console, need to specify a player. &7Use &f/xteams join <team or *> <player>"
+      priority_not_specified: "%prefix% #FF0000🚫 Need to specify the priority. &7Use &f/xteams create <team> <priority>"
+      all_not_permission:
+        delete: "%prefix% #FF0000🚫 Don't have permission to delete all teams."
+        leave: "%prefix% #FF0000🚫 Don't have permission to leave all teams."
+      leave:
+        self:
+          not_in_team: "%prefix% #FF0000🚫 You are not in '%team%' team."
+          not_in_anyteam: "%prefix% #FF0000🚫 You are not in any team"
+        other:
+          not_in_team: "%prefix% #FF0000🚫 Player '%player%' is not on '%team%' team."
+          not_in_anyteam: "%prefix% #FF0000🚫 Player %player% is not on any team."
+      join:
+        other:
+          already_in_team: "%prefix% #FF0000🚫 Player '%player%' is already on '%team%' team."
+        self:
+          already_in_team: "%prefix% #FF0000🚫 You are already on '%team%' team."
+      setdisplay:
+        displayname_not_specified: "%prefix% #FF0000🚫 Need to add the display name. &7Use &f/xteams setdisplay <team> [New Display Name]"
+        invalid_format: "%prefix% #FF0000🚫 The Display Name format is invalid. &7Remember to use double quotes: \"Display Name\"."
 warning:
   try_enter_end_without_required_bosses: "#FF0000🚫 You need to kill all bosses before entering to the end."
 error:
