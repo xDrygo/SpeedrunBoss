@@ -6,7 +6,7 @@ import org.eldrygo.SpeedrunBoss;
 
 public class PVPManager {
     private boolean pvpEnabled;
-    private final long pvpStartDelay; // El delay en ticks
+    private long pvpStartDelay; // El delay en ticks
     private final SpeedrunBoss plugin;
     private final BroadcastManager broadcastManager;
 
@@ -74,4 +74,12 @@ public class PVPManager {
             player.sendMessage("¡PVP desactivado!");
         }
     }*/
+    public long getPVPStartDelay() {
+        return pvpStartDelay;
+    }
+
+    // Setter para establecer el valor de pvpStartDelay
+    public void setPVPStartDelay(long delay) {
+        pvpStartDelay = delay;
+    }
 }

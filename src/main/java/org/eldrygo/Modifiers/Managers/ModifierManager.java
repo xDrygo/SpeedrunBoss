@@ -1,25 +1,8 @@
 package org.eldrygo.Modifiers.Managers;
 
 public class ModifierManager {
-    private boolean pvpEnabled;
     private long gracePeriod;
     private long gracePeriodStartTime;
-
-    // Constructor
-    public ModifierManager(boolean pvpEnabled, long gracePeriod) {
-        this.pvpEnabled = pvpEnabled;
-        this.gracePeriod = gracePeriod;
-        this.gracePeriodStartTime = 0;
-    }
-
-    // Métodos para gestionar reglas del juego
-    public boolean isPvpEnabled() {
-        return pvpEnabled;
-    }
-
-    public void setPvpEnabled(boolean pvpEnabled) {
-        this.pvpEnabled = pvpEnabled;
-    }
 
     public long getGracePeriod() {
         return gracePeriod;

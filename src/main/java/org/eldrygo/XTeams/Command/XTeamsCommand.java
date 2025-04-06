@@ -29,7 +29,11 @@ public class XTeamsCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.unknown_command", (Player) sender));
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.unknown_command", null));
+            } else {
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.unknown_command", (Player) sender));
+            }
             return false;
         }
 
@@ -294,7 +298,7 @@ public class XTeamsCommand implements CommandExecutor {
         for (String line : headerLines) {
             line = ChatUtils.formatColor(line.replace("%display_name%", displayName)
                     .replace("%team%", name)
-                    .replace("%prefix%", plugin.prefix)
+                    .replace("%prefix%", plugin.xTeamsPrefix)
                     .replace("%priority%", String.valueOf(priority)));
             message.append(PlaceholderAPI.setPlaceholders((OfflinePlayer) sender, line))
                     .append("\n");
@@ -310,7 +314,7 @@ public class XTeamsCommand implements CommandExecutor {
             }
         }
 
-        List<String> footerLines = chatUtils.getMessageList("commands.teaminfo.string.footer");
+        List<String> footerLines = chatUtils.getMessageList("xteams.commands.teaminfo.string.footer");
         for (String line : footerLines) {
             message.append(PlaceholderAPI.setPlaceholders((OfflinePlayer) sender, ChatUtils.formatColor(line))).append("\n");
         }

@@ -18,9 +18,10 @@ public class ChatUtils {
     private final ConfigManager configManager;
     private org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
 
-    public ChatUtils(SpeedrunBoss plugin, ConfigManager configManager) {
+    public ChatUtils(SpeedrunBoss plugin, ConfigManager configManager, org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager) {
         this.plugin = plugin;
         this.configManager = configManager;
+        this.teamConfigManager = teamConfigManager;
     }
 
     public static String formatColor(String message) {
@@ -76,6 +77,9 @@ public class ChatUtils {
     public String xTeamsGetMessage(String path, Player player) {
         if (configManager == null) {
             throw new IllegalStateException("ConfigManager is not initialized.");
+        }
+        if (teamConfigManager == null) {
+            throw new IllegalStateException("teamConfigManager is not initialized.");
         }
 
         String message = getMessageConfig().isList(path)

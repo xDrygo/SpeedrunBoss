@@ -15,13 +15,23 @@ public class EventDataManager {
     private final File dataFile;
 
     public EventDataManager(SpeedrunBoss plugin) {
-        this.dataFile = new File(plugin.getDataFolder(), "event_data.json");
+        this.dataFile = new File(plugin.getDataFolder(), "data/event.json");
+        if (!dataFile.getParentFile().exists()) {
+            dataFile.getParentFile().mkdirs();
+        }
         if (!dataFile.exists()) {
             saveEventState(EventState.NOT_STARTED, new HashSet<>());
         }
     }
 
     public void saveEventState(EventState state, Set<UUID> participants) {
+        if (state == null) {
+            state = EventState.NOT_STARTED;
+        }
+        if (participants == null) {
+            participants = new HashSet<>();
+        }
+
         JSONObject json = new JSONObject();
         json.put("state", state.toString());
 

@@ -17,7 +17,7 @@ public class TeamDataManager {
     private final File dataFile;
 
     public TeamDataManager(JavaPlugin plugin) {
-        this.dataFile = new File(plugin.getDataFolder(), "teams.json");
+        this.dataFile = new File(plugin.getDataFolder(), "data/teams.json");
 
         if (!dataFile.exists()) {
             try {

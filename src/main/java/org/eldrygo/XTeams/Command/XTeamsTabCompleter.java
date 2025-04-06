@@ -26,9 +26,9 @@ public class XTeamsTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        String teamNameMessage = chatUtils.getMessage("tab_complete.create.team", (Player) sender);
-        String priorityMessage = chatUtils.getMessage("tab_complete.create.priority", (Player) sender);
-        String displayNameMessage = chatUtils.getMessage("tab_complete.setdisplay.display_name", (Player) sender);
+        String teamNameMessage = chatUtils.getMessage("xteams.tab_complete.create.team", (Player) sender);
+        String priorityMessage = chatUtils.getMessage("xteams.tab_complete.create.priority", (Player) sender);
+        String displayNameMessage = chatUtils.getMessage("xteams.tab_complete.setdisplay.display_name", (Player) sender);
         // Primero comprobamos si el jugador tiene el permiso para el subcomando
         if (args.length == 0) {
             return Collections.emptyList();  // No hay nada que autocompletar si no hay argumentos
@@ -46,9 +46,6 @@ public class XTeamsTabCompleter implements TabCompleter {
         if (sender.hasPermission("xteams.command.info")) subCommands.add("info");
         if (sender.hasPermission("xteams.command.teaminfo")) subCommands.add("teaminfo");
         if (sender.hasPermission("xteams.command.playerinfo")) subCommands.add("playerinfo");
-        if (sender.hasPermission("xteams.command.reload")) subCommands.add("reload");
-        if (sender.hasPermission("xteams.command.list")) subCommands.add("list");
-        if (sender.hasPermission("xteams.command.help")) subCommands.add("help");
 
         // Si hay subcomandos disponibles y solo tenemos un argumento, completamos el subcomando
         if (args.length == 1) {
@@ -101,9 +98,6 @@ public class XTeamsTabCompleter implements TabCompleter {
                     // Sugerir jugadores para dejar un equipo
                     return getMatches(args[2], getPlayersList());
                 }
-            }
-            case "info", "list", "help" -> {
-                return Collections.emptyList();
             }
             case "teaminfo" -> {
                 if (args.length == 2) {

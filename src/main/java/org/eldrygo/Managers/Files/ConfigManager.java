@@ -18,7 +18,6 @@ public class ConfigManager {
     public void loadConfig() {
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
-        teamConfigManager.saveTeamsToConfig();
     }
     public String getPrefix() { return plugin.prefix; }
     public FileConfiguration getMessageConfig() { return plugin.messagesConfig; }
@@ -32,11 +31,18 @@ public class ConfigManager {
         } else {
             plugin.getLogger().info("✅ The messages.yml file has been loaded successfully.");
         }
-        plugin.prefix = ChatUtils.formatColor(getMessageConfig().getString("prefix", "&r&lSpeedrun#fd3c9e&lBoss &cDefault Prefix &8»&r"));
-        plugin.xTeamsPrefix = ChatUtils.formatColor(getMessageConfig().getString("xteams.prefix", "#ffbaff&lx&r&lTeams &cDefault Prefix &8»&r"));
+        setPrefix(ChatUtils.formatColor(getMessageConfig().getString("prefix", "&r&lSpeedrun#fd3c9e&lBoss &8»&r")));
+        setTeamsPrefix(ChatUtils.formatColor(getMessageConfig().getString("xteams.prefix", "#ffbaff&lx&r&lTeams &8»&r")));
         plugin.messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
     }
     public String getMessageString(String messageId) {
         return getMessageConfig().getString(messageId);
+    }
+
+    public void setPrefix(String prefix) {
+        plugin.prefix = prefix;
+    }
+    public void setTeamsPrefix(String prefix) {
+        plugin.xTeamsPrefix = prefix;
     }
 }

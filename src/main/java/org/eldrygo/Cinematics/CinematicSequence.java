@@ -34,6 +34,7 @@ public class CinematicSequence {
     public void start() {
         new BukkitRunnable() {
             int currentAction = 0;
+            long delayRemaining = 0; // Variable para controlar el delay entre acciones
 
             @Override
             public void run() {
@@ -44,12 +45,21 @@ public class CinematicSequence {
 
                 SequenceAction action = actions.get(currentAction);
 
+                // Si hay un delay pendiente, se espera
+                if (delayRemaining > 0) {
+                    delayRemaining--;  // Reducir el delay
+                    return;  // No hacer nada, solo esperar
+                }
+
                 if (action.getAction() != null) {
                     // Ejecutar la acción
                     action.getAction().accept(player);
                 }
 
-                // Avanzar a la siguiente acción respetando el delay
+                // Establecer el delay para la siguiente acción si existe
+                delayRemaining = action.getDelay();
+
+                // Avanzar a la siguiente acción
                 currentAction++;
             }
         }.runTaskTimer(plugin, 0L, 1L);  // Ejecutar la secuencia inmediatamente

@@ -17,7 +17,7 @@ prefix: "&r&lSpeedrun#fd3c9e&lBoss &8»&r"
 
 compass:
   item:
-    name: "#fff18d&lBrujula de Rastreo&r&8: &r%structure%"
+    name: "#fff18dBrujula de Rastreo: &r%structure%"
     lore:
       - "Usa esta brujula para "
     custom_model_data: 1
@@ -71,6 +71,7 @@ cinematics:
           title: "#FFB1D9&l🢒 1 🢐"
     go:
       title: "#ffd659&lᴀ ᴄᴏʀʀᴇʀ!"
+      subtitle: "#ccccccSPB por @Jose90YT"
       string:
       - " "
       - "&r&lSpeedrun#fd3c9e&lBoss &8» #ff99cd&lComenzó la carrera!"
@@ -128,7 +129,19 @@ administration:
     enable: "%prefix% #a0ff72✔ PvP has been enabled."
     disable: "%prefix% #ff7272❌ PvP has been disabled."
   broadcast_command:
-    prefix: "#ffd659🔔 &8» "
+    prefix: "#ffd659  🔔 &r#ffe9a6&lAnuncio &8»"
+  killer_handle:
+    give_self: "%prefix% #a0ff72✔ You have succesfully received the #ffd085Kill Handle ⚔&r#a0ff72."
+    give_other: "%prefix% #a0ff72✔ Successfully given the #ffd085Kill Handle ⚔&r#a0ff72to player %player%."
+  stun:
+    enable: "%prefix% #a0ff72✔ Successfully stunned all players."
+    disable: "%prefix% #ff7272❌ Successfully unstunned all players"
+    player:
+      true:
+        withtime_success: "%prefix% #a0ff72✔ Successfully stunned player %target% for %time% ticks."
+        success: "%prefix% #a0ff72✔ Successfully stunned player %target%."
+      false:
+        success: "%prefix% #ff7272❌ Successfully unstunned player %target%."
 xteams:
   prefix: "#ffbaff&lx&r&lTeams &8»&r"
   commands:
@@ -240,5 +253,6 @@ error:
   invalid_usage: "%prefix% #FF0000🚫 Incorrect usage. &7Use &f/spb help &7to see the usages of all commands."
   player_not_found: "%prefix% #FF0000🚫 Can't find player '%player%'."
   no_spb_info: "%prefix% #FF0000🚫 SPB String List not found."
+  only_by_player: "%prefix% #FF0000🚫 This command will only work if the sender is a player."
 
 # #FF0000🚫 #ff7272❌ #fff18d📰 #a0ff72✔

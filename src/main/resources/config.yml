@@ -15,3 +15,23 @@
 
 configuration:
   wither_skull_multiplier: 2.0
+  pvp_start_delay:
+teams:
+  red:
+    members:
+      - player1
+      - player2
+    displayName: '&e&lRed Team'
+    priority: 2
+  yellow:
+    members:
+      - player5
+      - player6
+    displayName: '&e&lYellow Team'
+    priority: 0
+  blue:
+    members:
+      - player3
+      - player4
+    displayName: '&e&lBlue Team'
+    priority: 1

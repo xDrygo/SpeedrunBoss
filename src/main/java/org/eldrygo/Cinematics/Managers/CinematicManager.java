@@ -14,20 +14,22 @@ import java.util.List;
 
 public class CinematicManager {
     private final SpeedrunBoss plugin;
-    private ChatUtils chatUtils;
-    private StunManager stunManager;
-    private CountdownBossBarManager countdownBossBarManager;
+    private final ChatUtils chatUtils;
+    private final StunManager stunManager;
+    private final CountdownBossBarManager countdownBossBarManager;
 
-    public CinematicManager(SpeedrunBoss plugin) {
+    public CinematicManager(SpeedrunBoss plugin, ChatUtils chatUtils, StunManager stunManager, CountdownBossBarManager countdownBossBarManager) {
         this.plugin = plugin;
+        this.chatUtils = chatUtils;
+        this.stunManager = stunManager;
+        this.countdownBossBarManager = countdownBossBarManager;
     }
 
     public void startCinematic() {
-        // Crear una secuencia de acciones
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             CinematicSequence sequence = new CinematicSequence(player, plugin)
-                    .addAction(p -> countdownBossBarManager.startCountdown(60))
-                    .addDelay(980)
+                    .addAction(p -> countdownBossBarManager.startCountdown(60)) // Empieza el countdown con el mismo tiempo
+                    .addDelay(980)  // Ajusta el delay dependiendo de tu flujo
                     .addAction(p -> stunManager.stunAllPlayers())
                     .addDelay(20)
                     .addAction(p -> p.sendTitle(
@@ -81,12 +83,13 @@ public class CinematicManager {
                     .addAction(p -> p.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 10f, 2f))
                     .addDelay(40)
                     .addAction(p -> p.sendTitle(
-                            chatUtils.getTitle("cinematics.start.titles.go.title", player), null,
+                            chatUtils.getTitle("cinematics.start.go.title", player), chatUtils.getSubtitle("cinematics.start.go.subtitle", player),
                             2, 60, 10))
                     .addAction(p -> p.playSound(player.getLocation(), Sound.BLOCK_CONDUIT_ACTIVATE, 10f, 2f))
                     .addAction(p -> p.playSound(player.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 10f, 1.5f))
                     .addAction(p -> p.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10f, 1.5f))
                     .addAction(p -> sendStartCinematicGoString(player))
+                    .addAction(p -> stunManager.unStunAllPlayers())
             ;
             // Iniciar la secuencia
             sequence.start();

@@ -50,11 +50,15 @@ public class BroadcastManager {
     }
     public void sendCommandBroadcastMessage(Player sender, String message) {
         for (Player players : Bukkit.getServer().getOnlinePlayers()) {
-            String formattedMessage = chatUtils.getMessage("administration.broadcast_command.prefix", sender) + message;
-            players.sendMessage(formattedMessage);
+            String argumentMessage = ChatUtils.formatColor(message);
+            String prefix = chatUtils.getMessage("administration.broadcast_command.prefix", sender);
+            players.sendMessage(" ");
+            players.sendMessage(prefix);
+            players.sendMessage(argumentMessage);
+            players.sendMessage(" ");
             Location location = players.getLocation();
-            players.playSound(location, Sound.ENTITY_VILLAGER_YES, 10f, 2f);
-            players.playSound(location, Sound.ENTITY_PLAYER_LEVELUP, 10f, 1.25f);
+            players.playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10f, 1.5f);
+            players.playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 10f, 2f);
         }
     }
 }

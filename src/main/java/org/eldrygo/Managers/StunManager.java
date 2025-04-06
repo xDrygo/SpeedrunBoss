@@ -15,18 +15,19 @@ import org.eldrygo.XTeams.API.XTeamsAPI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import static org.bukkit.GameMode.SPECTATOR;
 
 public class StunManager implements Listener {
     private final Set<UUID> stunnedPlayers = new HashSet<>();
     private final SpeedrunBoss plugin;
-    private XTeamsAPI xTeamsAPI;
-    private DepUtils depUtils;
+    private final XTeamsAPI xTeamsAPI;
+    private final DepUtils depUtils;
 
-    public StunManager(SpeedrunBoss plugin) {
+    public StunManager(SpeedrunBoss plugin, XTeamsAPI xTeamsAPI, DepUtils depUtils) {
         this.plugin = plugin;
+        this.xTeamsAPI = xTeamsAPI;
+        this.depUtils = depUtils;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -68,7 +69,7 @@ public class StunManager implements Listener {
             }
         }
     }
-    public void unstunAllPlayers() {
+    public void unStunAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             unStunPlayer(player);
         }
@@ -88,13 +89,13 @@ public class StunManager implements Listener {
     /**
      * Evento para evitar que los jugadores aturdidos se muevan.
      */
-    @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         if (stunnedPlayers.contains(event.getPlayer().getUniqueId())) {
-            if (event.getFrom().getBlockX() != event.getTo().getBlockX() ||
-                    event.getFrom().getBlockY() != event.getTo().getBlockY() ||
-                    event.getFrom().getBlockZ() != event.getTo().getBlockZ()) {
-                event.setCancelled(true);
+            // Comparar las coordenadas completas, incluyendo las decimales
+            if (event.getFrom().getX() != event.getTo().getX() ||
+                    event.getFrom().getY() != event.getTo().getY() ||
+                    event.getFrom().getZ() != event.getTo().getZ()) {
+                event.setCancelled(true); // Cancela el movimiento si hay cualquier diferencia
             }
         }
     }

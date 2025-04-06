@@ -1,10 +1,11 @@
 name: SpeedrunBoss
 main: org.eldrygo.SpeedrunBoss
-version: 0.0.13
+version: 0.0.72
 api-version: 1.21
-authors: [Drygo]
-softdepend:
-  - xTeams
+authors:
+  - Drygo
+  - Jose90
+depend:
   - PlaceholderAPI
   - Vault
 commands:
@@ -13,6 +14,8 @@ commands:
       - spb
       - sboss
     description: "SpeedrunBoss plugin main command."
+  xteams:
+    description: "xTeams feature main command"
 permissions:
   spb.compass:
     description: "Permission to use the compass features."
@@ -26,4 +29,46 @@ permissions:
         default: false
   spb.admin:
     description: "Permission to execute commands related to SpeedrunBoss."
+    default: false
+    children:
+      spb.admin.pvp:
+        description: "Permission to use PvP management command."
+        default: false
+      spb.admin.graceperiod:
+        description: "Permission to use Grace Period management command."
+        default: false
+      spb.admin.event:
+        description: "Permission to use Event task management command."
+        default: false
+      spb.admin.broadcast:
+        description: "Permission to use Broadcast command."
+        default: false
+      spb.admin.givecompass:
+        description: "Permission to use GiveCompass command."
+        default: false
+      spb.admin.killerhandle:
+        description: "Permission to use KillerHandle command."
+        default: false
+      spb.admin.reload:
+        description: "Permission to use Reload command."
+        default: false
+      spb.admin.help:
+        description: "Permission to use Help command."
+        default: false
+  xteams.command:
+    description: "Allows users to execute xTeams commands"
+    default: false
+    children:
+      xteams.command.create: true
+      xteams.command.delete: true
+      xteams.command.delete.all: true
+      xteams.command.setdisplay: true
+      xteams.command.join: true
+      xteams.command.leave: true
+      xteams.command.leave.all: true
+      xteams.command.info: true
+      xteams.command.teaminfo: true
+      xteams.command.playerinfo: true
+  xteams.admin:
+    description: "Allows administrators to execute xTeams commands"
     default: false

@@ -11,8 +11,8 @@ import org.eldrygo.SpeedrunBoss;
 
 public class WitherSkullListener implements Listener {
 
-    private SpeedrunBoss plugin;
-    private final double probabilityMultiplier = plugin.getConfig().getDouble("configuration.wither_skull_multiplier");
+    private final SpeedrunBoss plugin;
+    private double probabilityMultiplier = 0;
 
     public WitherSkullListener(SpeedrunBoss plugin) {
         this.plugin = plugin;
@@ -67,5 +67,8 @@ public class WitherSkullListener implements Listener {
             }
         }
         return 0; // No tiene looting
+    }
+    public void setProbabilityMultiplier(double value) {
+        probabilityMultiplier = value;
     }
 }

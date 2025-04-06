@@ -7,7 +7,11 @@ import org.eldrygo.XTeams.Models.Team;
 import java.util.*;
 
 public class ConfigManager {
-    private SpeedrunBoss plugin;
+    private final SpeedrunBoss plugin;
+
+    public ConfigManager(SpeedrunBoss plugin) {
+        this.plugin = plugin;
+    }
 
     public void loadTeamsFromConfig() {
         FileConfiguration config = plugin.getConfig();
