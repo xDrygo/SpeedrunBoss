@@ -1,8 +1,10 @@
 package org.eldrygo.XTeams.Managers;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.XTeams.Models.Team;
+import org.eldrygo.XTeams.TeamLPModule.TeamGroupLinker;
 
 import java.util.*;
 
@@ -11,10 +13,12 @@ public class TeamManager {
     private final SpeedrunBoss plugin;
     private final Map<String, Team> teams; // Utilizamos un mapa para almacenar equipos por su nombre.
     private final ConfigManager configManager;
+    private final TeamGroupLinker teamGroupLinker;
 
-    public TeamManager(SpeedrunBoss plugin, ConfigManager configManager) {
+    public TeamManager(SpeedrunBoss plugin, ConfigManager configManager, TeamGroupLinker teamGroupLinker) {
         this.plugin = plugin;
         this.configManager = configManager;
+        this.teamGroupLinker = teamGroupLinker;
         this.teams = new HashMap<>();
     }
 
@@ -96,6 +100,7 @@ public class TeamManager {
         Team team = getTeam(teamName);
         if (team != null) {
             team.addMember(player.getName());
+            teamGroupLinker.applyGroup((Player) player, teamName);
             plugin.getLogger().info(player.getName() + " has joined team " + teamName);
         } else {
             plugin.getLogger().warning("Team " + teamName + " does not exist.");
@@ -105,6 +110,7 @@ public class TeamManager {
     public void joinAllTeams(OfflinePlayer player) {
         for (Team team : teams.values()) {
             team.addMember(player.getName());
+            teamGroupLinker.applyGroup((Player) player, String.valueOf(team));
         }
         plugin.getLogger().info(player.getName() + " has joined all teams.");
     }
@@ -113,6 +119,7 @@ public class TeamManager {
         Team team = getTeam(teamName);
         if (team != null && team.getMembers().contains(player.getName())) {
             team.removeMember(player.getName());
+            teamGroupLinker.removeGroup((Player) player, teamName);
             plugin.getLogger().info(player.getName() + " has left team " + teamName);
         } else {
             plugin.getLogger().warning(player.getName() + " is not a member of team " + teamName);
@@ -122,6 +129,7 @@ public class TeamManager {
     public void leaveAllTeams(OfflinePlayer player) {
         for (Team team : teams.values()) {
             if (team.getMembers().contains(player.getName())) {
+                teamGroupLinker.removeGroup((Player) player, String.valueOf(team));
                 team.removeMember(player.getName());
             }
         }

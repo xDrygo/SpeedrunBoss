@@ -6,67 +6,98 @@ import org.eldrygo.SpeedrunBoss;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class CinematicSequence {
     private final Player player;
     private final List<SequenceAction> actions = new ArrayList<>();
     private final SpeedrunBoss plugin;
+    private BukkitRunnable task;
+    private boolean isRunning = false;
+    private final String cinematicName;
 
-    public CinematicSequence(Player player, SpeedrunBoss plugin) {
+    public CinematicSequence(Player player, SpeedrunBoss plugin, String cinematicName) {
         this.player = player;
         this.plugin = plugin;
+        this.cinematicName = cinematicName;
     }
 
-    // Agregar acción para el jugador
     public CinematicSequence addAction(Consumer<Player> action) {
-        actions.add(new SequenceAction(action, 0)); // Acción sin delay
+        actions.add(new SequenceAction(action, 0));
         return this;
     }
 
-    // Agregar un delay entre las acciones
     public CinematicSequence addDelay(long ticks) {
-        actions.add(new SequenceAction(null, ticks)); // Solo delay
+        actions.add(new SequenceAction(null, ticks));
         return this;
     }
 
-    // Iniciar la secuencia de acciones
+    public CinematicSequence then(Consumer<Player> action) {
+        return addAction(action);
+    }
+
+    public CinematicSequence waitTicks(long ticks) {
+        return addDelay(ticks);
+    }
+
     public void start() {
-        new BukkitRunnable() {
+        if (isRunning) return;
+        isRunning = true;
+
+        task = new BukkitRunnable() {
             int currentAction = 0;
-            long delayRemaining = 0; // Variable para controlar el delay entre acciones
+            long ticksUntilNextAction = 0;
 
             @Override
             public void run() {
                 if (currentAction >= actions.size()) {
-                    cancel(); // Termina cuando se han ejecutado todas las acciones
+                    stop();
                     return;
                 }
 
                 SequenceAction action = actions.get(currentAction);
 
-                // Si hay un delay pendiente, se espera
-                if (delayRemaining > 0) {
-                    delayRemaining--;  // Reducir el delay
-                    return;  // No hacer nada, solo esperar
+                if (ticksUntilNextAction > 0) {
+                    ticksUntilNextAction--;
+                    return;
                 }
 
                 if (action.getAction() != null) {
-                    // Ejecutar la acción
                     action.getAction().accept(player);
                 }
 
-                // Establecer el delay para la siguiente acción si existe
-                delayRemaining = action.getDelay();
-
-                // Avanzar a la siguiente acción
+                ticksUntilNextAction = action.getDelay();
                 currentAction++;
             }
-        }.runTaskTimer(plugin, 0L, 1L);  // Ejecutar la secuencia inmediatamente
+        };
+
+        task.runTaskTimer(plugin, 0L, 1L);
     }
 
-    // Clase para representar una acción con su correspondiente delay
-    static class SequenceAction {
+    public void stop() {
+        if (!isRunning) return;
+        if (task != null) task.cancel();
+        isRunning = false;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+    public Optional<String> getRunningCinematic() {
+        return isRunning ? Optional.of(cinematicName) : Optional.empty();
+    }
+
+    public String getName() {
+        return cinematicName;
+    }
+
+    public void reset() {
+        stop();
+        actions.clear();
+    }
+
+    private static class SequenceAction {
         private final Consumer<Player> action;
         private final long delay;
 

@@ -49,13 +49,17 @@ public class BroadcastManager {
         }
     }
     public void sendCommandBroadcastMessage(Player sender, String message) {
+        String[] lines = ChatUtils.formatColor(message).split("\n"); // soporta líneas con '\n'
+
         for (Player players : Bukkit.getServer().getOnlinePlayers()) {
-            String argumentMessage = ChatUtils.formatColor(message);
             String prefix = chatUtils.getMessage("administration.broadcast_command.prefix", sender);
             players.sendMessage(" ");
             players.sendMessage(prefix);
-            players.sendMessage(argumentMessage);
+            for (String line : lines) {
+                players.sendMessage(" " + line);
+            }
             players.sendMessage(" ");
+
             Location location = players.getLocation();
             players.playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10f, 1.5f);
             players.playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 10f, 2f);

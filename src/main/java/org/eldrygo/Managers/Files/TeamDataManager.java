@@ -1,6 +1,8 @@
 package org.eldrygo.Managers.Files;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,9 +17,11 @@ import java.util.List;
 
 public class TeamDataManager {
     private final File dataFile;
+    private final XTeamsAPI xTeamsAPI;
 
-    public TeamDataManager(JavaPlugin plugin) {
+    public TeamDataManager(JavaPlugin plugin, XTeamsAPI xTeamsAPI) {
         this.dataFile = new File(plugin.getDataFolder(), "data/teams.json");
+        this.xTeamsAPI = xTeamsAPI;
 
         if (!dataFile.exists()) {
             try {
@@ -77,6 +81,13 @@ public class TeamDataManager {
         List<String> killedBosses = getKilledBosses(teamName);
 
         // Verificar si el boss específico está en la lista de bosses asesinados
+        return killedBosses.contains(bossName);
+    }
+
+    public boolean playerKilledBoss(String bossName, Player player) {
+        String teamName = xTeamsAPI.getPlayerTeamName(player);
+
+        List<String> killedBosses = getKilledBosses(teamName);
         return killedBosses.contains(bossName);
     }
 

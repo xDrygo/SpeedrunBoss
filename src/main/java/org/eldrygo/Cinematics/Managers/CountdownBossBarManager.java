@@ -12,8 +12,10 @@ import org.eldrygo.Utils.ChatUtils;
 public class CountdownBossBarManager {
     private final SpeedrunBoss plugin;
     private final BossBar bossBar;
+    public BukkitRunnable bossbarTask;
     private int secondsRemaining;
     private final ChatUtils chatUtils;
+    private int totalSeconds;
 
     public CountdownBossBarManager(SpeedrunBoss plugin, ChatUtils chatUtils) {
         this.plugin = plugin;
@@ -24,10 +26,13 @@ public class CountdownBossBarManager {
 
     public void startCountdown(int time) {
         this.secondsRemaining = time;
-        updateBossBar(secondsRemaining); // Establece el progreso inicial de la boss bar
+        this.totalSeconds = time;
+
+        updateBossBar();
+
         bossBar.setVisible(true);
 
-        new BukkitRunnable() {
+        bossbarTask = new BukkitRunnable() {
             @Override
             public void run() {
                 if (secondsRemaining <= 0) {
@@ -36,21 +41,19 @@ public class CountdownBossBarManager {
                     return;
                 }
 
-                secondsRemaining--; // Decremento de 1 segundo
-                updateBossBar(secondsRemaining); // Actualiza la barra con el nuevo valor de segundos restantes
+                secondsRemaining--;
+                updateBossBar();
             }
-        }.runTaskTimer(plugin, 0L, 20L); // Ejecuta cada segundo (20 ticks = 1 segundo)
+        };
+
+        bossbarTask.runTaskTimer(plugin, 0L, 20L);
     }
 
-    private void updateBossBar(int timerTime) {
-        // Verifica que timerTime no sea cero
-        if (timerTime > 0) {
-            bossBar.setTitle(chatUtils.getMessage("cinematics.start.bossbar_countdown.string", null).replace("%time%", String.valueOf(secondsRemaining)));
-            bossBar.setProgress((double) secondsRemaining / timerTime);
-        } else {
-            // Si timerTime es cero, establece un valor predeterminado
-            bossBar.setProgress(0);
-        }
+    private void updateBossBar() {
+        bossBar.setTitle(chatUtils.getMessage("cinematics.start.bossbar_countdown.string", null)
+                .replace("%time%", String.valueOf(secondsRemaining)));
+
+        bossBar.setProgress((double) secondsRemaining / totalSeconds);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             bossBar.addPlayer(player);

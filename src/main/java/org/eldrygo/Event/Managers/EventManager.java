@@ -43,8 +43,8 @@ public class EventManager {
         this.modifierManager = modifierManager;
         this.state = EventState.NOT_STARTED;
         this.participants = new HashSet<>();
-        this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager);
-        this.pvpManager = new PVPManager(10 * 20L, plugin, broadcastManager);
+        this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils);
+        this.pvpManager = new PVPManager(10 * 20L, plugin, broadcastManager, chatUtils, xTeamsAPI);
     }
 
     public void startEvent(Player sender) {
@@ -70,14 +70,8 @@ public class EventManager {
 
             participants.add(player.getUniqueId());
         }
-        long gracePeriodDuration = 60000; // 60 segundos para el periodo de gracia
-        GracePeriodManager gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager);
-        gracePeriodManager.startGracePeriod(); // Activar el periodo de gracia
-        long pvpDelay = 5 * 60 * 20L;
-        PVPManager pvpManager = new PVPManager(pvpDelay, plugin, broadcastManager);
         pvpManager.stopPvP();
-        pvpManager.startPvPWithDelay();
-        cinematicManager.startCinematic();
+        cinematicManager.startCinematic("start");
 
         eventDataManager.saveEventState(state, participants);
         sender.sendMessage(chatUtils.getMessage("administration.event.start.success", sender));

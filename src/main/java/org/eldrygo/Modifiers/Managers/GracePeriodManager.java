@@ -7,13 +7,14 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.DepUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.List;
 
 public class GracePeriodManager {
-    private int gracePeriodDuration = 20 * 60; // Duración del tiempo de gracia en ticks (ej. 20 ticks = 1 segundo)
+    private int gracePeriodDuration; // Duración del tiempo de gracia en ticks (ej. 20 ticks = 1 segundo)
     private boolean isGracePeriodActive;
     private final SpeedrunBoss plugin;
     private final DepUtils depUtils;
@@ -22,10 +23,12 @@ public class GracePeriodManager {
     private boolean gracePeriodPaused;
     private long remainingTime;
     private long startTime;
-    private final BroadcastManager broadcastManager;
+    private BroadcastManager broadcastManager;
+    private final ChatUtils chatUtils;
 
-    public GracePeriodManager(SpeedrunBoss plugin, XTeamsAPI XTeamsAPI, BroadcastManager broadcastManager) {
+    public GracePeriodManager(SpeedrunBoss plugin, XTeamsAPI XTeamsAPI, BroadcastManager broadcastManager, ChatUtils chatUtils) {
         this.broadcastManager = broadcastManager;
+        this.chatUtils = chatUtils;
         this.isGracePeriodActive =  false;
         this.gracePeriodPaused = false;
         this.remainingTime = gracePeriodDuration;
@@ -68,6 +71,10 @@ public class GracePeriodManager {
         // Cambiar el estado de la bandera
         isGracePeriodActive = false;
 
+        if (broadcastManager == null) {
+            broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI);
+            plugin.getLogger().warning("⚠ broadcastManager is null. Initializing a new BroadcastManager...");
+        }
         broadcastManager.sendGracePeriodEndMessage();
     }
     public void pauseGracePeriod() {
@@ -117,5 +124,8 @@ public class GracePeriodManager {
     }
     public boolean isGracePeriodPaused() {
         return gracePeriodPaused;
+    }
+    public void setGracePeriodDuration(int time) {
+        gracePeriodDuration = time;
     }
 }

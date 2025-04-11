@@ -1,0 +1,10 @@
+# team_groups.yml
+# This file links teams to LuckPerms groups.
+# The team name (key) must match exactly with the names used in your plugin.
+# The group name (value) must match an existing group in LuckPerms.
+
+team-groups:
+  red: redteam
+  blue: blueteam
+  green: greenteam
+  yellow: yellowteam

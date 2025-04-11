@@ -13,9 +13,15 @@
 
 # Welcome to the config file of SpeedrunBoss plugin! In the messages.yml file you can modify the plugin messages.
 
-configuration:
-  wither_skull_multiplier: 2.0
-  pvp_start_delay:
+settings:
+  wither_skull_multiplier: 2.0 #The multiplier of the wither skull drop probability.
+  pvp_start_delay: 400 #In Ticks
+  graceperiod_duration: 200 #In ticks
+  cinematics:
+    bypass:
+      enabled: true
+      list:
+        - xDrygo
 teams:
   red:
     members:

@@ -1,16 +1,24 @@
 package org.eldrygo.XTeams.Managers;
 
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.XTeams.Models.Team;
+import org.eldrygo.XTeams.TeamLPModule.TeamGroupLinker;
 
+import java.io.File;
 import java.util.*;
 
 public class ConfigManager {
     private final SpeedrunBoss plugin;
+    private final TeamGroupLinker teamGroupLinker;
 
-    public ConfigManager(SpeedrunBoss plugin) {
+    public ConfigManager(SpeedrunBoss plugin, TeamGroupLinker teamGroupLinker) {
         this.plugin = plugin;
+        this.teamGroupLinker = teamGroupLinker;
     }
 
     public void loadTeamsFromConfig() {
@@ -25,13 +33,20 @@ public class ConfigManager {
                 // Crear el equipo con los jugadores y el displayName directamente desde la configuración
                 Set<String> playerSet = new HashSet<>(players); // Convertir la lista de jugadores en un Set
                 Team team = new Team(teamName, displayName, priority, playerSet);  // Usar el constructor adecuado
-                plugin.getTeamManager().addTeam(team);  // CORRECCIÓN: Añadir el equipo con el nombre
+                plugin.getTeamManager().addTeam(team);  // Añadir el equipo con el nombre
 
-                plugin.getLogger().info("Team loaded: " + teamName);
+                // Aplicar el grupo de LuckPerms a cada jugador que pertenece a este equipo
+                for (String playerName : players) {
+                    Player player = Bukkit.getPlayer(playerName);  // Obtener el jugador por su nombre
+                    if (player != null && player.isOnline()) {
+                        teamGroupLinker.applyGroup(player, teamName);  // Aplicar el grupo de LuckPerms al jugador
+                    }
+                }
+
+                plugin.getLogger().info("✅ Team loaded: " + teamName);
             }
         }
     }
-
     public void saveTeamsToConfig() {
         FileConfiguration config = plugin.getConfig();
         // Limpiar la sección de equipos para evitar duplicados
@@ -52,9 +67,18 @@ public class ConfigManager {
             config.set("teams." + teamName + ".members", memberList); // Usamos el teamName que es un String
             config.set("teams." + teamName + ".displayName", team.getDisplayName()); // Usamos el displayName que es un String
             config.set("teams." + teamName + ".priority", team.getPriority()); // Usamos el priority que es un integer
+
+            // Remover el grupo de LuckPerms de los jugadores que ya no están en este equipo
+            for (String playerName : Bukkit.getOnlinePlayers().stream().map(Player::getName).toList()) {
+                Player player = Bukkit.getPlayer(playerName);
+                if (player != null && !members.contains(player.getName())) {
+                    teamGroupLinker.removeGroup(player, teamName);  // Eliminar el grupo de LuckPerms
+                }
+            }
         }
         // Guardar la configuración en el archivo
         plugin.saveConfig();
+        plugin.getLogger().info("✅ Teams successfully saved to config.");
     }
     public String getPrefix() { return plugin.xTeamsPrefix; }
 }

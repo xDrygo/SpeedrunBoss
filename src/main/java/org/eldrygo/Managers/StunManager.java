@@ -1,6 +1,7 @@
 package org.eldrygo.Managers;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -41,11 +42,13 @@ public class StunManager implements Listener {
         if (player == null || stunnedPlayers.contains(player.getUniqueId())) return;
 
         stunnedPlayers.add(player.getUniqueId());
+        plugin.getLogger().info("✅ " + player.getName() + " now is stunned.");
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 unStunPlayer(player);
+                plugin.getLogger().info("✅ " + player.getName() + " now is not stunned.");
             }
         }.runTaskLater(plugin, durationTicks);
     }
@@ -61,10 +64,11 @@ public class StunManager implements Listener {
         stunnedPlayers.add(player.getUniqueId());
     }
     public void stunAllPlayers() {
+        plugin.getLogger().info("✅ Stunning all players...");
         for (Player players : Bukkit.getOnlinePlayers()) {
             String vaultGroup = depUtils.getPrimaryGroup(players);
             String teamName = xTeamsAPI.getPlayerTeamName(players);
-            if (!(players.getGameMode() == SPECTATOR) && !(vaultGroup.contains("team_")) && !(teamName == null) && !(teamName.isEmpty())) { // Si NO cumple la condición, lo stuneamos
+            if (!(players.getGameMode() == SPECTATOR) && !(vaultGroup.contains("team_")) && !(teamName == null) && !(teamName.isEmpty())) {
                 stunPlayerIndefinitely(players);
             }
         }
@@ -89,13 +93,21 @@ public class StunManager implements Listener {
     /**
      * Evento para evitar que los jugadores aturdidos se muevan.
      */
+    @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         if (stunnedPlayers.contains(event.getPlayer().getUniqueId())) {
-            // Comparar las coordenadas completas, incluyendo las decimales
             if (event.getFrom().getX() != event.getTo().getX() ||
-                    event.getFrom().getY() != event.getTo().getY() ||
                     event.getFrom().getZ() != event.getTo().getZ()) {
-                event.setCancelled(true); // Cancela el movimiento si hay cualquier diferencia
+
+                // Restaurar la posición en X y Z, pero permitir la Y y la rotación
+                Location from = event.getFrom().clone();
+                Location to = event.getTo().clone();
+
+                to.setX(from.getX());
+                to.setZ(from.getZ());
+
+                // Mantiene la Y y la rotación (pitch/yaw)
+                event.setTo(to);
             }
         }
     }

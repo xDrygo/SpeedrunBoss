@@ -12,9 +12,11 @@ import java.util.Set;
 import java.util.UUID;
 
 public class EventDataManager {
+    private final SpeedrunBoss plugin;
     private final File dataFile;
 
     public EventDataManager(SpeedrunBoss plugin) {
+        this.plugin = plugin;
         this.dataFile = new File(plugin.getDataFolder(), "data/event.json");
         if (!dataFile.getParentFile().exists()) {
             dataFile.getParentFile().mkdirs();
@@ -44,6 +46,7 @@ public class EventDataManager {
         try (FileWriter writer = new FileWriter(dataFile, StandardCharsets.UTF_8)) {
             writer.write(json.toJSONString());
         } catch (IOException e) {
+            plugin.getLogger().severe("❌ Failed on saving Event State: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -64,6 +67,7 @@ public class EventDataManager {
             // Aplicar el estado al evento
             eventManager.resumeEvent(null);
         } catch (Exception e) {
+            plugin.getLogger().severe("❌ Failed on loading Event State: " + e.getMessage());
             e.printStackTrace();
         }
     }

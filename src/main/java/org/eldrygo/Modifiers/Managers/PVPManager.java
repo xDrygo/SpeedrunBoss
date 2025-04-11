@@ -3,16 +3,23 @@ package org.eldrygo.Modifiers.Managers;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Utils.ChatUtils;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 
 public class PVPManager {
+    public BukkitRunnable pvpTask;
     private boolean pvpEnabled;
     private long pvpStartDelay; // El delay en ticks
     private final SpeedrunBoss plugin;
-    private final BroadcastManager broadcastManager;
+    private BroadcastManager broadcastManager;
+    private final ChatUtils chatUtils;
+    private final XTeamsAPI xTeamsAPI;
 
-    public PVPManager(long pvpStartDelay, SpeedrunBoss plugin, BroadcastManager broadcastManager) {
+    public PVPManager(long pvpStartDelay, SpeedrunBoss plugin, BroadcastManager broadcastManager, ChatUtils chatUtils, XTeamsAPI xTeamsAPI) {
         this.plugin = plugin;
         this.broadcastManager = broadcastManager;
+        this.chatUtils = chatUtils;
+        this.xTeamsAPI = xTeamsAPI;
         this.pvpEnabled = false;
         this.pvpStartDelay = pvpStartDelay;
     }
@@ -23,12 +30,16 @@ public class PVPManager {
 
         // Aquí se ejecuta el código cuando se activa el PVP después del delay
         // Si tienes efectos específicos para el PVP, agrégalos aquí
-        BukkitRunnable pvpTask = new BukkitRunnable() {
+        pvpTask = new BukkitRunnable() {
             @Override
             public void run() {
                 // Aquí se ejecuta el código cuando se activa el PVP después del delay
                 pvpEnabled = true;
                 //applyPvPEffects(); // Si tienes efectos específicos para el PVP, agrégalos aquí
+                if (broadcastManager == null) {
+                    broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI);
+                    plugin.getLogger().warning("⚠ broadcastManager is null. Initializing a new BroadcastManager...");
+                }
                 broadcastManager.sendPVPEnableMessage();
             }
         };

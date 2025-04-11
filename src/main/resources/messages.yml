@@ -34,7 +34,6 @@ commands:
     give:
       success_other: "%prefix% #a0ff72✔ Successfully given the compass to player '%player%'"
       success:  "%prefix% #a0ff72✔ You have successfully received the compass."
-#events:
 broadcast:
   boss_kill:
     warden: "#ffd659🔔 &8» #3bebbc⚔️ The player '#ffffff%player%#3bebbc' from team '#ffffff%team%#3bebbc' killed the #16705d&lWarden #3bebbcin: #ffffff%time%" # NAME: #16705d  HIGHLIGHT: #ffffff  BASE: #3bebbc
@@ -88,7 +87,7 @@ cinematics:
       - "#858585ℹDesarrollado por @eldrygo"
       - " "
     bossbar_countdown:
-      string: "#cccccc🢒 &fIniciando en #fff18d%time% #cccccc🢐"
+      string: "#cccccc▪ &fIniciando en #fff18d%time% #cccccc▪"
 playerutils:
   spbinfo:
     no_members: "#FF4444No members."
@@ -130,6 +129,8 @@ administration:
     disable: "%prefix% #ff7272❌ PvP has been disabled."
   broadcast_command:
     prefix: "#ffd659  🔔 &r#ffe9a6&lAnuncio &8»"
+  reload_command:
+    success: "%prefix% #a0ff72✔ Plugin and config files succesfully reloaded."
   killer_handle:
     give_self: "%prefix% #a0ff72✔ You have succesfully received the #ffd085Kill Handle ⚔&r#a0ff72."
     give_other: "%prefix% #a0ff72✔ Successfully given the #ffd085Kill Handle ⚔&r#a0ff72to player %player%."
@@ -142,6 +143,47 @@ administration:
         success: "%prefix% #a0ff72✔ Successfully stunned player %target%."
       false:
         success: "%prefix% #ff7272❌ Successfully unstunned player %target%."
+  task:
+    cancel:
+      task_not_initialized: "%prefix% #FF0000🚫 Task %task% is not running."
+      task_not_found: "%prefix% #FF0000🚫 Can't find task %task%."
+      success: "%prefix% #ff7272❌ Task %task% was canceled succesfully."
+      no_pending_confirmation: "%prefix% #FF0000🚫 You have no tasks pending confirmation."
+      confirmation_request:
+        - " "
+        - "%prefix% #FF3535&lTask Cancel Confirmation ⚠"
+        - " "
+        - " #ccccccYou are about to cancel the task &f%task%#cccccc."
+        - " &7For security reasons, we need you to confirm the action of canceling the task."
+        - " "
+        - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin task confirm &r%task%"
+        - " "
+        - "#FF4444&o(This action can't be undone.)"
+        - " "
+  cinematic:
+    start:
+      cinematic_already_running: "%prefix% #FF0000🚫 Is already running a cinematic."
+      success: "%prefix% #a0ff72✔ The cinematic %cinematic% was successfully started."
+    stop:
+      no_cinematic_running: "%prefix% #FF0000🚫 There is no running cinematic."
+      success: "%prefix% #ff7272❌ The cinematic %cinematic% was succesfully stopped."
+      confirmation_request:
+          - " "
+          - "%prefix% #FF3535&lCinematic Stop Confirmation ⚠"
+          - " "
+          - " #ccccccYou are about to stop the cinematic &f%cinematic%#cccccc."
+          - " &7For security reasons, we need you to confirm the action of stop it."
+          - " "
+          - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin cinematic stop confirm"
+          - " "
+          - "#FF4444&o(This action can't be undone.)"
+          - " "
+placeholders:
+  tablist:
+    teammates:
+      no_members: "#FF4444No tienes equipo."
+      members: "#fff18d%member_name%"
+      members_separator: "&7, "
 xteams:
   prefix: "#ffbaff&lx&r&lTeams &8»&r"
   commands:

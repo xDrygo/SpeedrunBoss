@@ -46,7 +46,12 @@ public class BossKillManager {
             case WITHER -> "wither";
             case WARDEN -> "warden";
             case ELDER_GUARDIAN -> "elder_guardian";
-            default -> null; // No es un boss relevante
+            default -> null;
         };
     }
+
+    /*
+    TO DO LIST:
+    -
+     */
 }

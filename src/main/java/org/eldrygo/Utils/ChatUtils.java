@@ -45,6 +45,7 @@ public class ChatUtils {
         matcher.appendTail(buffer);
         return buffer.toString();
     }
+
     public String getMessage(String path, Player player) {
         if (configManager == null) {
             throw new IllegalStateException("ConfigManager is not initialized.");
@@ -70,10 +71,11 @@ public class ChatUtils {
             message = PlaceholderAPI.setPlaceholders(player, message);
         }
 
-        message = message.replace("%prefix%", configManager.getPrefix());
+        message = message.replace("%prefix%", configManager.getPrefix() != null ? configManager.getPrefix() : "");
 
         return ChatUtils.formatColor(message);
     }
+
     public String xTeamsGetMessage(String path, Player player) {
         if (configManager == null) {
             throw new IllegalStateException("ConfigManager is not initialized.");
@@ -102,18 +104,19 @@ public class ChatUtils {
             message = PlaceholderAPI.setPlaceholders(player, message);
         }
 
-        message = message.replace("%prefix%", teamConfigManager.getPrefix());
+        message = message.replace("%prefix%", teamConfigManager.getPrefix() != null ? teamConfigManager.getPrefix() : "");
 
         return ChatUtils.formatColor(message);
     }
+
     public List<String> getMessageList(String path) {
-        // Accede a la instancia de messagesConfig directamente
         List<String> messages = getMessageConfig().getStringList(path);
         if (messages == null) {
             return new ArrayList<>();  // Devuelve una lista vacía si no se encuentra el mensaje
         }
         return messages;  // Retorna la lista de mensajes
     }
+
     public String getTitle(String path, Player player) {
         if (configManager == null) {
             throw new IllegalStateException("ConfigManager is not initialized.");
@@ -121,9 +124,10 @@ public class ChatUtils {
 
         String title = getMessageConfig().getString(path);
 
+        // Si el título es null o vacío, se asigna un valor predeterminado.
         if (title == null || title.isEmpty()) {
             plugin.getLogger().warning("[WARNING] Title not found: " + path);
-            return ChatUtils.formatColor("&r" + configManager.getPrefix() + " #FF0000&l[ERROR] #FF3535Title not found: " + path);
+            title = "&r" + configManager.getPrefix() + " #FF0000&l[ERROR] #FF3535Title not found: " + path;
         }
 
         // Reemplazar placeholders
@@ -137,7 +141,7 @@ public class ChatUtils {
             title = PlaceholderAPI.setPlaceholders(player, title);
         }
 
-        title = title.replace("%prefix%", configManager.getPrefix());
+        title = title.replace("%prefix%", configManager.getPrefix() != null ? configManager.getPrefix() : "");
 
         return ChatUtils.formatColor(title);
     }
@@ -165,12 +169,15 @@ public class ChatUtils {
             subtitle = PlaceholderAPI.setPlaceholders(player, subtitle);
         }
 
-        subtitle = subtitle.replace("%prefix%", configManager.getPrefix());
+        subtitle = subtitle.replace("%prefix%", configManager.getPrefix() != null ? configManager.getPrefix() : "");
 
         return ChatUtils.formatColor(subtitle);
     }
+
     public FileConfiguration getMessageConfig() {
+        if (plugin.messagesConfig == null) {
+            throw new IllegalStateException("messagesConfig is not initialized.");
+        }
         return plugin.messagesConfig;
     }
-
 }

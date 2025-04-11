@@ -1,6 +1,6 @@
 name: SpeedrunBoss
 main: org.eldrygo.SpeedrunBoss
-version: 0.0.72
+version: 0.0.91
 api-version: 1.21
 authors:
   - Drygo
@@ -8,6 +8,7 @@ authors:
 depend:
   - PlaceholderAPI
   - Vault
+  - LuckPerms
 commands:
   speedrunboss:
     aliases:
@@ -17,16 +18,6 @@ commands:
   xteams:
     description: "xTeams feature main command"
 permissions:
-  spb.compass:
-    description: "Permission to use the compass features."
-    default: false
-    children:
-      spb.compass.give:
-        description: "Permission to use /spb compass give command."
-        default: false
-      spb.compass.admin:
-        description: "Permission to use all compass features."
-        default: false
   spb.admin:
     description: "Permission to execute commands related to SpeedrunBoss."
     default: false

@@ -7,15 +7,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
-import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Utils.SettingsUtils;
 
 public class WitherSkullListener implements Listener {
 
-    private final SpeedrunBoss plugin;
-    private double probabilityMultiplier = 0;
+    private final SettingsUtils settingsUtils;
 
-    public WitherSkullListener(SpeedrunBoss plugin) {
-        this.plugin = plugin;
+    public WitherSkullListener(SettingsUtils settingsUtils) {
+        this.settingsUtils = settingsUtils;
     }
 
     @EventHandler
@@ -44,7 +43,7 @@ public class WitherSkullListener implements Listener {
             }
 
             // Ahora aplicamos el multiplicador extra (por ejemplo x2)
-            double modifiedChance = baseDropChance * probabilityMultiplier;
+            double modifiedChance = baseDropChance * settingsUtils.probabilityMultiplier;
 
             // Generamos un valor aleatorio y lo comparamos con la probabilidad
             double randomValue = Math.random();
@@ -67,8 +66,5 @@ public class WitherSkullListener implements Listener {
             }
         }
         return 0; // No tiene looting
-    }
-    public void setProbabilityMultiplier(double value) {
-        probabilityMultiplier = value;
     }
 }
