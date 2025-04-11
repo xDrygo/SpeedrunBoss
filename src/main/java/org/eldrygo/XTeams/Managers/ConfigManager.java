@@ -1,15 +1,12 @@
 package org.eldrygo.XTeams.Managers;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.XTeams.Models.Team;
 import org.eldrygo.XTeams.TeamLPModule.TeamGroupLinker;
 
-import java.io.File;
 import java.util.*;
 
 public class ConfigManager {

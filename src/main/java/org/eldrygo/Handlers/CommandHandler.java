@@ -179,7 +179,7 @@ public class CommandHandler implements CommandExecutor {
                     sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
                     return true;
                 } else {
-                    return handleEvent(sender, args);
+                    handleEvent(sender, args);
                 }
             }
             case "broadcast" -> {
@@ -250,7 +250,7 @@ public class CommandHandler implements CommandExecutor {
         return true;
     }
 
-    private boolean handleEvent(CommandSender sender, String[] args) {
+    private void handleEvent(CommandSender sender, String[] args) {
         Player target;
         if (!(sender instanceof Player)) {
             target = null;
@@ -259,7 +259,6 @@ public class CommandHandler implements CommandExecutor {
         }
         if (args.length == 2) {
             sender.sendMessage(chatUtils.getMessage("error.invalid_usage", target));
-            return false;
         }
         String action = args[2].toLowerCase();
         switch (action) {
@@ -268,7 +267,6 @@ public class CommandHandler implements CommandExecutor {
             case "pause" -> eventManager.pauseEvent(target);
             case "resume" -> eventManager.resumeEvent(target);
         }
-        return false;
     }
 
     private boolean handlePvP(CommandSender sender, String[] args) {
@@ -386,7 +384,6 @@ public class CommandHandler implements CommandExecutor {
                     if (modifierManager.isGracePeriodActive()) {
                         sender.sendMessage(chatUtils.getMessage("administration.graceperiod.forcestart.already", target));
                     } else {
-                        long duration = Integer.parseInt(args[3]);
                         GracePeriodManager gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils);
                         gracePeriodManager.startGracePeriod();
                         sender.sendMessage(chatUtils.getMessage("administration.graceperiod.forcestart.success", target));
@@ -481,7 +478,7 @@ public class CommandHandler implements CommandExecutor {
             }
 
             // Subcomando no válido
-            player.sendMessage(chatUtils.getMessage("error.invalid_usage", isConsole ? null : player));
+            player.sendMessage(chatUtils.getMessage("error.invalid_usage", player));
         } else {
             // Si el comando no es ejecutado por un jugador
             sender.sendMessage(chatUtils.getMessage("error.only_players_can_use_this", null));

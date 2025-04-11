@@ -37,10 +37,6 @@ public class CinematicSequence {
         return addAction(action);
     }
 
-    public CinematicSequence waitTicks(long ticks) {
-        return addDelay(ticks);
-    }
-
     public void start() {
         if (isRunning) return;
         isRunning = true;
@@ -92,10 +88,6 @@ public class CinematicSequence {
         return cinematicName;
     }
 
-    public void reset() {
-        stop();
-        actions.clear();
-    }
 
     private static class SequenceAction {
         private final Consumer<Player> action;

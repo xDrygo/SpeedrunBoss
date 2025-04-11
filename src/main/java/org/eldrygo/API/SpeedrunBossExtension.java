@@ -2,7 +2,6 @@ package org.eldrygo.API;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.eldrygo.Managers.Files.ConfigManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.SpeedrunBoss;
@@ -92,8 +91,6 @@ public class SpeedrunBossExtension extends PlaceholderExpansion {
                         .map(member -> memberFormat.replace("%member_name%", member))
                         .collect(Collectors.joining(separator));
 
-        String output = ChatUtils.formatColor(teamMembersFormatted);
-
-        return output;
+        return ChatUtils.formatColor(teamMembersFormatted);
     }
 }

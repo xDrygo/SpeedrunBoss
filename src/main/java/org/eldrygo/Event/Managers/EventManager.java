@@ -20,27 +20,22 @@ import java.util.UUID;
 public class EventManager {
     private final ChatUtils chatUtils;
     private final DepUtils depUtils;
-    private final SpeedrunBoss plugin;
     private final CinematicManager cinematicManager;
     private final XTeamsAPI xTeamsAPI;
-    private BroadcastManager broadcastManager;
 
     public enum EventState { NOT_STARTED, RUNNING, PAUSED, ENDED }
     private EventState state;
     private final Set<UUID> participants;
     private final EventDataManager eventDataManager;
-    private final ModifierManager modifierManager;
     private final GracePeriodManager gracePeriodManager;
     private final PVPManager pvpManager;
 
-    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, DepUtils depUtils, CinematicManager cinematicManager, EventDataManager eventDataManager, ModifierManager modifierManager, SpeedrunBoss plugin) {
+    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, DepUtils depUtils, CinematicManager cinematicManager, BroadcastManager broadcastManager, EventDataManager eventDataManager, ModifierManager modifierManager, SpeedrunBoss plugin) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
         this.depUtils = depUtils;
-        this.plugin = plugin;
         this.cinematicManager = cinematicManager;
         this.eventDataManager = eventDataManager;
-        this.modifierManager = modifierManager;
         this.state = EventState.NOT_STARTED;
         this.participants = new HashSet<>();
         this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils);

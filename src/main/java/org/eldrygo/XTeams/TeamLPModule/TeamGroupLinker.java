@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
-import org.eldrygo.XTeams.Managers.ConfigManager;
 
 import java.io.File;
 import java.util.HashMap;

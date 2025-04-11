@@ -69,26 +69,6 @@ public class PVPManager {
         return pvpEnabled;
     }
 
-    /*
-    // Método para aplicar efectos PvP (agrega tu lógica)
-    private void applyPvPEffects() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            // Aquí podrías aplicar efectos como daño aumentado, invencibilidad, etc.
-            player.sendMessage("¡PVP activado!");
-        }
-    }
-
-    // Método para remover efectos PvP (agrega tu lógica)
-    private void removePvPEffects() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            // Aquí podrías quitar efectos aplicados en PvP, como daño aumentado, etc.
-            player.sendMessage("¡PVP desactivado!");
-        }
-    }*/
-    public long getPVPStartDelay() {
-        return pvpStartDelay;
-    }
-
     // Setter para establecer el valor de pvpStartDelay
     public void setPVPStartDelay(long delay) {
         pvpStartDelay = delay;

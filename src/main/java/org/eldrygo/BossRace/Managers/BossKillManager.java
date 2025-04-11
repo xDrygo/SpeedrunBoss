@@ -11,7 +11,7 @@ import org.eldrygo.XTeams.Models.Team;
 public class BossKillManager {
     private final TeamDataManager teamDataManager;
     private final BroadcastManager broadcastManager;
-    private XTeamsAPI xTeamsAPI;
+    private final XTeamsAPI xTeamsAPI;
 
     // Constructor que recibe las dependencias necesarias
     public BossKillManager(XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, BroadcastManager broadcastManager) {

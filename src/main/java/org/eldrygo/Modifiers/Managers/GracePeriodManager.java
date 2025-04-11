@@ -77,23 +77,7 @@ public class GracePeriodManager {
         }
         broadcastManager.sendGracePeriodEndMessage();
     }
-    public void pauseGracePeriod() {
-        if (!isGracePeriodActive || gracePeriodPaused) return; // Si no está activo o ya está pausado, no hacer nada
 
-        gracePeriodPaused = true;
-        // Calculamos el tiempo transcurrido
-        long elapsed = System.currentTimeMillis() - startTime;
-        remainingTime -= elapsed; // Calculamos el tiempo restante al momento de pausar
-        gracePeriodTask.cancel(); // Cancelamos el temporizador
-    }
-
-    public void resumeGracePeriod() {
-        if (!gracePeriodPaused) return; // Si no está pausado, no hacer nada
-
-        gracePeriodPaused = false;
-        startTime = System.currentTimeMillis(); // Actualizamos la marca de tiempo al reanudar
-        startGracePeriod(); // Reiniciamos el periodo de gracia
-    }
     private void applyGracePeriodEffects() {
         List<Player> players = (List<Player>) Bukkit.getOnlinePlayers();
         for (Player player : players) {
@@ -119,12 +103,7 @@ public class GracePeriodManager {
             task.cancel();
         }
     }
-    public boolean isGracePeriodActive() {
-        return isGracePeriodActive;
-    }
-    public boolean isGracePeriodPaused() {
-        return gracePeriodPaused;
-    }
+
     public void setGracePeriodDuration(int time) {
         gracePeriodDuration = time;
     }

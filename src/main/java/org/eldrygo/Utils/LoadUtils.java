@@ -44,12 +44,11 @@ public class LoadUtils {
     private final org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
     private final DepUtils depUtils;
     private final CinematicManager cinematicManager;
-    private final WitherSkullListener witherSkullListener;
     private final StunManager stunManager;
     private final CountdownBossBarManager countdownBossBarManager;
     private final CinematicSequence cinematicSequence;
     private final SettingsUtils settingsUtils;
-    private TeamGroupLinker teamGroupLinker;
+    private final TeamGroupLinker teamGroupLinker;
 
     public LoadUtils(SpeedrunBoss plugin, BossKillManager bossKillManager, BroadcastManager broadcastManager, ChatUtils chatUtils,
                      EventManager eventManager, EventDataManager eventDataManager, GracePeriodManager gracePeriodManager,
@@ -72,7 +71,6 @@ public class LoadUtils {
         this.teamConfigManager = teamConfigManager;
         this.depUtils = depUtils;
         this.cinematicManager = cinematicManager;
-        this.witherSkullListener = witherSkullListener;
         this.stunManager = stunManager;
         this.countdownBossBarManager = countdownBossBarManager;
         this.cinematicSequence = cinematicSequence;
@@ -86,7 +84,6 @@ public class LoadUtils {
         loadPlaceholderAPI();
         loadVault();
         loadEvent();
-        loadManagers();
         loadListeners(pvpManager);
         loadCommands();
     }
@@ -108,7 +105,7 @@ public class LoadUtils {
         plugin.getLogger().info(ChatUtils.formatColor("&eLoading Event Manager..."));
         if (eventManager == null) {
             plugin.getLogger().warning(ChatUtils.formatColor("&6⚠ eventManager is null. Initializing a new EventManager..."));
-            eventManager = new EventManager(chatUtils, xTeamsAPI, depUtils, cinematicManager, eventDataManager, modifierManager, plugin);
+            eventManager = new EventManager(chatUtils, xTeamsAPI, depUtils, cinematicManager, broadcastManager, eventDataManager, modifierManager, plugin);
         }
 
         // Ahora puedes cargar el estado del evento sin problemas
@@ -152,10 +149,6 @@ public class LoadUtils {
         }
     }
 
-    private void loadManagers() {
-        TeamDataManager teamDataManager = new TeamDataManager(plugin, xTeamsAPI);
-        BossKillManager bossKillManager = new BossKillManager(xTeamsAPI, teamDataManager, broadcastManager);
-    }
     private void loadListeners(PVPManager pvpManager) {
         plugin.getServer().getPluginManager().registerEvents(new PvpListener(pvpManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new PortalEnterListener(teamDataManager, xTeamsAPI, chatUtils), plugin);

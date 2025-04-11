@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class ChatUtils {
     private final SpeedrunBoss plugin;
     private final ConfigManager configManager;
-    private org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
+    private final org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
 
     public ChatUtils(SpeedrunBoss plugin, ConfigManager configManager, org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager) {
         this.plugin = plugin;
@@ -111,9 +111,6 @@ public class ChatUtils {
 
     public List<String> getMessageList(String path) {
         List<String> messages = getMessageConfig().getStringList(path);
-        if (messages == null) {
-            return new ArrayList<>();  // Devuelve una lista vacía si no se encuentra el mensaje
-        }
         return messages;  // Retorna la lista de mensajes
     }
 

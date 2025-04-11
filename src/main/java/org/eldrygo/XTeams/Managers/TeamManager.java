@@ -107,13 +107,6 @@ public class TeamManager {
         }
     }
 
-    public void joinAllTeams(OfflinePlayer player) {
-        for (Team team : teams.values()) {
-            team.addMember(player.getName());
-            teamGroupLinker.applyGroup((Player) player, String.valueOf(team));
-        }
-        plugin.getLogger().info(player.getName() + " has joined all teams.");
-    }
 
     public void leaveTeam(OfflinePlayer player, String teamName) {
         Team team = getTeam(teamName);
@@ -125,7 +118,14 @@ public class TeamManager {
             plugin.getLogger().warning(player.getName() + " is not a member of team " + teamName);
         }
     }
-
+/*
+    public void joinAllTeams(OfflinePlayer player) {
+        for (Team team : teams.values()) {
+            team.addMember(player.getName());
+            teamGroupLinker.applyGroup((Player) player, String.valueOf(team));
+        }
+        plugin.getLogger().info(player.getName() + " has joined all teams.");
+    }
     public void leaveAllTeams(OfflinePlayer player) {
         for (Team team : teams.values()) {
             if (team.getMembers().contains(player.getName())) {
@@ -135,13 +135,6 @@ public class TeamManager {
         }
         plugin.getLogger().info(player.getName() + " has left all teams.");
     }
-
-    public boolean isInTeam(OfflinePlayer player, String teamName) {
-        Team team = getTeam(teamName);
-        return team != null && team.hasMember(player);
-    }
-
-    // Método para comprobar si un jugador está en algún equipo
     public boolean isInAnyTeam(OfflinePlayer player) {
         for (Team team : teams.values()) {
             if (team.hasMember(player)) {
@@ -151,11 +144,29 @@ public class TeamManager {
         return false;
     }
 
+    public int getTeamNumberOfMembers(String teamName) {
+        Team team = getTeam(teamName);
+        return (team != null) ? team.getMembers().size() : 0;
+    }
+
+    public boolean isPlayerInAnyTeam(OfflinePlayer player) {
+        return getPlayerTeam(player) != null;
+    }
+    private int getTeamPriority(Team team) {
+        return team.getPriority();
+    }
+
+*/
+    public boolean isInTeam(OfflinePlayer player, String teamName) {
+        Team team = getTeam(teamName);
+        return team != null && team.hasMember(player);
+    }
+
+    // Método para comprobar si un jugador está en algún equipo
+
     public Team getTeamByName(String teamName) {
         return teams.get(teamName); // Suponiendo que teams es un mapa que contiene los equipos
     }
-
-    // Métodos para los placeholders
 
     // Obtiene el nombre del equipo con mayor prioridad al que pertenece el jugador
     public String getPlayerTeamName(OfflinePlayer player) {
@@ -192,24 +203,12 @@ public class TeamManager {
         }
         return playerTeams;
     }
-    private int getTeamPriority(Team team) {
-        return team.getPriority();
-    }
     public boolean hasPlayerInTeam(OfflinePlayer player, String teamName) {
         Team team = getTeam(teamName);
         if (team != null) {
             return team.hasMember(player);
         }
         return false; // Si el equipo no existe, retornamos false
-    }
-
-    public int getTeamNumberOfMembers(String teamName) {
-        Team team = getTeam(teamName);
-        return (team != null) ? team.getMembers().size() : 0;
-    }
-
-    public boolean isPlayerInAnyTeam(OfflinePlayer player) {
-        return getPlayerTeam(player) != null;
     }
 
     public boolean setTeamDisplayName(String teamName, String newDisplayName) {

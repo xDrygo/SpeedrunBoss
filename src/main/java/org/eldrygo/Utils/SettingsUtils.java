@@ -1,9 +1,7 @@
 package org.eldrygo.Utils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.eldrygo.BossRace.Listeners.WitherSkullListener;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
@@ -13,7 +11,6 @@ import java.util.List;
 
 public class SettingsUtils {
     private final SpeedrunBoss plugin;
-    private final WitherSkullListener witherSkullListener;
     private final PVPManager pvpManager;
     private final GracePeriodManager gracePeriodManager;
 
@@ -21,9 +18,8 @@ public class SettingsUtils {
     public List<String> cinematicBypassPlayers;
     public double probabilityMultiplier = 0;
 
-    public SettingsUtils(SpeedrunBoss plugin, WitherSkullListener witherSkullListener, PVPManager pvpManager, GracePeriodManager gracePeriodManager) {
+    public SettingsUtils(SpeedrunBoss plugin, PVPManager pvpManager, GracePeriodManager gracePeriodManager) {
         this.plugin = plugin;
-        this.witherSkullListener = witherSkullListener;
         this.pvpManager = pvpManager;
         this.gracePeriodManager = gracePeriodManager;
     }

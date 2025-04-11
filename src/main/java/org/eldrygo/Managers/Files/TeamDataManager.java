@@ -84,13 +84,6 @@ public class TeamDataManager {
         return killedBosses.contains(bossName);
     }
 
-    public boolean playerKilledBoss(String bossName, Player player) {
-        String teamName = xTeamsAPI.getPlayerTeamName(player);
-
-        List<String> killedBosses = getKilledBosses(teamName);
-        return killedBosses.contains(bossName);
-    }
-
     public JSONObject readJsonFile() {
         if (!dataFile.exists()) return new JSONObject();
 

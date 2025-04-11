@@ -135,13 +135,4 @@ public class StunManager implements Listener {
     }
 
 
-    /**
-     * Verifica si un jugador está aturdido.
-     *
-     * @param player El jugador a comprobar.
-     * @return `true` si está aturdido, `false` en caso contrario.
-     */
-    public boolean isPlayerStunned(Player player) {
-        return player != null && stunnedPlayers.contains(player.getUniqueId());
-    }
 }

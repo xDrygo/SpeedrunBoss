@@ -60,7 +60,4 @@ public class CountdownBossBarManager {
         }
     }
 
-    public void stopCountdown() {
-        bossBar.setVisible(false);
-    }
 }

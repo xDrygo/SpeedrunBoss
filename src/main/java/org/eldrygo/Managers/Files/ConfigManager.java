@@ -9,9 +9,8 @@ import java.io.File;
 
 public class ConfigManager {
     private final SpeedrunBoss plugin;
-    private org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
 
-    public ConfigManager(SpeedrunBoss plugin) {
+    public ConfigManager(SpeedrunBoss plugin, org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager) {
         this.plugin = plugin;
     }
 
