@@ -19,13 +19,15 @@ public class TeamGroupLinker {
 
     private final SpeedrunBoss plugin;
     private final LuckPerms luckPerms;
-    private final Map<String, String> teamGroupMap;
+    private Map<String, String> teamGroupMap;
 
     public TeamGroupLinker(SpeedrunBoss plugin) {
         this.plugin = plugin;
         this.luckPerms = LuckPermsProvider.get();
         this.teamGroupMap = loadTeamGroupConfig();
     }
+
+    // Load team to group mapping from config
     public Map<String, String> loadTeamGroupConfig() {
         FileConfiguration config = getTeamGroupConfig();
         Map<String, String> map = new HashMap<>();
@@ -33,12 +35,20 @@ public class TeamGroupLinker {
         ConfigurationSection section = config.getConfigurationSection("team-groups");
         if (section != null) {
             for (String team : section.getKeys(false)) {
-                map.put(team.toLowerCase(), section.getString(team));
+                String group = section.getString(team);
+                if (group != null && !group.isBlank()) {
+                    map.put(team.toLowerCase(), group);
+                }
             }
         }
-
         return map;
     }
+    public void reloadTeamGroupConfig() {
+        this.teamGroupMap = loadTeamGroupConfig(); // Recargar el mapa de equipos y grupos
+        plugin.getLogger().info(ChatUtils.formatColor("&ateam_groups.yml reloaded."));
+    }
+
+    // Load the YML config file
     public FileConfiguration getTeamGroupConfig() {
         File file = new File(plugin.getDataFolder(), "team_groups.yml");
 
@@ -49,42 +59,40 @@ public class TeamGroupLinker {
         return YamlConfiguration.loadConfiguration(file);
     }
 
-    // Apply the group based on the team name
+    // Apply the group to the player based on team name
     public void applyGroup(Player player, String teamName) {
-        String group = teamGroupMap.get(teamName.toLowerCase());
-        plugin.getLogger().info(ChatUtils.formatColor("&eRemoving player " + player.getName() + " from the Luckperms group of " + teamName + "..."));
-
-        if (group == null) {
-            plugin.getLogger().warning(ChatUtils.formatColor("&c❌ No LuckPerms group found for team: " + teamName));
-            return; // If no group is found, exit the method
-        }
-
-        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        if (user != null) {
-            user.data().add(InheritanceNode.builder(group).build());
-            luckPerms.getUserManager().saveUser(user);
-        } else {
-            plugin.getLogger().warning(ChatUtils.formatColor("&c❌ User not found for player: " + player.getName()));
-        }
+        handleGroupChange(player, teamName, true);
     }
 
-    // Remove the group based on the team name
+    // Remove the group from the player based on team name
     public void removeGroup(Player player, String teamName) {
-        String group = teamGroupMap.get(teamName.toLowerCase());
+        handleGroupChange(player, teamName, false);
+    }
 
-        plugin.getLogger().info(ChatUtils.formatColor("&eAdding player " + player.getName() + " to the Luckperms group of " + teamName + "..."));
+    // Unified logic for adding/removing LuckPerms group
+    private void handleGroupChange(Player player, String teamName, boolean add) {
+        String teamKey = teamName.toLowerCase();
+        String group = teamGroupMap.get(teamKey);
 
-        if (group == null) {
+        if (group == null || group.isBlank()) {
             plugin.getLogger().warning(ChatUtils.formatColor("&c❌ No LuckPerms group found for team: " + teamName));
-            return; // If no group is found, exit the method
+            return;
         }
 
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        if (user != null) {
-            user.data().remove(InheritanceNode.builder(group).build());
-            luckPerms.getUserManager().saveUser(user);
-        } else {
+        if (user == null) {
             plugin.getLogger().warning(ChatUtils.formatColor("&c❌ User not found for player: " + player.getName()));
+            return;
         }
+
+        InheritanceNode node = InheritanceNode.builder(group).build();
+
+        if (add) {
+            user.data().add(node);
+        } else {
+            user.data().remove(node);
+        }
+
+        luckPerms.getUserManager().saveUser(user);
     }
 }

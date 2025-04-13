@@ -1,6 +1,6 @@
 name: SpeedrunBoss
 main: org.eldrygo.SpeedrunBoss
-version: 0.0.91
+version: 0.1.66
 api-version: 1.21
 authors:
   - Drygo
@@ -39,6 +39,12 @@ permissions:
         default: false
       spb.admin.killerhandle:
         description: "Permission to use KillerHandle command."
+        default: false
+      spb.admin.bossregister:
+        description: "Permission to use BossRegister command."
+        default: false
+      spb.admin.waitingscreen:
+        description: "Permission to use WaitingScreen command."
         default: false
       spb.admin.reload:
         description: "Permission to use Reload command."

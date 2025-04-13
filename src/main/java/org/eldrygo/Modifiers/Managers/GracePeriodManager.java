@@ -8,16 +8,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
-import org.eldrygo.Utils.DepUtils;
+import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
-import java.util.List;
-
 public class GracePeriodManager {
-    private int gracePeriodDuration; // Duración del tiempo de gracia en ticks (ej. 20 ticks = 1 segundo)
+    private int gracePeriodDuration = 600; // ticks por defecto (30 segundos)
     private boolean isGracePeriodActive;
     private final SpeedrunBoss plugin;
-    private final DepUtils depUtils;
     private final XTeamsAPI xTeamsAPI;
     public BukkitRunnable gracePeriodTask;
     private boolean gracePeriodPaused;
@@ -25,86 +22,119 @@ public class GracePeriodManager {
     private long startTime;
     private BroadcastManager broadcastManager;
     private final ChatUtils chatUtils;
+    public PlayerUtils playerUtils;
 
-    public GracePeriodManager(SpeedrunBoss plugin, XTeamsAPI XTeamsAPI, BroadcastManager broadcastManager, ChatUtils chatUtils) {
-        this.broadcastManager = broadcastManager;
+    public GracePeriodManager(SpeedrunBoss plugin, XTeamsAPI xTeamsAPI, BroadcastManager broadcastManager, ChatUtils chatUtils, PlayerUtils playerUtils) {
+        this.plugin = plugin;
+        this.xTeamsAPI = xTeamsAPI;
         this.chatUtils = chatUtils;
-        this.isGracePeriodActive =  false;
+        this.broadcastManager = broadcastManager;
+        this.playerUtils = playerUtils;
+        this.isGracePeriodActive = false;
         this.gracePeriodPaused = false;
         this.remainingTime = gracePeriodDuration;
-        this.plugin = plugin;
-        this.depUtils = new DepUtils();
-        this.xTeamsAPI = XTeamsAPI;
-        this.startTime = System.currentTimeMillis();
     }
 
     public void startGracePeriod() {
         if (isGracePeriodActive || gracePeriodPaused) return;
 
         isGracePeriodActive = true;
+        startTime = System.currentTimeMillis();
+        remainingTime = gracePeriodDuration;
 
         // Aplicar efectos a todos los jugadores
         applyGracePeriodEffects();
 
-        // Iniciar un temporizador para que el tiempo de gracia termine después de un periodo determinado
+        // Iniciar un temporizador para terminar el periodo de gracia
         gracePeriodTask = new BukkitRunnable() {
             @Override
             public void run() {
-                stopGracePeriod(); // Detener el periodo de gracia al finalizar
+                stopGracePeriod();
             }
         };
         gracePeriodTask.runTaskLater(plugin, remainingTime);
     }
+
     public void stopGracePeriod() {
-        if (!isGracePeriodActive) {
-            return; // Si el periodo de gracia no está activo, no hacer nada
-        }
+        if (!isGracePeriodActive) return;
 
-        // Cancelar la tarea programada
+        // Cancelar la tarea
         if (gracePeriodTask != null) {
-            cancelTask(gracePeriodTask);
+            gracePeriodTask.cancel();
         }
 
-        // Eliminar efectos de gracia
+        // Quitar efectos
         removeGracePeriodEffects();
 
-        // Cambiar el estado de la bandera
         isGracePeriodActive = false;
 
         if (broadcastManager == null) {
-            broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI);
+            broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI, playerUtils);
             plugin.getLogger().warning("⚠ broadcastManager is null. Initializing a new BroadcastManager...");
         }
+
         broadcastManager.sendGracePeriodEndMessage();
     }
 
     private void applyGracePeriodEffects() {
-        List<Player> players = (List<Player>) Bukkit.getOnlinePlayers();
-        for (Player player : players) {
-            String vaultGroup = depUtils.getPrimaryGroup(player);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            String vaultGroup = playerUtils.getPrimaryGroup(player);
             String teamName = xTeamsAPI.getPlayerTeamName(player);
-            if (!(vaultGroup.contains("team_")) && !(teamName == null) && !(teamName.isEmpty())) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, gracePeriodDuration, 1)); // Efecto de velocidad
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, gracePeriodDuration, 1)); // Efecto de regeneración
+
+            boolean isInTeam = teamName != null && !teamName.isEmpty();
+            boolean isNotAdminGroup = vaultGroup != null && !vaultGroup.contains("team_");
+
+            if (isInTeam && isNotAdminGroup) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, gracePeriodDuration, 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, gracePeriodDuration, 1));
             }
         }
     }
 
     private void removeGracePeriodEffects() {
-        List<Player> players = (List<Player>) Bukkit.getOnlinePlayers();
-        for (Player player : players) {
-            // Eliminar los efectos de poción
+        for (Player player : Bukkit.getOnlinePlayers()) {
             player.removePotionEffect(PotionEffectType.SPEED);
             player.removePotionEffect(PotionEffectType.REGENERATION);
         }
     }
-    private void cancelTask(BukkitRunnable task) {
-        if (task != null) {
-            task.cancel();
-        }
+
+    public void setGracePeriodDuration(int ticks) {
+        this.gracePeriodDuration = ticks;
+        this.remainingTime = ticks;
     }
 
-    public void setGracePeriodDuration(int time) {
-        gracePeriodDuration = time;
+    public boolean isGracePeriodActive() {
+        return isGracePeriodActive;
+    }
+
+    public boolean isGracePeriodPaused() {
+        return gracePeriodPaused;
+    }
+
+    public void pauseGracePeriod() {
+        if (!isGracePeriodActive || gracePeriodPaused) return;
+
+        gracePeriodPaused = true;
+        if (gracePeriodTask != null) {
+            gracePeriodTask.cancel();
+        }
+
+        long elapsed = (System.currentTimeMillis() - startTime) / 50L;
+        remainingTime = Math.max(1, gracePeriodDuration - elapsed);
+    }
+
+    public void resumeGracePeriod() {
+        if (!gracePeriodPaused) return;
+
+        gracePeriodPaused = false;
+        startTime = System.currentTimeMillis();
+
+        gracePeriodTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                stopGracePeriod();
+            }
+        };
+        gracePeriodTask.runTaskLater(plugin, remainingTime);
     }
 }

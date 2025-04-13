@@ -1,0 +1,65 @@
+main:
+  title: "&r    &8&lꜱᴘᴇᴇᴅʀᴜɴ ʙᴏꜱꜱ - &r&8ᴍᴇɴᴜ"
+  items:
+    teams:
+      name: "&f&lꜱʜᴏʀᴛᴄᴜᴛ #cccccc›  &r#f396ffEquipos"
+      lore:
+        - " "
+        - "&7Abrir menu de equipos"
+        - "&7para ver la lista de"
+        - "&7miembros, hacer TP a"
+        - "&7ellos, etc."
+        - " "
+        - "#fff145&lᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴀʙʀɪʀ."
+teams:
+  title: "&r  &8&lꜱᴘᴇᴇᴅʀᴜɴ ʙᴏꜱꜱ - &r&8ᴇqᴜɪᴘᴏꜱ"
+  inventory:
+    lore:
+      - " "
+      - "&7▪ #ccccccID del equipo: #fff18d%team%"
+      - "&7▪ #ccccccMiembros: #fff18d%team_members%"
+      - " "
+      - "#fff145&lᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴀʙʀɪʀ."
+    name:
+      team_1: "&f&lᴇqᴜɪᴘᴏ&r &7› &rऐ"
+      team_2: "&f&lᴇqᴜɪᴘᴏ&r &7› &rऑ"
+      team_3: "&f&lᴇqᴜɪᴘᴏ&r &7› &rऒ"
+      team_4: "&f&lᴇqᴜɪᴘᴏ&r &7› &rओ"
+      team_5: "&f&lᴇqᴜɪᴘᴏ&r &7› &rऔ"
+      team_6: "&f&lᴇqᴜɪᴘᴏ&r &7› &rक"
+      team_7: "&f&lᴇqᴜɪᴘᴏ&r &7› &rख"
+      team_8: "&f&lᴇqᴜɪᴘᴏ&r &7› &rग"
+      team_9: "&f&lᴇqᴜɪᴘᴏ&r &7› &rघ"
+      team_10: "&f&lᴇqᴜɪᴘᴏ&r &7› &rङ"
+      team_11: "&f&lᴇqᴜɪᴘᴏ&r &7› &rच"
+      team_12: "&f&lᴇqᴜɪᴘᴏ&r &7› &rछ"
+      team_13: "&f&lᴇqᴜɪᴘᴏ&r &7› &rज"
+      team_14: "&f&lᴇqᴜɪᴘᴏ&r &7› &rझ"
+      team_15: "&f&lᴇqᴜɪᴘᴏ&r &7› &rञ"
+      team_16: "&f&lᴇqᴜɪᴘᴏ&r &7› &rट"
+per_team_inv:
+  title: "&8&lꜱᴘʙ - &r&8ᴇqᴜɪᴘᴏꜱ: &f%team_displayname%"
+  items:
+    player:
+      name: "&f&lᴊᴜɢᴀᴅᴏʀ&r &7› #fff18d%player%"
+      lore:
+        - " "
+        - "&7▪ #ccccccSkill: #fff18d%status%"
+        - "&7▪ #ccccccCoords: #fff18d%x%, %y%, %z%"
+        - " "
+        - "#fff145&lᴄʟɪᴄᴋ ᴘᴀʀᴀ ᴛᴘ."
+    empty:
+      name: "&f&lᴊᴜɢᴀᴅᴏʀ&r &7› #ff3535Vacío"
+      lore:
+        - " "
+        - "&7▪ #ccccccSlot vacío."
+        - " "
+  methods:
+    tp:
+      success: "%prefix% #a0ff72✔ Te has teletransportado al jugador %player%."
+      not_online: "%prefix% #FF0000🚫 El jugador no esta conectado."
+genericitems:
+  close:
+    name: "#ff3535Cerrar"
+  back:
+    name: "#fff18dVolver"

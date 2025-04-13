@@ -6,11 +6,10 @@ import org.bukkit.entity.Player;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
-import org.eldrygo.Modifiers.Managers.ModifierManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
-import org.eldrygo.Utils.DepUtils;
+import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.HashSet;
@@ -19,9 +18,9 @@ import java.util.UUID;
 
 public class EventManager {
     private final ChatUtils chatUtils;
-    private final DepUtils depUtils;
     private final CinematicManager cinematicManager;
     private final XTeamsAPI xTeamsAPI;
+    private PlayerUtils playerUtils;
 
     public enum EventState { NOT_STARTED, RUNNING, PAUSED, ENDED }
     private EventState state;
@@ -30,16 +29,16 @@ public class EventManager {
     private final GracePeriodManager gracePeriodManager;
     private final PVPManager pvpManager;
 
-    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, DepUtils depUtils, CinematicManager cinematicManager, BroadcastManager broadcastManager, EventDataManager eventDataManager, ModifierManager modifierManager, SpeedrunBoss plugin) {
+    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, CinematicManager cinematicManager, PlayerUtils playerUtils, BroadcastManager broadcastManager, EventDataManager eventDataManager, SpeedrunBoss plugin) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
-        this.depUtils = depUtils;
         this.cinematicManager = cinematicManager;
+        this.playerUtils = playerUtils;
         this.eventDataManager = eventDataManager;
         this.state = EventState.NOT_STARTED;
         this.participants = new HashSet<>();
-        this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils);
-        this.pvpManager = new PVPManager(10 * 20L, plugin, broadcastManager, chatUtils, xTeamsAPI);
+        this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils, playerUtils);
+        this.pvpManager = new PVPManager(10 * 20L, plugin, broadcastManager, chatUtils, xTeamsAPI, playerUtils);
     }
 
     public void startEvent(Player sender) {
@@ -51,7 +50,7 @@ public class EventManager {
         state = EventState.RUNNING;
         participants.clear();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            String vaultGroup = depUtils.getPrimaryGroup(player);
+            String vaultGroup = playerUtils.getPrimaryGroup(player);
             String teamName = xTeamsAPI.getPlayerTeamName(player);
             if (teamName == null || teamName.isEmpty()) {
                 continue;

@@ -4,6 +4,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
+import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
 public class PVPManager {
@@ -14,12 +15,14 @@ public class PVPManager {
     private BroadcastManager broadcastManager;
     private final ChatUtils chatUtils;
     private final XTeamsAPI xTeamsAPI;
+    public PlayerUtils playerUtils;
 
-    public PVPManager(long pvpStartDelay, SpeedrunBoss plugin, BroadcastManager broadcastManager, ChatUtils chatUtils, XTeamsAPI xTeamsAPI) {
+    public PVPManager(long pvpStartDelay, SpeedrunBoss plugin, BroadcastManager broadcastManager, ChatUtils chatUtils, XTeamsAPI xTeamsAPI, PlayerUtils playerUtils) {
         this.plugin = plugin;
         this.broadcastManager = broadcastManager;
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
+        this.playerUtils = playerUtils;
         this.pvpEnabled = false;
         this.pvpStartDelay = pvpStartDelay;
     }
@@ -37,7 +40,7 @@ public class PVPManager {
                 pvpEnabled = true;
                 //applyPvPEffects(); // Si tienes efectos específicos para el PVP, agrégalos aquí
                 if (broadcastManager == null) {
-                    broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI);
+                    broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI, playerUtils);
                     plugin.getLogger().warning("⚠ broadcastManager is null. Initializing a new BroadcastManager...");
                 }
                 broadcastManager.sendPVPEnableMessage();

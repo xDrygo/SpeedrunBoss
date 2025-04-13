@@ -10,46 +10,18 @@ import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
 
 public class CountdownBossBarManager {
-    private final SpeedrunBoss plugin;
-    private final BossBar bossBar;
-    public BukkitRunnable bossbarTask;
-    private int secondsRemaining;
+    public final BossBar bossBar;
+    public final BossBar voidBossBar;
     private final ChatUtils chatUtils;
-    private int totalSeconds;
 
-    public CountdownBossBarManager(SpeedrunBoss plugin, ChatUtils chatUtils) {
-        this.plugin = plugin;
+    public CountdownBossBarManager(ChatUtils chatUtils) {
         this.chatUtils = chatUtils;
-        this.bossBar = Bukkit.createBossBar(chatUtils.getTitle("cinematics.start.bossbar_countdown.string", null), BarColor.PINK, BarStyle.SOLID);
-        this.secondsRemaining = 60;
+        this.voidBossBar = Bukkit.createBossBar("Void Bossbar", BarColor.YELLOW, BarStyle.SOLID);
+        this.bossBar = Bukkit.createBossBar(chatUtils.getTitle("cinematics.start.bossbar_countdown.string", null), BarColor.YELLOW, BarStyle.SOLID);
     }
 
-    public void startCountdown(int time) {
-        this.secondsRemaining = time;
-        this.totalSeconds = time;
-
-        updateBossBar();
-
+    public void updateBossBar(int totalSeconds, int secondsRemaining) {
         bossBar.setVisible(true);
-
-        bossbarTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (secondsRemaining <= 0) {
-                    bossBar.setVisible(false);
-                    this.cancel();
-                    return;
-                }
-
-                secondsRemaining--;
-                updateBossBar();
-            }
-        };
-
-        bossbarTask.runTaskTimer(plugin, 0L, 20L);
-    }
-
-    private void updateBossBar() {
         bossBar.setTitle(chatUtils.getMessage("cinematics.start.bossbar_countdown.string", null)
                 .replace("%time%", String.valueOf(secondsRemaining)));
 
@@ -59,5 +31,14 @@ public class CountdownBossBarManager {
             bossBar.addPlayer(player);
         }
     }
+    public void updateVoidBossBar() {
+        voidBossBar.setVisible(true);
+        voidBossBar.setTitle(" ");
 
+        voidBossBar.setProgress(1);
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            voidBossBar.addPlayer(player);
+        }
+    }
 }

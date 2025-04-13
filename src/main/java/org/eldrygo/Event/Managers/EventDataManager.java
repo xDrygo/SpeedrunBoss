@@ -1,9 +1,9 @@
 package org.eldrygo.Event.Managers;
 
-import org.eldrygo.Event.Managers.EventManager.EventState;
+import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.SpeedrunBoss;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -22,19 +22,35 @@ public class EventDataManager {
             dataFile.getParentFile().mkdirs();
         }
         if (!dataFile.exists()) {
-            saveEventState(EventState.NOT_STARTED, new HashSet<>());
+            saveDefaultEventData();
         }
     }
 
-    public void saveEventState(EventState state, Set<UUID> participants) {
-        if (state == null) {
-            state = EventState.NOT_STARTED;
-        }
-        if (participants == null) {
-            participants = new HashSet<>();
-        }
-
+    private void saveDefaultEventData() {
         JSONObject json = new JSONObject();
+        json.put("state", EventManager.EventState.NOT_STARTED.toString());
+        json.put("participants", new JSONArray());
+        json.put("waitingscreen_active", false);
+        saveJson(json);
+    }
+
+    public void setWaitingScreenActive(boolean active) {
+        JSONObject json = readJson();
+        json.put("waitingscreen_active", active);
+        saveJson(json);
+    }
+
+    public boolean isWaitingScreenActive() {
+        JSONObject json = readJson();
+        Object value = json.get("waitingscreen_active");
+        return value instanceof Boolean && (boolean) value;
+    }
+
+    public void saveEventState(EventManager.EventState state, Set<UUID> participants) {
+        if (state == null) state = EventManager.EventState.NOT_STARTED;
+        if (participants == null) participants = new HashSet<>();
+
+        JSONObject json = readJson();
         json.put("state", state.toString());
 
         JSONArray participantArray = new JSONArray();
@@ -43,11 +59,32 @@ public class EventDataManager {
         }
         json.put("participants", participantArray);
 
+        saveJson(json);
+    }
+
+    private JSONObject readJson() {
+        if (!dataFile.exists()) return new JSONObject();
+        try (BufferedReader reader = new BufferedReader(new FileReader(dataFile, StandardCharsets.UTF_8))) {
+            return (JSONObject) new org.json.simple.parser.JSONParser().parse(reader);
+        } catch (Exception e) {
+            plugin.getLogger().severe("❌ Failed reading event.json: " + e.getMessage());
+            e.printStackTrace();
+            return new JSONObject();
+        }
+    }
+
+    private void saveJson(JSONObject json) {
         try (FileWriter writer = new FileWriter(dataFile, StandardCharsets.UTF_8)) {
             writer.write(json.toJSONString());
         } catch (IOException e) {
-            plugin.getLogger().severe("❌ Failed on saving Event State: " + e.getMessage());
+            plugin.getLogger().severe("❌ Failed saving event.json: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public void clearEventData() {
+        if (dataFile.exists()) {
+            dataFile.delete();
         }
     }
 
@@ -58,23 +95,16 @@ public class EventDataManager {
             JSONObject json = (JSONObject) new org.json.simple.parser.JSONParser().parse(reader);
 
             JSONArray participantArray = (JSONArray) json.get("participants");
-
             Set<UUID> participants = new HashSet<>();
             for (Object obj : participantArray) {
                 participants.add(UUID.fromString((String) obj));
             }
 
-            // Aplicar el estado al evento
+            // Puedes usar el estado si es necesario más adelante
             eventManager.resumeEvent(null);
         } catch (Exception e) {
             plugin.getLogger().severe("❌ Failed on loading Event State: " + e.getMessage());
             e.printStackTrace();
-        }
-    }
-
-    public void clearEventData() {
-        if (dataFile.exists()) {
-            dataFile.delete();
         }
     }
 }

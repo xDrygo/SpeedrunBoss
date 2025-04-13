@@ -220,4 +220,9 @@ public class TeamManager {
         configManager.saveTeamsToConfig();  // Guardar los cambios en la configuración
         return true;
     }
+
+    public String getTeamDisplayName(String teamName) {
+        Team team = getTeam(teamName);
+        return team.getDisplayName();
+    }
 }

@@ -14,30 +14,83 @@
 # Welcome to the config file of SpeedrunBoss plugin! In the messages.yml file you can modify the plugin messages.
 
 settings:
-  wither_skull_multiplier: 2.0 #The multiplier of the wither skull drop probability.
-  pvp_start_delay: 400 #In Ticks
-  graceperiod_duration: 200 #In ticks
+  wither_skull_multiplier: 2.0 # The multiplier of the wither skull drop probability.
+  pvp_start_delay: 400 # In Ticks
+  graceperiod_duration: 200 # In ticks
+  compass_search_radius: 1000
+  team_radius_to_bossregister: 30.0
   cinematics:
     bypass:
       enabled: true
       list:
-        - xDrygo
+        - "xDrygo"
+  waiting_screen:
+    bypass:
+      enabled: true
+      list:
+        - "xDrygo"
 teams:
-  red:
-    members:
-      - player1
-      - player2
-    displayName: '&e&lRed Team'
-    priority: 2
-  yellow:
-    members:
-      - player5
-      - player6
-    displayName: '&e&lYellow Team'
-    priority: 0
-  blue:
-    members:
-      - player3
-      - player4
-    displayName: '&e&lBlue Team'
+  team_5:
+    members: []
+    displayName: औ
+    priority: 5
+  team_12:
+    members: []
+    displayName: छ
+    priority: 12
+  team_6:
+    members: []
+    displayName: क
+    priority: 6
+  team_14:
+    members: []
+    displayName: झ
+    priority: 14
+  team_9:
+    members: []
+    displayName: घ
+    priority: 9
+  team_10:
+    members: []
+    displayName: ङ
+    priority: 10
+  team_4:
+    members: []
+    displayName: ओ
+    priority: 4
+  team_13:
+    members: []
+    displayName: ज
+    priority: 13
+  team_1:
+    members: []
+    displayName: ऐ
     priority: 1
+  team_2:
+    members: []
+    displayName: ऑ
+    priority: 2
+  team_3:
+    members: []
+    displayName: ऒ
+    priority: 3
+  team_15:
+    members: []
+    displayName: ञ
+    priority: 15
+  team_11:
+    members: []
+    displayName: च
+    priority: 11
+  team_7:
+    members: []
+    displayName: ख
+    priority: 7
+  team_16:
+    members: []
+    displayName: ट
+    priority: 16
+  team_8:
+    members: []
+    displayName: ग
+    priority: 8

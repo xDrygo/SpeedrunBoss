@@ -36,7 +36,7 @@ public class SpeedrunBossExtension extends PlaceholderExpansion {
     public @NotNull String getVersion() { return plugin.getDescription().getVersion(); }
 
     public String onRequest(OfflinePlayer player, String params) {
-        if (params.startsWith("tab_remainingbosses_")) {
+        if (params.startsWith("tab_remainingbosses_")) { //%spb_tab_remainingbosses_<boss>%
             String bossName = params.replace("tab_remainingbosses_", "");
             String teamName = xTeamsAPI.getPlayerTeamName(player);
 
@@ -76,16 +76,28 @@ public class SpeedrunBossExtension extends PlaceholderExpansion {
         if (params.startsWith("tab_teammate")){
             return getTeammatesFormatted(player);
         }
-
+        if (params.startsWith("tab_teamdisplayname")) {
+            String output;
+            if (xTeamsAPI.getPlayerTeamDisplayName(player) != "No Team") {
+                output = "&r&f&lᴛᴜ ᴇqᴜɪᴘᴏ: " + xTeamsAPI.getPlayerTeamDisplayName(player);
+            } else {
+                output = ChatUtils.formatColor(configManager.getMessageString("placeholders.tablist.teammates.no_members"));
+            }
+            return output;
+        }
         return null;
     }
 
     private String getTeammatesFormatted(OfflinePlayer player) {
         String teamName = xTeamsAPI.getPlayerTeamName(player);
         List<String> teamMembers = new ArrayList<>(xTeamsAPI.getTeamMembers(teamName));
-        String noMembersMsg = ChatUtils.formatColor(configManager.getMessageString("placeholders.tablist.teammates.no_members"));
+
+        teamMembers.removeIf(member -> member.equalsIgnoreCase(player.getName()));
+
+        String noMembersMsg = " ";
         String memberFormat = configManager.getMessageString("placeholders.tablist.teammates.members");
         String separator = configManager.getMessageString("placeholders.tablist.teammates.members_separator");
+
         String teamMembersFormatted = teamMembers.isEmpty() ? noMembersMsg :
                 teamMembers.stream()
                         .map(member -> memberFormat.replace("%member_name%", member))

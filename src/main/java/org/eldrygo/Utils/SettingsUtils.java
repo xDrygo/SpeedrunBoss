@@ -2,6 +2,7 @@ package org.eldrygo.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.eldrygo.BossRace.Listeners.BossKillListener;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
@@ -17,34 +18,22 @@ public class SettingsUtils {
     public boolean cinematicBypassEnabled;
     public List<String> cinematicBypassPlayers;
     public double probabilityMultiplier = 0;
+    private BossKillListener bossKillListener;
 
-    public SettingsUtils(SpeedrunBoss plugin, PVPManager pvpManager, GracePeriodManager gracePeriodManager) {
+    public SettingsUtils(SpeedrunBoss plugin, PVPManager pvpManager, GracePeriodManager gracePeriodManager, BossKillListener bossKillListener) {
         this.plugin = plugin;
         this.pvpManager = pvpManager;
         this.gracePeriodManager = gracePeriodManager;
-    }
-
-    public List<Player> getCinematicsPlayers() {
-        List<Player> cinematicsPlayers = new ArrayList<>();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (cinematicBypassEnabled) {
-                if (!cinematicBypassPlayers.contains(String.valueOf(player))) {
-                    cinematicsPlayers.add(player);
-                }
-            } else {
-                cinematicsPlayers.add(player);
-            }
-        }
-        return cinematicsPlayers;
+        this.bossKillListener = bossKillListener;
     }
 
     public void loadSettings() {
-        plugin.getLogger().info(ChatUtils.formatColor("&eLoading settings..."));
+        plugin.getLogger().info("Loading settings...");
         loadSettingWitherProbabilityMultiplier();
         loadSettingPVPStartDelay();
         loadSettingGracePeriodDuration();
         loadSettingCinematicBypass();
+        loadSettingTeamRadiusToBossRegister();
     }
 
     private void loadSettingWitherProbabilityMultiplier() {
@@ -89,5 +78,15 @@ public class SettingsUtils {
             e.printStackTrace();
         }
     }
+    private void loadSettingTeamRadiusToBossRegister() {
+        try {
+            double team_radius_to_bossregister = plugin.getConfig().getDouble("settings.team_radius_to_bossregister");
+            bossKillListener.setCheckRadius(team_radius_to_bossregister);
 
+            plugin.getLogger().info("✅ Cinematic Bypass setting successfully loaded.");
+        } catch (Exception e) {
+            plugin.getLogger().severe("❌ Failed on loading Cinematic Bypass setting: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

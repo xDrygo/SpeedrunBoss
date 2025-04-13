@@ -220,56 +220,6 @@ public class XTeamsCommand implements CommandExecutor {
         return true;
     }
 
-    private boolean handleJoin(CommandSender sender, String[] args) {
-        if (args.length < 2) {
-            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_specified.join", (Player) sender));
-            return false;
-        }
-
-        String teamName = args[1];
-        Team team = plugin.getTeamManager().getTeamByName(teamName);
-
-        // Primero comprobamos si el equipo existe
-        if (team == null) {
-            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_found", (Player) sender).replace("%team%", teamName));
-            return false;
-        }
-
-        Player player = (Player) sender;
-
-        if (args.length > 2) {
-            Player targetPlayer = Bukkit.getPlayer(args[2]);
-
-            if (targetPlayer == null || !targetPlayer.isOnline()) {
-                sender.sendMessage(PlaceholderAPI.setPlaceholders(player, chatUtils.xTeamsGetMessage("xteams.error.commands.player_not_found", targetPlayer).replace("%player%", args[2])));
-                return false;
-            }
-
-            if (plugin.getTeamManager().isInTeam(targetPlayer, teamName)) {
-                sender.sendMessage(PlaceholderAPI.setPlaceholders(targetPlayer, chatUtils.xTeamsGetMessage("xteams.error.commands.join.other.already_in_team", targetPlayer).replace("%team%", teamName)));
-                return false;
-            }
-
-            plugin.getTeamManager().joinTeam(targetPlayer, teamName);
-            sender.sendMessage(PlaceholderAPI.setPlaceholders(targetPlayer, chatUtils.xTeamsGetMessage("xteams.commands.join.other.success", targetPlayer).replace("%team%", teamName)));
-            teamConfigManager.saveTeamsToConfig();
-        } else {
-            if (!(sender instanceof Player)) {
-                Bukkit.getConsoleSender().sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.join.self_onlyplayer", (Player) sender));
-                return false;
-            }
-            if (plugin.getTeamManager().isInTeam(player, teamName)) {
-                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.join.self.already_in_team", (Player) sender).replace("%team%", teamName));
-                return false;
-            }
-
-            plugin.getTeamManager().joinTeam(player, teamName);
-            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.join.self.success", (Player) sender).replace("%team%", teamName));
-            teamConfigManager.saveTeamsToConfig();
-        }
-
-        return true;
-    }
 
     private boolean handleInfoTeam(CommandSender sender, String[] args) {
         if (args.length < 2) {
@@ -329,7 +279,6 @@ public class XTeamsCommand implements CommandExecutor {
             return false;
         }
 
-        Player player = (Player) sender;
         Player targetPlayer = Bukkit.getPlayer(args[1]);  // Corregido el índice aquí
 
         if (targetPlayer == null || (!targetPlayer.hasPlayedBefore() && !targetPlayer.isOnline())) {
@@ -403,91 +352,167 @@ public class XTeamsCommand implements CommandExecutor {
         }
         return false;
     }
-
     private boolean handleLeave(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_specified.leave", (Player) sender));
+            if (sender instanceof Player player) {
+                player.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_specified.leave", player));
+            } else {
+                sender.sendMessage("You must specify a team.");
+            }
+            return false;
+        }
+
+        String teamName = args[1];
+        boolean leaveAll = teamName.equals("*");
+
+        // Handle target player if specified
+        if (args.length > 2) {
+            Player target = Bukkit.getPlayer(args[2]);
+            if (target == null || !target.isOnline()) {
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.player_not_found", (Player) sender).replace("%player%", args[2]));
+                return false;
+            }
+
+            if (leaveAll) {
+                if (!sender.hasPermission("xteams.command.leave.all") && !sender.hasPermission("xteams.admin")) {
+                    sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.all_not_permission.leave", (Player) sender));
+                    return false;
+                }
+
+                boolean leftAny = false;
+                for (Team t : plugin.getTeamManager().getAllTeams()) {
+                    if (t.getMembers().contains(target.getName())) {
+                        plugin.getTeamManager().leaveTeam(target, t.getName());
+                        leftAny = true;
+                    }
+                }
+
+                if (!leftAny) {
+                    sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.leave.other.not_in_anyteam", target).replace("%player%", target.getName()));
+                    return false;
+                }
+
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.leave.other.successall", target).replace("%team%", "*"));
+                teamConfigManager.saveTeamsToConfig();
+                return true;
+            }
+
+            // Leave specific team
+            Team team = plugin.getTeamManager().getTeamByName(teamName);
+            if (team == null) {
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_found", (Player) sender).replace("%team%", teamName));
+                return false;
+            }
+
+            if (!team.getMembers().contains(target.getName())) {
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.leave.other.not_in_team", target).replace("%player%", target.getName()).replace("%team%", teamName));
+                return false;
+            }
+
+            plugin.getTeamManager().leaveTeam(target, teamName);
+            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.leave.other.success", target).replace("%team%", teamName));
+            teamConfigManager.saveTeamsToConfig();
+            return true;
+        }
+
+        // Self player
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.onlyplayer.leave", null));
+            return false;
+        }
+
+        if (leaveAll) {
+            boolean leftAny = false;
+            for (Team t : plugin.getTeamManager().getAllTeams()) {
+                if (t.getMembers().contains(player.getName())) {
+                    plugin.getTeamManager().leaveTeam(player, t.getName());
+                    leftAny = true;
+                }
+            }
+
+            if (!leftAny) {
+                player.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.leave.self.not_in_anyteam", player).replace("%team%", "*"));
+                return false;
+            }
+
+            player.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.leave.self.successall", player).replace("%team%", "*"));
+            teamConfigManager.saveTeamsToConfig();
+            return true;
+        }
+
+        // Leave specific team
+        Team team = plugin.getTeamManager().getTeamByName(teamName);
+        if (team == null) {
+            player.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_found", player).replace("%team%", teamName));
+            return false;
+        }
+
+        if (!team.getMembers().contains(player.getName())) {
+            player.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.leave.self.not_in_team", player).replace("%team%", teamName));
+            return false;
+        }
+
+        plugin.getTeamManager().leaveTeam(player, teamName);
+        player.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.leave.self.success", player).replace("%team%", teamName));
+        teamConfigManager.saveTeamsToConfig();
+        return true;
+    }
+    private boolean handleJoin(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            if (sender instanceof Player player) {
+                player.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_specified.join", player));
+            } else {
+                sender.sendMessage("You must specify a team.");
+            }
             return false;
         }
 
         String teamName = args[1];
         Team team = plugin.getTeamManager().getTeamByName(teamName);
 
-        if (team == null && !(teamName.equals("*"))) {
-            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_found", (Player) sender).replace("%team%", teamName));
+        if (team == null) {
+            if (sender instanceof Player player) {
+                player.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.team_not_found", player).replace("%team%", teamName));
+            } else {
+                sender.sendMessage("Team not found: " + teamName);
+            }
             return false;
         }
 
-
-        Player player = (Player) sender;
-
-        if (teamName.equals("*")) {
-            if (!sender.hasPermission("xteams.command.leave.all") && !sender.hasPermission("xteams.admin")) {
-                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.all_not_permission.leave", (Player) sender));
+        // Join for another player
+        if (args.length > 2) {
+            Player target = Bukkit.getPlayer(args[2]);
+            if (target == null || !target.isOnline()) {
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.player_not_found", (Player) sender).replace("%player%", args[2]));
                 return false;
             }
-            if (args.length > 2) {
-                Player targetPlayer = Bukkit.getPlayer(args[2]);
 
-                if (targetPlayer == null || !targetPlayer.isOnline()) {
-                    sender.sendMessage(PlaceholderAPI.setPlaceholders(player, chatUtils.xTeamsGetMessage("xteams.error.commands.player_not_found", targetPlayer).replace("%player%", args[2])));
-                    return false;
-                }
-
-                if (!plugin.getTeamManager().isInTeam(targetPlayer, teamName)) {
-                    sender.sendMessage(PlaceholderAPI.setPlaceholders(player, chatUtils.xTeamsGetMessage("xteams.error.commands.leave.other.not_in_anyteam", targetPlayer).replace("%player%", args[2]).replace("%team%", teamName)));
-                    return false;
-                }
-
-                plugin.getTeamManager().leaveTeam(targetPlayer, teamName);
-                sender.sendMessage(PlaceholderAPI.setPlaceholders(targetPlayer, chatUtils.xTeamsGetMessage("xteams.commands.leave.other.successall", targetPlayer).replace("%team%", teamName)));
-                teamConfigManager.saveTeamsToConfig();
-            } else {
-                if (!(sender instanceof Player)) {
-                    Bukkit.getConsoleSender().sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.onlyplayer.leave", (Player) sender));
-                    return false;
-                }
-                if (!plugin.getTeamManager().isInTeam(player, teamName)) {
-                    sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.leave.self.not_in_anyteam", player).replace("%team%", teamName));
-                    return false;
-                }
-
-                plugin.getTeamManager().leaveTeam(player, teamName);
-                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.leave.self.successall", player).replace("%team%", teamName));
-                teamConfigManager.saveTeamsToConfig();
+            if (plugin.getTeamManager().isInTeam(target, teamName)) {
+                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.join.other.already_in_team", target).replace("%team%", teamName));
+                return false;
             }
-        } else {
-            if (args.length > 2) {
-                Player targetPlayer = Bukkit.getPlayer(args[2]);
 
-                if (targetPlayer == null || !targetPlayer.isOnline()) {
-                    sender.sendMessage(PlaceholderAPI.setPlaceholders(player, chatUtils.xTeamsGetMessage("xteams.error.commands.player_not_found", targetPlayer).replace("%player%", args[2])));
-                    return false;
-                }
+            plugin.getTeamManager().joinTeam(target, teamName);
+            sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.join.other.success", target).replace("%team%", teamName));
+            teamConfigManager.saveTeamsToConfig();
+            return true;
+        }
 
-                if (!plugin.getTeamManager().isInTeam(targetPlayer, teamName)) {
-                    sender.sendMessage(PlaceholderAPI.setPlaceholders(player, chatUtils.xTeamsGetMessage("xteams.error.commands.leave.other.not_in_team", targetPlayer).replace("%player%", args[2]).replace("%team%", teamName)));
-                    return false;
-                }
+        // Join for self
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Only players can join a team.");
+            return false;
+        }
 
-                plugin.getTeamManager().leaveTeam(targetPlayer, teamName);
-                sender.sendMessage(PlaceholderAPI.setPlaceholders(targetPlayer, chatUtils.xTeamsGetMessage("xteams.commands.leave.other.success", targetPlayer).replace("%team%", teamName)));
-                teamConfigManager.saveTeamsToConfig();
-            } else {
-                if (!(sender instanceof Player)) {
-                    Bukkit.getConsoleSender().sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.onlyplayer.leave", (Player) sender));
-                    return false;
-                }
-                if (!plugin.getTeamManager().isInTeam(player, teamName)) {
-                    sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.leave.self.not_in_team", player).replace("%team%", teamName));
-                    return false;
-                }
+        if (plugin.getTeamManager().isInTeam(player, teamName)) {
+            player.sendMessage(chatUtils.xTeamsGetMessage("xteams.error.commands.join.self.already_in_team", player).replace("%team%", teamName));
+            return false;
+        }
 
-                plugin.getTeamManager().leaveTeam(player, teamName);
-                sender.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.leave.self.success", player).replace("%team%", teamName));
-                teamConfigManager.saveTeamsToConfig();
-            }}
-
+        plugin.getTeamManager().joinTeam(player, teamName);
+        player.sendMessage(chatUtils.xTeamsGetMessage("xteams.commands.join.self.success", player).replace("%team%", teamName));
+        teamConfigManager.saveTeamsToConfig();
         return true;
     }
+
 }

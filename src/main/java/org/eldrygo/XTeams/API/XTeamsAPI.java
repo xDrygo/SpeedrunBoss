@@ -19,15 +19,30 @@ public class XTeamsAPI {
     public String getPlayerTeamName(OfflinePlayer player) {
         return plugin.getTeamManager().getPlayerTeamName(player);
     }
-    public boolean setDisplayName(String teamName, String newDisplayName) {
-        return plugin.getTeamManager().setTeamDisplayName(teamName, newDisplayName);
-    }
 
     // Delegar al TeamManager para obtener el displayName de un jugador
     public String getPlayerTeamDisplayName(OfflinePlayer player) {
         return plugin.getTeamManager().getPlayerTeamDisplayName(player);
     }
 
+
+    // Delegar al TeamManager para obtener todos los miembros de un equipo
+    public Set<String> getTeamMembers(String teamName) {
+        return plugin.getTeamManager().getTeamMembers(teamName);
+    }
+
+    // Delegar al TeamManager para obtener la información de un equipo
+    public Team getTeamByName(String teamName) {
+        return plugin.getTeamManager().getTeam(teamName);
+    }
+
+    public String getTeamDisplayName(String teamName) {
+        return plugin.getTeamManager().getTeamDisplayName(teamName);
+    }
+    /*
+    public boolean setDisplayName(String teamName, String newDisplayName) {
+        return plugin.getTeamManager().setTeamDisplayName(teamName, newDisplayName);
+    }
     // Delegar al TeamManager para obtener todos los equipos de un jugador
     public List<Team> getPlayerTeams(OfflinePlayer player) {
         return plugin.getTeamManager().getPlayerTeams(player);
@@ -38,19 +53,9 @@ public class XTeamsAPI {
         return plugin.getTeamManager().hasPlayerInTeam(player, teamName);
     }
 
-    // Delegar al TeamManager para obtener todos los miembros de un equipo
-    public Set<String> getTeamMembers(String teamName) {
-        return plugin.getTeamManager().getTeamMembers(teamName);
-    }
-
     // Delegar al TeamManager para listar los nombres de todos los equipos
     public List<String> listTeams() {
         return plugin.getTeamManager().listTeams();
-    }
-
-    // Delegar al TeamManager para obtener la información de un equipo
-    public Team getTeamByName(String teamName) {
-        return plugin.getTeamManager().getTeam(teamName);
     }
 
     // Delegar al TeamManager para crear un equipo
@@ -77,4 +82,5 @@ public class XTeamsAPI {
     public void deleteAllTeams() {
         plugin.getTeamManager().deleteAllTeams();
     }
+     */
 }

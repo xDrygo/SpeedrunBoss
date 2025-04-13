@@ -2,7 +2,7 @@ package org.eldrygo.BossRace.Listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPortalEnterEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.entity.Player;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.Utils.ChatUtils;
@@ -20,21 +20,26 @@ public class PortalEnterListener implements Listener {
     }
 
     @EventHandler
-    public void onPortalEnter(EntityPortalEnterEvent event) {
-        if (event.getEntity() instanceof Player player) {
+    public void onPlayerPortal(PlayerPortalEvent event) {
+        Player player = event.getPlayer();
 
-            // Verificar si el jugador intenta entrar al portal del End
-            if (event.getLocation().getWorld().getName().equals("world_end")) {
+        // Verificar si el portal es un portal al End
+        if (event.getCause() == PlayerPortalEvent.TeleportCause.END_PORTAL) {
 
-                // Obtener el nombre del equipo del jugador (suponiendo que usas XTeams o algo similar)
-                String teamName = xTeamsAPI.getPlayerTeamName(player); // Este debería ser obtenido dinámicamente del jugador
+            // Obtener el nombre del equipo del jugador
+            String teamName = xTeamsAPI.getPlayerTeamName(player);
 
-                // Comprobar si el equipo ha matado todos los bosses necesarios
-                if (!teamDataManager.hasKilledRequiredBosses(teamName)) {
-                    // Si no han matado todos los bosses, cancelar el evento para que no entren al End
-                    player.sendMessage(chatUtils.getMessage("warning.try_enter_end_without_required_bosses", player));
-                    event.setCancelled(true);
-                }
+            // Asegurarse de que el jugador tiene un equipo asignado
+            if (teamName == null || teamName.isEmpty()) {
+                player.sendMessage(chatUtils.getMessage("warning.no_team_assigned", player));
+                event.setCancelled(true);
+                return;
+            }
+
+            // Comprobar si el equipo ha matado todos los bosses necesarios
+            if (!teamDataManager.hasKilledRequiredBosses(teamName)) {
+                player.sendMessage(chatUtils.getMessage("warning.try_enter_end_without_required_bosses", player));
+                event.setCancelled(true);  // Cancelar la teletransportación
             }
         }
     }

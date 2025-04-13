@@ -18,27 +18,43 @@ public class ConfigManager {
         try {
             plugin.saveDefaultConfig();
             plugin.reloadConfig();
-            plugin.getLogger().info(ChatUtils.formatColor("&a✅ The config.yml file successfully loaded."));
+            plugin.getLogger().info("✅ The config.yml file successfully loaded.");
         } catch (Exception e) {
-            plugin.getLogger().severe(ChatUtils.formatColor("&c`❌ Failed on loading config.yml: " + e.getMessage()));
+            plugin.getLogger().severe("❌ Failed on loading config.yml: " + e.getMessage());
             e.printStackTrace();
         }
     }
     public String getPrefix() { return plugin.prefix; }
     public FileConfiguration getMessageConfig() { return plugin.messagesConfig; }
+    public FileConfiguration getInventoriesConfig() { return plugin.inventoriesConfig; }
 
     public void loadMessages() {
         File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         try {
             if (!messagesFile.exists()) {
                 plugin.saveResource("messages.yml", false);
-                plugin.getLogger().info(ChatUtils.formatColor("&a✅ The messages.yml file did not exist, it has been created with default configurations."));
+                plugin.getLogger().info("✅ The messages.yml file did not exist, it has been created with default configurations.");
             } else {
-                plugin.getLogger().info(ChatUtils.formatColor("&a✅ The messages.yml file successfully loaded."));
+                plugin.getLogger().info("✅ The messages.yml file successfully loaded.");
             }
             plugin.messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
         } catch (Exception e) {
-            plugin.getLogger().severe("&c❌ Failed on loading messages.yml: " + e.getMessage());
+            plugin.getLogger().severe("❌ Failed on loading messages.yml: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void loadInventories() {
+        File messagesFile = new File(plugin.getDataFolder(), "inventories.yml");
+        try {
+            if (!messagesFile.exists()) {
+                plugin.saveResource("inventories.yml", false);
+                plugin.getLogger().info("✅ The inventories.yml file did not exist, it has been created with default configurations.");
+            } else {
+                plugin.getLogger().info("✅ The inventories.yml file successfully loaded.");
+            }
+            plugin.inventoriesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+        } catch (Exception e) {
+            plugin.getLogger().severe("❌ Failed on loading inventories.yml: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -47,7 +63,7 @@ public class ConfigManager {
             setPrefix(ChatUtils.formatColor(getMessageConfig().getString("prefix", "&r&lSpeedrun#fd3c9e&lBoss &cDefault Prefix &8»&r")));
             setTeamsPrefix(ChatUtils.formatColor(getMessageConfig().getString("xteams.prefix", "#ffbaff&lx&r&lTeams &cDefault Prefix &8»&r")));
         } catch (Exception e) {
-            plugin.getLogger().severe(ChatUtils.formatColor("&c❌ Failed on loading prefixes: " + e.getMessage()));
+            plugin.getLogger().severe("❌ Failed on loading prefixes: " + e.getMessage());
             e.printStackTrace();
         }
     }

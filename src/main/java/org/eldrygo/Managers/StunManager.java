@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eldrygo.SpeedrunBoss;
-import org.eldrygo.Utils.DepUtils;
+import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.HashSet;
@@ -23,12 +23,12 @@ public class StunManager implements Listener {
     private final Set<UUID> stunnedPlayers = new HashSet<>();
     private final SpeedrunBoss plugin;
     private final XTeamsAPI xTeamsAPI;
-    private final DepUtils depUtils;
+    public PlayerUtils playerUtils;
 
-    public StunManager(SpeedrunBoss plugin, XTeamsAPI xTeamsAPI, DepUtils depUtils) {
+    public StunManager(SpeedrunBoss plugin, XTeamsAPI xTeamsAPI, PlayerUtils playerUtils) {
         this.plugin = plugin;
         this.xTeamsAPI = xTeamsAPI;
-        this.depUtils = depUtils;
+        this.playerUtils = playerUtils;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -66,7 +66,7 @@ public class StunManager implements Listener {
     public void stunAllPlayers() {
         plugin.getLogger().info("✅ Stunning all players...");
         for (Player players : Bukkit.getOnlinePlayers()) {
-            String vaultGroup = depUtils.getPrimaryGroup(players);
+            String vaultGroup = playerUtils.getPrimaryGroup(players);
             String teamName = xTeamsAPI.getPlayerTeamName(players);
             if (!(players.getGameMode() == SPECTATOR) && !(vaultGroup.contains("team_")) && !(teamName == null) && !(teamName.isEmpty())) {
                 stunPlayerIndefinitely(players);

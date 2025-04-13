@@ -50,6 +50,55 @@ public class TeamDataManager {
         }
         return killedBosses;
     }
+    public void addDimensionRegister(String teamName, String dimension) {
+        JSONObject json = readJsonFile();
+        JSONArray dimensions = (JSONArray) json.get(teamName); // Cambié "optJSONArray" por "get"
+
+        if (dimensions == null) {
+            dimensions = new JSONArray();
+        }
+
+        if (!dimensions.contains(dimension)) { // "toList" no existe en json-simple, pero podemos usar "contains"
+            dimensions.add(dimension); // Cambié "put" por "add" (json-simple usa "add" en JSONArray)
+        }
+
+        json.put(teamName, dimensions);
+        saveJsonFile(json);
+    }
+    public void delDimensionRegister(String teamName, String dimension) {
+        JSONObject json = readJsonFile();
+        JSONArray dimensions = (JSONArray) json.get(teamName);
+
+        if (dimensions == null) return;
+
+        if (dimensions.contains(dimension)) {
+            dimensions.remove(dimension);
+            json.put(teamName, dimensions);
+            saveJsonFile(json);
+        }
+    }
+    public boolean hasRegisteredDimension(String teamName, String dimension) {
+        // Obtener los bosses asesinados por el equipo
+        List<String> dimensionsRegistered = getDimensionsRegistered(teamName);
+
+        // Verificar si el boss específico está en la lista de bosses asesinados
+        return dimensionsRegistered.contains(dimension);
+    }
+
+    private List<String> getDimensionsRegistered(String teamName) {
+        JSONObject json = readJsonFile();
+        List<String> dimensionsRegistered = new ArrayList<>();
+
+        if (json.containsKey(teamName)) { // Cambié "has" por "containsKey"
+            JSONArray array = (JSONArray) json.get(teamName); // Cambié "optJSONArray" por "get"
+            if (array != null) {
+                for (Object obj : array) {
+                    dimensionsRegistered.add(obj.toString()); // "optString" no existe en json-simple
+                }
+            }
+        }
+        return dimensionsRegistered;
+    }
 
     public void addKilledBoss(String teamName, String bossName) {
         JSONObject json = readJsonFile();
@@ -65,6 +114,18 @@ public class TeamDataManager {
 
         json.put(teamName, killedBosses);
         saveJsonFile(json);
+    }
+    public void delKilledBoss(String teamName, String bossName) {
+        JSONObject json = readJsonFile();
+        JSONArray killedBosses = (JSONArray) json.get(teamName);
+
+        if (killedBosses == null) return;
+
+        if (killedBosses.contains(bossName)) {
+            killedBosses.remove(bossName);
+            json.put(teamName, killedBosses);
+            saveJsonFile(json);
+        }
     }
     public boolean hasKilledRequiredBosses(String teamName) {
         // Lista de bosses que deben ser derrotados en orden
@@ -85,22 +146,25 @@ public class TeamDataManager {
     }
 
     public JSONObject readJsonFile() {
-        if (!dataFile.exists()) return new JSONObject();
+        if (!dataFile.exists() || dataFile.length() == 0) {
+            System.out.println("[TeamDataManager] Archivo vacío o inexistente: " + dataFile.getAbsolutePath());
+            return new JSONObject();
+        }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dataFile), StandardCharsets.UTF_8))) {
             JSONParser parser = new JSONParser();
-            return (JSONObject) parser.parse(reader); // Se usa JSONParser en json-simple
+            return (JSONObject) parser.parse(reader);
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
+            System.out.println("[TeamDataManager] Error al leer el archivo JSON: " + e.getMessage());
             return new JSONObject();
         }
     }
 
     public void saveJsonFile(JSONObject json) {
-        try (FileWriter writer = new FileWriter(dataFile, StandardCharsets.UTF_8)) {
-            writer.write(json.toJSONString()); // "toString(int)" no existe en json-simple, se usa "toJSONString()"
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(dataFile), StandardCharsets.UTF_8)) {
+            writer.write(json.toJSONString());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[TeamDataManager] Error al guardar el archivo JSON: " + e.getMessage());
         }
     }
 }

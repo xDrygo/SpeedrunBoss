@@ -17,7 +17,9 @@ prefix: "&r&lSpeedrun#fd3c9e&lBoss &8»&r"
 
 compass:
   item:
-    name: "#fff18dBrujula de Rastreo: &r%structure%"
+    name:
+      no_structure: "#fff18dBrujula de Rastreo: #FF4444Estructura indefinida."
+      structure: "#fff18dBrujula de Rastreo: &r%structure%"
     lore:
       - "Usa esta brujula para "
     custom_model_data: 1
@@ -25,6 +27,7 @@ compass:
   structure:
     ancient_city: "#43BEC3&lAncient City"
     monument: "#85D2FF&lMonument"
+    null: "#FF3535Invalid structure."
   use:
     update:
       success: "%prefix% #a0ff72✔ Now you are tracking the structure '%structure%'."
@@ -34,16 +37,44 @@ commands:
     give:
       success_other: "%prefix% #a0ff72✔ Successfully given the compass to player '%player%'"
       success:  "%prefix% #a0ff72✔ You have successfully received the compass."
+playerutils:
+  spbinfo:
+    no_members: "#FF4444No members."
+    members: "#fff18d%member_name%"
+    members_separator: "&7, "
+    string:
+      - " "
+      - "&r&lSpeedrun#fd3c9e&lBoss &8- #fff18dTeam: &r%team_display_name% &7(&r%team_name%&7)"
+      - " "
+      - "&7‣ &fKilled Bosses:"
+      - "#16705d  &lWarden %warden_killed%"
+      - "#4a2d2d  &lWither %wither_killed%"
+      - "#D98E44  &lElder Guardian %elderguardian_killed%"
+      - "#a745ed  &lEnder Dragon %enderdragon_killed%"
+      - " "
+      - "&7‣ &fMembers:"
+      - "  %team_members%"
+      - " "
 broadcast:
+  connection:
+    global:
+      join: "#ffd659&l◇ &8» #a0ff72&l+ &r%target_prefix% %target% #a0ff72se ha unido al servidor."
+      leave: "#ffd659&l◇ &8» #ff7272&l- &r%target_prefix% %target% #ff7272ha salido del servidor."
+    admin:
+      join: "#fd3c9e&l◇ &8» #a0ff72&l+ &r%target_prefix% %target% #a0ff72se ha unido al servidor."
+      leave: "#fd3c9e&l◇ &8» #ff7272&l- &r%target_prefix% %target% #ff7272ha salido del servidor."
+  dimension_enter:
+    nether: "#ffd659🔔 &8» #ff634a✈ El equipo &r%team% #ff634aha entrado al &lNETHER en &r%time%"
+    end: "#ffd659🔔 &8» #daa6ff✈ El equipo &r%team% #daa6ffha entrado al &lEND en &r%time%"
   boss_kill:
-    warden: "#ffd659🔔 &8» #3bebbc⚔️ The player '#ffffff%player%#3bebbc' from team '#ffffff%team%#3bebbc' killed the #16705d&lWarden #3bebbcin: #ffffff%time%" # NAME: #16705d  HIGHLIGHT: #ffffff  BASE: #3bebbc
-    wither: "#ffd659🔔 &8» #7d5454⚔️ The player '#ffffff%player%#7d5454' from team '#ffffff%team%#7d5454' killed the #4a2d2d&lWither Boss #7d5454in: #ffffff%time%" # NAME: #4a2d2d  HIGHLIGHT: #ffffff  BASE: #7d5454
-    elder_guardian: "#ffd659🔔 &8» #ffbf80⚔️ The player '#ffffff%player%#ffbf80' from team '#ffffff%team%#ffbf80' killed the #D98E44&lElder Guardian #ffbf80in: #ffffff%time%" # NAME: #D98E44  HIGHLIGHT: #ffffff  BASE: #ffbf80
-    ender_dragon: "#ffd659🔔 &8» #d191ff⚔️ The player '#ffffff%player%#d191ff' from team '#ffffff%team%#d191ff' killed the #a745ed&lEnder Dragon in: #ffffff%time%" # NAME: #a745ed  HIGHLIGHT: #ffffff  BASE: #d191ff
+    warden: "#ffd659🔔 &8» #3bebbc⚔️ El jugador #ffffff%player%#3bebbc del equipo #ffffff%team%#3bebbc derrotó al #409986&lWarden #3bebbcen #ffffff%time%" # NAME: #16705d  HIGHLIGHT: #ffffff  BASE: #3bebbc
+    wither: "#ffd659🔔 &8» #ff634a⚔️ El jugador #ffffff%player%#ff634a del equipo #ffffff%team%#ff634a derrotó al #ff492b&lWither #ff634aen #ffffff%time%" # NAME: #4a2d2d  HIGHLIGHT: #ffffff  BASE: #7d5454
+    elder_guardian: "#ffd659🔔 &8» #ffbf80⚔️ El jugador #ffffff%player%#ffbf80 del equipo '#ffffff%team%#ffbf80 derrotó al #eba765&lElder Guardian #ffbf80en #ffffff%time%" # NAME: #D98E44  HIGHLIGHT: #ffffff  BASE: #ffbf80
+    ender_dragon: "#ffd659🔔 &8» #daa6ff⚔️ El jugador #ffffff%player%#daa6ff del equipo '#ffffff%team%#daa6ff derrotó al #cb8df7&lEnder Dragon en #ffffff%time%" # NAME: #a745ed  HIGHLIGHT: #ffffff  BASE: #d191ff
   pvp:
-    enable: "#ffd659🔔 &8» #ff4f7eThe &lPvP &r#ff4f7ehas been &lENABLED&r#ff4f7e."
-    disable: "#ffd659🔔 &8» #ff4f7eThe &lPvP &r#ff4f7ehas been &lDISABLED&r#ff4f7e."
-  graceperiod_ended: "#ffd659🔔 &8» #bafffdThe Grace Period has &lENDED&r#bafffd."
+    enable: "#ffd659🔔 &8» #ff4f7eEl &lPvP &r#ff4f7eha sido &lACTIVADO&r#ff4f7e."
+    disable: "#ffd659🔔 &8» #ff4f7eEl &lPvP &r#ff4f7eha sido &lDESACTIVADO&r#ff4f7e."
+  graceperiod_ended: "#ffd659🔔 &8» #bafffdEl Tiempo de Gracia ha &lACABADO&r#bafffd."
 cinematics:
   start:
     titles:
@@ -72,40 +103,41 @@ cinematics:
       title: "#ffd659&lᴀ ᴄᴏʀʀᴇʀ!"
       subtitle: "#ccccccSPB por @Jose90YT"
       string:
-      - " "
-      - "&r&lSpeedrun#fd3c9e&lBoss &8» #ff99cd&lComenzó la carrera!"
-      - "#ffe3f1Haz que tu equipo sea el primero en matar a todos"
-      - "#ffe3f1los bosses del juego para ganar."
-      - " "
-      - "&7‣ &fBosses a derrotar:"
-      - "#16705d  &lWarden"
-      - "#4a2d2d  &lWither"
-      - "#D98E44  &lElder Guardian"
-      - "#a745ed  &lEnder Dragon"
-      - " "
-      - "#dbdbdb&oMira los bosses asesinados por tu equipo con /spb"
-      - "#858585ℹDesarrollado por @eldrygo"
-      - " "
+        - " "
+        - "&r&lSP#fd3c9e&lB &8» #ff99cd&lComenzó la carrera!"
+        - "#ffe3f1Haz que tu equipo sea el primero en matar a todos"
+        - "#ffe3f1los bosses del juego para ganar."
+        - " "
+        - "&7‣ &fBosses a derrotar:  ढ   त   द   न"
+        - " "
+        - " "
+        - "#cccccc&o(Recuerda matar a los primeros antes para poder entrar al END.)"
+        - " "
+        - "#dbdbdb&oMira los bosses asesinados por tu equipo con /spb"
+        - "#858585ℹDesarrollado por @eldrygo"
+        - " "
     bossbar_countdown:
       string: "#cccccc▪ &fIniciando en #fff18d%time% #cccccc▪"
-playerutils:
-  spbinfo:
-    no_members: "#FF4444No members."
-    members: "#fff18d%member_name%"
-    members_separator: "&7, "
-    string:
-      - " "
-      - "&r&lSpeedrun#fd3c9e&lBoss &8- #fff18dTeam: &r%team_display_name% &7(&r%team_name%&7)"
-      - " "
-      - "&7‣ &fKilled Bosses:"
-      - "#16705d  &lWarden %warden_killed%"
-      - "#4a2d2d  &lWither %wither_killed%"
-      - "#D98E44  &lElder Guardian %elderguardian_killed%"
-      - "#a745ed  &lEnder Dragon %enderdragon_killed%"
-      - " "
-      - "&7‣ &fMembers:"
-      - "  %team_members%"
-      - " "
+waiting_screen:
+  title: "&rऱ"
+  subtitle: "&rल"
+  invalid_state: "%prefix% #FF0000🚫 Invalid state. &7Valid states: &fon&7 or &foff&7."
+  status:
+    value_on: "%prefix% #fff18d📰 The Waiting Screen is currently &lON&r#fff18d."
+    value_off: "%prefix% #fff18d📰 The Waiting Screen is currently &lOFF&r#fff18d."
+  success:
+    value_on: "%prefix% #a0ff72✔ Defined Waiting Screen to %value%."
+    value_off: "%prefix% #ff7272❌ Defined Waiting Screen to %value%."
+  confirmation_request:
+    - " "
+    - "%prefix% #FF3535&lWaiting Screen confirmation ⚠"
+    - " "
+    - " #ccccccYou are about to make the Waiting Screen %value%."
+    - " &7For security reasons, we need you to confirm the action of registering it."
+    - " "
+    - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin waitingscreen %value% confirm"
+    - " "
+    - "#FF4444&o(This action can't be undone.)"
 administration:
   event:
     start:
@@ -168,22 +200,38 @@ administration:
       no_cinematic_running: "%prefix% #FF0000🚫 There is no running cinematic."
       success: "%prefix% #ff7272❌ The cinematic %cinematic% was succesfully stopped."
       confirmation_request:
-          - " "
-          - "%prefix% #FF3535&lCinematic Stop Confirmation ⚠"
-          - " "
-          - " #ccccccYou are about to stop the cinematic &f%cinematic%#cccccc."
-          - " &7For security reasons, we need you to confirm the action of stop it."
-          - " "
-          - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin cinematic stop confirm"
-          - " "
-          - "#FF4444&o(This action can't be undone.)"
-          - " "
+        - " "
+        - "%prefix% #FF3535&lCinematic Stop Confirmation ⚠"
+        - " "
+        - " #ccccccYou are about to stop the cinematic &f%cinematic%#cccccc."
+        - " &7For security reasons, we need you to confirm the action of stop it."
+        - " "
+        - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin cinematic stop confirm"
+        - " "
+        - "#FF4444&o(This action can't be undone.)"
+        - " "
+  bossregister:
+    success: "%prefix% #a0ff72✔ Successfully set boss '%boss%' to '%value%' for team '%team%'."
+    confirmation_request:
+      - " "
+      - "%prefix% #FF3535&lBoss Registration Confirmation ⚠"
+      - " "
+      - " #ccccccYou are about to register the boss &f%boss%#cccccc for team &f%team%#cccccc."
+      - " &7For security reasons, we need you to confirm the action of registering it."
+      - " "
+      - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin bossregister %team% %boss% %value% confirm"
+      - " "
+      - "#FF4444&o(This action can't be undone.)"
+      - " "
+  menu:
+    open: "%prefix% #a0ff72✔ Opened the Speedrun Boss menu."
+    only_players: "%prefix% #FF0000🚫 Only players can open the menu."
 placeholders:
   tablist:
     teammates:
-      no_members: "#FF4444No tienes equipo."
-      members: "#fff18d%member_name%"
-      members_separator: "&7, "
+      no_members: "&r#FF4444ɴᴏ ᴛɪᴇɴᴇꜱ ᴇqᴜɪᴘᴏ"
+      members: "&r#fff18d%member_name%"
+      members_separator: "&r&7, "
 xteams:
   prefix: "#ffbaff&lx&r&lTeams &8»&r"
   commands:
@@ -290,9 +338,11 @@ xteams:
 warning:
   try_enter_end_without_required_bosses: "#FF0000🚫 You need to kill all bosses before entering to the end."
 error:
-  no_permission: "%prefix% #FF0000🚫 You have no permission to use this command."
+  no_permission: "%prefix% #FF0000🚫 No tienes permiso para usar ese comando."
   unknown_command: "%prefix% #FF0000🚫 Unknown command. &7Use &f/spb help &7to see the list of commands."
   invalid_usage: "%prefix% #FF0000🚫 Incorrect usage. &7Use &f/spb help &7to see the usages of all commands."
+  invalid_boss: "%prefix% #FF0000🚫 Invalid boss. &7Boss IDs: &fwither&7, &fwarden&7, &felder_guardian&7, &fender_dragon&7."
+  invalid_boolean: "%prefix% #FF0000🚫 Invalid boolean. &7Valid booleans: &ftrue&7 or &ffalse&7."
   player_not_found: "%prefix% #FF0000🚫 Can't find player '%player%'."
   no_spb_info: "%prefix% #FF0000🚫 SPB String List not found."
   only_by_player: "%prefix% #FF0000🚫 This command will only work if the sender is a player."
