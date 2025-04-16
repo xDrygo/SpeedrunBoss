@@ -32,7 +32,6 @@ public class BossKillManager {
             String bossName = getBossName(entity.getType());
 
             if (bossName != null) {
-                // Registrar el boss asesinado en el archivo de datos
                 teamDataManager.addKilledBoss(teamName, bossName);
                 broadcastManager.sendBossKilledMessage(bossName, player);
             }

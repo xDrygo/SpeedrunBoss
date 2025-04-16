@@ -49,12 +49,13 @@ public class CinematicManager {
             return;
         }
 
-        for (Player player : playerUtils.getCinematicsPlayers()) {
-            CinematicSequence sequence = createCinematicSequence(cinematicName, player);
-            if (sequence != null) {
-                runningSequence = sequence;
-                sequence.start();
-            }
+        List<Player> players = playerUtils.getCinematicsPlayers();
+        if (players.isEmpty()) return;
+
+        CinematicSequence sequence = createCinematicSequence(cinematicName, players);
+        if (sequence != null) {
+            runningSequence = sequence;
+            sequence.start();
         }
     }
 
@@ -73,23 +74,26 @@ public class CinematicManager {
         }
     }
 
-    private CinematicSequence createCinematicSequence(String cinematicName, Player player) {
+    private CinematicSequence createCinematicSequence(String cinematicName, List<Player> players) {
         if (!"start".equalsIgnoreCase(cinematicName)) {
             plugin.getLogger().warning("Can't find cinematic: " + cinematicName);
             return null;
         }
 
-        CinematicSequence sequence = new CinematicSequence(player, plugin, cinematicName);
+        CinematicSequence sequence = new CinematicSequence(players, plugin, cinematicName);
 
         sequence.addDelay(1);
         for (int i = 60; i >= 1; i--) {
             final int num = i;
-            sequence.then(p -> countdownBossBarManager.updateVoidBossBar())
+            sequence
+                    .then(p -> countdownBossBarManager.updateVoidBossBar())
                     .then(p -> countdownBossBarManager.updateBossBar(60, num))
-                    .then(p -> p.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, num < 11 ? 10f : 0f, 1.5f))
+                    .then(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, num < 11 ? 10f : 0f, 1.5f))
                     .addDelay(20);
         }
-        sequence.then(p -> countdownBossBarManager.bossBar.setVisible(false))
+
+        sequence
+                .then(p -> countdownBossBarManager.bossBar.setVisible(false))
                 .then(p -> countdownBossBarManager.voidBossBar.setVisible(false))
                 .then(p -> stunManager.stunAllPlayers())
                 .then(p -> p.sendMessage(ChatUtils.formatColor("&eAquí empieza el stun para hacer el TP...")))
@@ -99,24 +103,26 @@ public class CinematicManager {
 
         for (int i = 10; i >= 1; i--) {
             final int num = i;
-            sequence.then(p -> p.sendTitle(
-                            chatUtils.getTitle("cinematics.start.titles.countdown." + num + ".title", player),
+            sequence
+                    .then(p -> p.sendTitle(
+                            chatUtils.getTitle("cinematics.start.titles.countdown." + num + ".title", p),
                             null,
                             2, 16, 2))
-                    .then(p -> p.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 10f, num == 1 ? 2f : 1.5f))
+                    .then(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 10f, num == 1 ? 2f : 1.5f))
                     .addDelay(20);
         }
 
-        sequence.then(p -> p.sendTitle(
-                        chatUtils.getTitle("cinematics.start.go.title", player),
-                        chatUtils.getSubtitle("cinematics.start.go.subtitle", player),
+        sequence
+                .then(p -> p.sendTitle(
+                        chatUtils.getTitle("cinematics.start.go.title", p),
+                        chatUtils.getSubtitle("cinematics.start.go.subtitle", p),
                         2, 60, 10))
                 .then(p -> {
-                    p.playSound(player.getLocation(), Sound.BLOCK_CONDUIT_ACTIVATE, 10f, 2f);
-                    p.playSound(player.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 10f, 1.5f);
-                    p.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10f, 1.5f);
+                    p.playSound(p.getLocation(), Sound.BLOCK_CONDUIT_ACTIVATE, 10f, 2f);
+                    p.playSound(p.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 10f, 1.5f);
+                    p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10f, 1.5f);
                 })
-                .then(p -> sendStartCinematicGoString(player))
+                .then(this::sendStartCinematicGoString)
                 .then(p -> p.sendMessage(ChatUtils.formatColor("&eInicia el periodo de gracia, inicia el delay para que se active el PVP, se quita el stun e inicia el evento...")))
                 .then(p -> stunManager.unStunAllPlayers())
                 .then(p -> gracePeriodManager.startGracePeriod())

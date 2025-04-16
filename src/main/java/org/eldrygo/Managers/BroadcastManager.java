@@ -90,49 +90,4 @@ public class BroadcastManager {
             players.playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 10f, 2f);
         }
     }
-    public void sendPlayerConnectionMessage(Player player, String type) {
-        switch (type) {
-            case "join" -> {
-                Location playerLocation = player.getLocation();
-                player.playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP, 10f, 2f);
-                for (Player players : Bukkit.getServer().getOnlinePlayers()) {
-                    players.sendMessage(chatUtils.getMessage("broadcast.connection.global.join", players)
-                            .replace("%target%", player.getName())
-                            .replace("%target_prefix%", playerUtils.getPrefix(player)));
-                }
-            }
-            case "leave" -> {
-                for (Player players : Bukkit.getServer().getOnlinePlayers()) {
-                    players.sendMessage(chatUtils.getMessage("broadcast.connection.global.leave", players)
-                            .replace("%target%", player.getName())
-                            .replace("%target_prefix%", playerUtils.getPrefix(player)));
-                }
-
-            }
-        }
-    }
-    public void sendAdminConnectionMessage(Player player, String type) {
-        switch (type) {
-            case "join" -> {
-                Location playerLocation = player.getLocation();
-                player.playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP, 10f, 2f);
-                for (Player players : playerUtils.getAdminPlayers()) {
-                    Location targetLocation = players.getLocation();
-                    player.playSound(targetLocation, Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, 10f, 1.25f);
-                    players.sendMessage(chatUtils.getMessage("broadcast.connection.admin.join", players)
-                            .replace("%target%", player.getName())
-                            .replace("%target_prefix%", playerUtils.getPrefix(player)));
-                }
-            }
-            case "leave" -> {
-                for (Player players : playerUtils.getAdminPlayers()) {
-                    Location targetLocation = players.getLocation();
-                    player.playSound(targetLocation, Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, 10f, 1.25f);
-                    players.sendMessage(chatUtils.getMessage("broadcast.connection.admin.leave", players)
-                            .replace("%target%", player.getName())
-                            .replace("%target_prefix%", playerUtils.getPrefix(player)));
-                }
-            }
-        }
-    }
 }

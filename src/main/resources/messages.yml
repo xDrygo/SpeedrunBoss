@@ -56,13 +56,6 @@ playerutils:
       - "  %team_members%"
       - " "
 broadcast:
-  connection:
-    global:
-      join: "#ffd659&l◇ &8» #a0ff72&l+ &r%target_prefix% %target% #a0ff72se ha unido al servidor."
-      leave: "#ffd659&l◇ &8» #ff7272&l- &r%target_prefix% %target% #ff7272ha salido del servidor."
-    admin:
-      join: "#fd3c9e&l◇ &8» #a0ff72&l+ &r%target_prefix% %target% #a0ff72se ha unido al servidor."
-      leave: "#fd3c9e&l◇ &8» #ff7272&l- &r%target_prefix% %target% #ff7272ha salido del servidor."
   dimension_enter:
     nether: "#ffd659🔔 &8» #ff634a✈ El equipo &r%team% #ff634aha entrado al &lNETHER en &r%time%"
     end: "#ffd659🔔 &8» #daa6ff✈ El equipo &r%team% #daa6ffha entrado al &lEND en &r%time%"
@@ -75,6 +68,10 @@ broadcast:
     enable: "#ffd659🔔 &8» #ff4f7eEl &lPvP &r#ff4f7eha sido &lACTIVADO&r#ff4f7e."
     disable: "#ffd659🔔 &8» #ff4f7eEl &lPvP &r#ff4f7eha sido &lDESACTIVADO&r#ff4f7e."
   graceperiod_ended: "#ffd659🔔 &8» #bafffdEl Tiempo de Gracia ha &lACABADO&r#bafffd."
+spawn:
+  teleport:
+    team: "#ffd659✈️ Fuiste transportado al spawn de tu equipo."
+    global: "#ffd659✈️ Fuiste transportado al spawn del mundo."
 cinematics:
   start:
     titles:
@@ -118,26 +115,6 @@ cinematics:
         - " "
     bossbar_countdown:
       string: "#cccccc▪ &fIniciando en #fff18d%time% #cccccc▪"
-waiting_screen:
-  title: "&rऱ"
-  subtitle: "&rल"
-  invalid_state: "%prefix% #FF0000🚫 Invalid state. &7Valid states: &fon&7 or &foff&7."
-  status:
-    value_on: "%prefix% #fff18d📰 The Waiting Screen is currently &lON&r#fff18d."
-    value_off: "%prefix% #fff18d📰 The Waiting Screen is currently &lOFF&r#fff18d."
-  success:
-    value_on: "%prefix% #a0ff72✔ Defined Waiting Screen to %value%."
-    value_off: "%prefix% #ff7272❌ Defined Waiting Screen to %value%."
-  confirmation_request:
-    - " "
-    - "%prefix% #FF3535&lWaiting Screen confirmation ⚠"
-    - " "
-    - " #ccccccYou are about to make the Waiting Screen %value%."
-    - " &7For security reasons, we need you to confirm the action of registering it."
-    - " "
-    - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin waitingscreen %value% confirm"
-    - " "
-    - "#FF4444&o(This action can't be undone.)"
 administration:
   event:
     start:
@@ -223,9 +200,55 @@ administration:
       - " "
       - "#FF4444&o(This action can't be undone.)"
       - " "
+  dimregister:
+    success: "%prefix% #a0ff72✔ Successfully set dimension '%dimension%' to '%value%' for team '%team%'."
+    confirmation_request:
+      - " "
+      - "%prefix% #FF3535&lDimension Registration Confirmation ⚠"
+      - " "
+      - " #ccccccYou are about to register the dimension &f%dimension%#cccccc for team &f%team%#cccccc."
+      - " &7For security reasons, we need you to confirm the action of registering it."
+      - " "
+      - "  #fff18d&lTo confirm, type &r#fff9cc/spb admin dimregister %team% %dimension% %value% confirm"
+      - " "
+      - "#FF4444&o(This action can't be undone.)"
+      - " "
   menu:
     open: "%prefix% #a0ff72✔ Opened the Speedrun Boss menu."
     only_players: "%prefix% #FF0000🚫 Only players can open the menu."
+  spawn:
+    error:
+      usage: "%prefix% #FF0000🚫 Incorrect usage. &7/spb admin help to get the command list."
+      only_players: "%prefix% #FF0000🚫 Only players can use this command."
+      global_spawn_not_defined: "%prefix% #FF0000🚫 Global spawn not defined"
+      team_spawn_not_defined: "%prefix% #FF0000🚫 Team %team%'s spawn not defined"
+      team_not_specified: "%prefix% #FF0000🚫 Need to specify a team."
+      player_not_in_a_team: "%prefix% #FF0000🚫 The player %target% is not on a team."
+    set:
+      usage: "%prefix% #FF0000🚫 Incorrect usage. &7/spb admin spawn tp <global/team> <team>"
+      global:
+        success: "%prefix% #a0ff72✔ Set global spawn to your location."
+      team:
+        success: "%prefix% #a0ff72✔ Set team %team% spawn to your location."
+        usage: "%prefix% #FF0000🚫 Incorrect usage. &7/spb admin spawn setteam <team>"
+    tp:
+      usage: "%prefix% #FF0000🚫 Incorrect usage. &7/spb admin spawn tp <global/team> <target/*>"
+      global:
+        success: "%prefix% #a0ff72✔ Teleported to global spawn."
+        player:
+          success: "%prefix% #a0ff72✔ Player %target% was teleported to the global spawn."
+        team:
+          success: "%prefix% #a0ff72✔ Team %team% have been teleported to the global spawn."
+        all:
+          success: "%prefix% #a0ff72✔ All players have been teleported to the global spawn."
+      team:
+        self:
+          success: "%prefix% #a0ff72✔ You have been teleported to %team% team spawn."
+        player:
+          success: "%prefix% #a0ff72✔ Player %target% was teleported to his team spawn."
+        all:
+          success: "%prefix% #a0ff72✔ All teams has been teleported to their team spawn."
+        success: "%prefix% #a0ff72✔ Teleported %team% team members to his spawn."
 placeholders:
   tablist:
     teammates:
@@ -336,12 +359,17 @@ xteams:
         displayname_not_specified: "%prefix% #FF0000🚫 Need to add the display name. &7Use &f/xteams setdisplay <team> [New Display Name]"
         invalid_format: "%prefix% #FF0000🚫 The Display Name format is invalid. &7Remember to use double quotes: \"Display Name\"."
 warning:
-  try_enter_end_without_required_bosses: "#FF0000🚫 You need to kill all bosses before entering to the end."
+  try_enter_end_without_required_bosses: "#FF3566🚫 Tienes que matar a todos los jefes antes de poder entrar al &lEND&r#FF3566."
+  try_to_kill_boss_without_team_nearby:
+    message: "#FF3566🚫 Se canceló la muerte del jefe porque tu equipo no está en el rango necesario (el rango es en base a tu ubicación actual)."
+    title: "#FF4747&lɢ#FF454A&lᴏ#FF434D&lʟ#FF4250&lᴘ#FF4053&lᴇ #FF3C5A&lꜰ#FF3A5D&lɪ#FF3960&lɴ#FF3763&lᴀ#FF3566&lʟ"
+    subtitle: "#ccccccSe ha cancelado la muerte del boss."
 error:
   no_permission: "%prefix% #FF0000🚫 No tienes permiso para usar ese comando."
   unknown_command: "%prefix% #FF0000🚫 Unknown command. &7Use &f/spb help &7to see the list of commands."
   invalid_usage: "%prefix% #FF0000🚫 Incorrect usage. &7Use &f/spb help &7to see the usages of all commands."
   invalid_boss: "%prefix% #FF0000🚫 Invalid boss. &7Boss IDs: &fwither&7, &fwarden&7, &felder_guardian&7, &fender_dragon&7."
+  invalid_dimension: "%prefix% #FF0000🚫 Invalid dimension. &7Dimension IDs: &fnether&7, &fend&7."
   invalid_boolean: "%prefix% #FF0000🚫 Invalid boolean. &7Valid booleans: &ftrue&7 or &ffalse&7."
   player_not_found: "%prefix% #FF0000🚫 Can't find player '%player%'."
   no_spb_info: "%prefix% #FF0000🚫 SPB String List not found."

@@ -2,6 +2,7 @@ package org.eldrygo.Handlers;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,26 +12,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.eldrygo.Menu.Inventory.Managers.SPBInventoryManager;
 import org.eldrygo.Cinematics.CinematicSequence;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Cinematics.Managers.CountdownBossBarManager;
 import org.eldrygo.Compass.Managers.CompassManager;
 import org.eldrygo.Event.Managers.EventManager;
-import org.eldrygo.Interface.Managers.WaitingScreenManager;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Managers.Files.ConfigManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.Managers.StunManager;
+import org.eldrygo.Menu.Inventory.Managers.SPBInventoryManager;
 import org.eldrygo.Menu.Inventory.Model.InventoryPlayer;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
+import org.eldrygo.Spawn.Managers.SpawnManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.LoadUtils;
 import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
-import org.eldrygo.XTeams.TeamLPModule.TeamGroupLinker;
+import org.eldrygo.XTeams.Models.Team;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -52,12 +53,10 @@ public class CommandHandler implements CommandExecutor {
     private final CinematicManager cinematicManager;
     private final CompassManager compassManager;
     private final PlayerUtils playerUtils;
-    private final WaitingScreenManager waitingScreenManager;
     private final SPBInventoryManager spbInventoryManager;
-    private final org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager;
-    private final TeamGroupLinker teamGroupLinker;
+    private final SpawnManager spawnManager;
 
-    public CommandHandler(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, ConfigManager configManager, GracePeriodManager gracePeriodManager, SpeedrunBoss plugin, EventManager eventManager, PVPManager pvpManager, BroadcastManager broadcastManager, LoadUtils loadUtils, StunManager stunManager, CountdownBossBarManager countdownBossBarManager, CinematicManager cinematicManager, CompassManager compassManager, PlayerUtils playerUtils, WaitingScreenManager waitingScreenManager, SPBInventoryManager spbInventoryManager, org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager, TeamGroupLinker teamGroupLinker) {
+    public CommandHandler(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, ConfigManager configManager, GracePeriodManager gracePeriodManager, SpeedrunBoss plugin, EventManager eventManager, PVPManager pvpManager, BroadcastManager broadcastManager, LoadUtils loadUtils, StunManager stunManager, CountdownBossBarManager countdownBossBarManager, CinematicManager cinematicManager, CompassManager compassManager, PlayerUtils playerUtils, SPBInventoryManager spbInventoryManager, SpawnManager spawnManager) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
         this.teamDataManager = teamDataManager;
@@ -73,10 +72,8 @@ public class CommandHandler implements CommandExecutor {
         this.cinematicManager = cinematicManager;
         this.compassManager = compassManager;
         this.playerUtils = playerUtils;
-        this.waitingScreenManager = waitingScreenManager;
         this.spbInventoryManager = spbInventoryManager;
-        this.teamConfigManager = teamConfigManager;
-        this.teamGroupLinker = teamGroupLinker;
+        this.spawnManager = spawnManager;
     }
 
 
@@ -214,6 +211,14 @@ public class CommandHandler implements CommandExecutor {
                     return handleBroadcast(sender, args);
                 }
             }
+            case "spawn" -> {
+                if (!sender.hasPermission("spb.admin.spawn") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
+                    sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
+                    return true;
+                } else {
+                    handleSpawn(sender, args);
+                }
+            }
             case "killerhandle" -> {
                 if (!sender.hasPermission("spb.admin.killerhandle") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
                     sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
@@ -254,12 +259,12 @@ public class CommandHandler implements CommandExecutor {
                     return handleBossRegister(sender, args);
                 }
             }
-            case "waitingscreen" -> {
-                if (!sender.hasPermission("spb.admin.waitingscreen") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
+            case "dimregister" -> {
+                if (!sender.hasPermission("spb.admin.dimregister") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
                     sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
                     return true;
                 } else {
-                    return handleWaitingScreen(sender, args);
+                    return handleDimRegister(sender, args);
                 }
             }
             case "reload" -> {
@@ -295,6 +300,181 @@ public class CommandHandler implements CommandExecutor {
 
         broadcastManager.sendCommandBroadcastMessage(target, message);
         return true;
+    }
+    private void handleSpawn(CommandSender sender, String[] args) {
+        Player player = (sender instanceof Player p) ? p : null;
+
+        if (args.length < 3) {
+            sender.sendMessage(chatUtils.getMessage("administration.spawn.error.usage", null));
+            return;
+        }
+
+        String action = args[2].toLowerCase();
+
+        switch (action) {
+            case "set" -> {
+                if (args.length < 4) {
+                    sender.sendMessage(chatUtils.getMessage("administration.spawn.set.usage", null));
+                    return;
+                }
+
+                if (player == null) {
+                    sender.sendMessage(chatUtils.getMessage("administration.spawn.error.only_players", null));
+                    return;
+                }
+
+                String setType = args[3].toLowerCase();
+                switch (setType) {
+                    case "global" -> {
+                        spawnManager.setGlobalSpawn(player.getLocation());
+                        sender.sendMessage(chatUtils.getMessage("administration.spawn.set.global.success", null));
+                    }
+
+                    case "team" -> {
+                        if (args.length < 5) {
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.set.team.usage", null));
+                            return;
+                        }
+                        String team = args[4];
+                        spawnManager.setTeamSpawn(team, player.getLocation());
+                        sender.sendMessage(chatUtils.getMessage("administration.spawn.set.team.success", null).replace("%team%", team));
+                    }
+
+                    default -> sender.sendMessage(chatUtils.getMessage("administration.spawn.set.usage", null));
+                }
+            }
+
+            case "tp" -> {
+                if (args.length < 4) {
+                    sender.sendMessage(chatUtils.getMessage("administration.spawn.tp.usage", null));
+                    return;
+                }
+
+                String type = args[3].toLowerCase();
+
+                switch (type) {
+                    case "global" -> {
+                        if (args.length == 4) {
+                            if (player == null) {
+                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.only_players", null));
+                                return;
+                            }
+                            Location loc = spawnManager.getGlobalSpawn();
+                            if (loc == null) {
+                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.global_spawn_not_defined", null));
+                                return;
+                            }
+                            player.teleport(loc);
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.global.success", null));
+                            return;
+                        }
+
+                        String target = args[4];
+                        Location loc = spawnManager.getGlobalSpawn();
+                        if (loc == null) {
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.error.global_spawn_not_defined", null));
+                            return;
+                        }
+
+                        if (target.equalsIgnoreCase("*")) {
+                            spawnManager.teleportAllToGlobalSpawn();
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.global.all.success", null));
+                            return;
+                        }
+
+                        Team team = plugin.getTeamManager().getTeam(target);
+                        if (team != null) {
+                            for (String member : team.getMembers()) {
+                                Player memberPlayer = Bukkit.getPlayerExact(member);
+                                if (memberPlayer != null && memberPlayer.isOnline()) {
+                                    memberPlayer.teleport(loc);
+                                    memberPlayer.sendMessage(chatUtils.getMessage("spawn.teleport.global", null));
+                                }
+                            }
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.global.team.success", null).replace("%team%", team.getName()));
+                            return;
+                        }
+
+                        Player targetPlayer = Bukkit.getPlayerExact(target);
+                        if (targetPlayer != null && targetPlayer.isOnline()) {
+                            targetPlayer.teleport(loc);
+                            targetPlayer.sendMessage(chatUtils.getMessage("spawn.teleport.global", null));
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.global.player.success", null).replace("%target%", targetPlayer.getName()));
+                            return;
+                        }
+
+                        sender.sendMessage(chatUtils.getMessage("error.player_not_found", null));
+                    }
+
+                    case "team" -> {
+                        if (args.length >= 4 && args[3].equalsIgnoreCase("self")) {
+                            if (player == null) {
+                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.only_players", null));
+                                return;
+                            }
+
+                            if (args.length < 5) {
+                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.team_not_specified", null));
+                                return;
+                            }
+
+                            String targetTeam = args[4];
+                            Location loc = spawnManager.getTeamSpawn(targetTeam);
+                            if (loc == null) {
+                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.team_spawn_not_defined", null).replace("%team%", targetTeam));
+                                return;
+                            }
+
+                            player.teleport(loc);
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.team.self.success", null).replace("%team%", targetTeam));
+                            return;
+                        };
+
+                        String target = args[4];
+
+                        if (target.equalsIgnoreCase("*")) {
+                            for (Team t : plugin.getTeamManager().getAllTeams()) {
+                                spawnManager.teleportTeam(t.getName());
+                            }
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.team.all.success", null));
+                            return;
+                        }
+
+                        Player targetPlayer = Bukkit.getPlayerExact(target);
+                        if (targetPlayer != null && targetPlayer.isOnline()) {
+                            String teamName = xTeamsAPI.getPlayerTeamName(player);
+                            if (teamName == null) {
+                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.player_not_in_a_team", null).replace("%target%", targetPlayer.getName()));
+                                return;
+                            }
+
+                            Location loc = spawnManager.getTeamSpawn(teamName);
+                            if (loc == null) {
+                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.team_spawn_not_defined", null).replace("%team%", teamName));
+                                return;
+                            }
+
+                            targetPlayer.teleport(loc);
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.team.player.success", null).replace("%target%", targetPlayer.getName()));
+                            return;
+                        }
+
+                        // Try as team name
+                        boolean success = spawnManager.teleportTeam(target);
+                        if (!success) {
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.error.team_spawn_not_defined", null).replace("%team%", target));
+                            return;
+                        }
+
+                        sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.team.success", null).replace("%team%", target));
+                    }
+
+                    default -> sender.sendMessage(chatUtils.getMessage("administration.spawn.tp.usage", null));
+                }
+            }
+
+            default -> sender.sendMessage(chatUtils.getMessage("administration.spawn.error.usage", null));
+        }
     }
     private void handleEvent(CommandSender sender, String[] args) {
         Player target;
@@ -521,16 +701,8 @@ public class CommandHandler implements CommandExecutor {
         }
     }
     private boolean handleCinematic(CommandSender sender, String[] args) {
-        Player player = getTargetPlayer(sender);
-        boolean isConsole = player == null;
-
         if (args.length < 3) {
-            sender.sendMessage(chatUtils.getMessage("error.invalid_usage", player));
-            return false;
-        }
-
-        if (isConsole) {
-            sender.sendMessage(chatUtils.getMessage("error.only_players_can_use_this", null));
+            sender.sendMessage(chatUtils.getMessage("error.invalid_usage", getTargetPlayer(sender)));
             return false;
         }
 
@@ -539,29 +711,29 @@ public class CommandHandler implements CommandExecutor {
         switch (action) {
             case "start" -> {
                 if (args.length < 4) {
-                    player.sendMessage(chatUtils.getMessage("error.invalid_usage", player));
+                    sender.sendMessage(chatUtils.getMessage("error.invalid_usage", getTargetPlayer(sender)));
                     return false;
                 }
 
                 String cinematic = args[3].toLowerCase();
                 if (!cinematicManager.getCinematicList().contains(cinematic)) {
-                    player.sendMessage(chatUtils.getMessage("administration.cinematic.start.not_found", player)
+                    sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.not_found", getTargetPlayer(sender))
                             .replace("%cinematic%", cinematic));
                     return false;
                 }
 
-                return handleStartCinematic(player, cinematic);
+                return handleStartCinematic(sender, cinematic);
             }
 
             case "stop" -> {
                 if (args.length >= 4 && "confirm".equalsIgnoreCase(args[3])) {
-                    return confirmStopCinematic(player);
+                    return confirmStopCinematic(sender);
                 }
-                handleStopCinematic(player);
+                handleStopCinematic(sender);
             }
 
             default -> {
-                player.sendMessage(chatUtils.getMessage("error.invalid_usage", player));
+                sender.sendMessage(chatUtils.getMessage("error.invalid_usage", getTargetPlayer(sender)));
                 return false;
             }
         }
@@ -570,37 +742,43 @@ public class CommandHandler implements CommandExecutor {
     private Player getTargetPlayer(CommandSender sender) {
         return (sender instanceof Player player) ? player : null;
     }
-    private boolean handleStartCinematic(Player player, String cinematic) {
+    private boolean handleStartCinematic(CommandSender sender, String cinematic) {
         CinematicSequence sequence = cinematicManager.getSequence(cinematic);
         if (sequence == null) {
-            player.sendMessage(chatUtils.getMessage("administration.cinematic.start.failed", player));
+            sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.failed", getTargetPlayer(sender)));
             return false;
         }
 
         if (sequence.isRunning()) {
-            player.sendMessage(chatUtils.getMessage("administration.cinematic.start.cinematic_already_running", player));
+            sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.cinematic_already_running", getTargetPlayer(sender)));
             return false;
         }
 
         cinematicManager.startCinematic(cinematic);
-        player.sendMessage(chatUtils.getMessage("administration.cinematic.start.success", player)
+        sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.success", getTargetPlayer(sender))
                 .replace("%cinematic%", cinematic));
         return true;
     }
-    private void handleStopCinematic(Player player) {
+    private void handleStopCinematic(CommandSender sender) {
         CinematicSequence sequence = cinematicManager.getRunningSequence();
         if (sequence == null || !sequence.isRunning()) {
-            player.sendMessage(chatUtils.getMessage("administration.cinematic.stop.no_cinematic_running", player));
+            sender.sendMessage(chatUtils.getMessage("administration.cinematic.stop.no_cinematic_running", getTargetPlayer(sender)));
+            return;
         }
 
-        assert sequence != null;
         String cinematic = sequence.getRunningCinematic().orElse("none");
-        sendStopConfirmationRequest(player, cinematic);
+
+        if (sender instanceof Player player) {
+            sendStopConfirmationRequest(player, cinematic);
+        } else {
+            // Si es consola, se confirma automáticamente
+            confirmStopCinematic(sender);
+        }
     }
-    private boolean confirmStopCinematic(Player player) {
+    private boolean confirmStopCinematic(CommandSender sender) {
         CinematicSequence sequence = cinematicManager.getRunningSequence();
         if (sequence == null || !sequence.isRunning()) {
-            player.sendMessage(chatUtils.getMessage("administration.cinematic.stop.no_cinematic_running", player));
+            sender.sendMessage(chatUtils.getMessage("administration.cinematic.stop.no_cinematic_running", getTargetPlayer(sender)));
             return false;
         }
 
@@ -609,7 +787,7 @@ public class CommandHandler implements CommandExecutor {
         cinematicManager.stopCinematic();
         countdownBossBarManager.bossBar.setVisible(false);
         countdownBossBarManager.voidBossBar.setVisible(false);
-        player.sendMessage(chatUtils.getMessage("administration.cinematic.stop.success", player)
+        sender.sendMessage(chatUtils.getMessage("administration.cinematic.stop.success", getTargetPlayer(sender))
                 .replace("%cinematic%", cinematic));
         return true;
     }
@@ -638,7 +816,6 @@ public class CommandHandler implements CommandExecutor {
                     .replace("%prefix%", plugin.prefix)));
         }
     }
-    private final Map<String, String> pendingTaskCancellations = new HashMap<>();
     private boolean handleTask(CommandSender sender, String[] args) {
         boolean isConsole = !(sender instanceof Player);
         String senderId = isConsole ? "CONSOLE" : ((Player) sender).getUniqueId().toString();
@@ -804,66 +981,70 @@ public class CommandHandler implements CommandExecutor {
                     .replace("%prefix%", plugin.prefix)));
         }
     }
-    private boolean handleWaitingScreen(CommandSender sender, String[] args) {
+    private boolean handleDimRegister(CommandSender sender, String[] args) {
+        if (args.length < 5) {
+            sender.sendMessage(chatUtils.getMessage("error.invalid_usage", sender instanceof Player player ? player : null));
+            return false;
+        }
+
+        String teamName = args[2];
+        String dimName = args[3].toLowerCase();
+        String valueStr = args[4].toLowerCase();
+
+        // Validar valor booleano
+        if (!valueStr.equals("true") && !valueStr.equals("false")) {
+            sender.sendMessage(chatUtils.getMessage("error.invalid_boolean", sender instanceof Player player ? player : null));
+            return false;
+        }
+        boolean value = Boolean.parseBoolean(valueStr);
+
+        // Validar nombre del boss
+        List<String> validDimensions = List.of("end", "nether");
+        if (!validDimensions.contains(dimName)) {
+            sender.sendMessage(chatUtils.getMessage("error.invalid_dimension", sender instanceof Player player ? player : null)
+                    .replace("%dimension%", dimName));
+            return false;
+        }
+
         Player player = sender instanceof Player ? (Player) sender : null;
-
-        if (args.length < 3) {
-            sender.sendMessage(chatUtils.getMessage("error.invalid_usage", player));
+        if (player == null) {
+            sender.sendMessage(chatUtils.getMessage("error.only_players_can_use_this", null));
             return false;
         }
 
-        String value = args[2].toLowerCase();
-
-        // Nueva funcionalidad: status
-        if (value.equals("status")) {
-            boolean isActive = waitingScreenManager.isRunning();
-            sender.sendMessage(chatUtils.getMessage("waiting_screen.status.value_" + (isActive ? "on" : "off"), player));
-            return true;
-        }
-
-        boolean enable;
-
-        // Validación del valor
-        if (value.equals("on")) {
-            enable = true;
-        } else if (value.equals("off")) {
-            enable = false;
-        } else {
-            sender.sendMessage(chatUtils.getMessage("waiting_screen.invalid_state", player));
-            return false;
-        }
-
-        // Confirmación
-        if (args.length >= 4 && args[3].equalsIgnoreCase("confirm")) {
-            if (enable) {
-                waitingScreenManager.startWaitingScreen();
-                sender.sendMessage(chatUtils.getMessage("waiting_screen.success.value_on", player)
-                        .replace("%value%", value.toUpperCase()));
+        // Verificar si se pidió confirmación
+        if (args.length >= 6 && args[5].equalsIgnoreCase("confirm")) {
+            // Aquí se procederá a registrar el boss para el equipo
+            if (value) {
+                teamDataManager.addDimensionRegister(teamName, dimName);
             } else {
-                waitingScreenManager.stopWaitingScreen();
-                sender.sendMessage(chatUtils.getMessage("waiting_screen.success.value_off", player)
-                        .replace("%value%", value.toUpperCase()));
+                teamDataManager.delDimensionRegister(teamName, dimName);
             }
+
+            sender.sendMessage(chatUtils.getMessage("administration.dimregister.success", player)
+                    .replace("%team%", teamName)
+                    .replace("%dimension%", dimName)
+                    .replace("%value%", String.valueOf(value)));
             return true;
         }
 
-        // Petición de confirmación
-        sendWaitingScreenConfirmationRequest(sender, value);
+        // Si no hay confirmación, enviar mensaje de confirmación
+        sendDimRegisterConfirmationRequest(player, teamName, dimName, value);
         return false;
     }
-    private void sendWaitingScreenConfirmationRequest(CommandSender sender, String value) {
+    private void sendDimRegisterConfirmationRequest(Player player, String teamName, String dimName, boolean value) {
         List<String> confirmationLines = chatUtils.getMessageConfig()
-                .getStringList("waiting_screen.confirmation_request");
+                .getStringList("administration.bossregister.confirmation_request");
 
         if (confirmationLines.isEmpty()) {
             confirmationLines = List.of(
                     " ",
-                    "%prefix% #FF3535&lWaiting Screen confirmation ⚠",
+                    "%prefix% #FF3535&lDimension Registration Confirmation ⚠",
                     " ",
-                    " #ccccccYou are about to make the Waiting Screen %value%.",
+                    " #ccccccYou are about to register the dimension &f%dimension%#cccccc for team &f%team%#cccccc.",
                     " &7For security reasons, we need you to confirm the action of registering it.",
                     " ",
-                    "  #fff18d&lTo confirm, type &r#fff9cc/spb admin waitingscreen %value% confirm",
+                    "  #fff18d&lTo confirm, type &r#fff9cc/spb admin dimregister %team% %dimension% %value% confirm",
                     " ",
                     "#FF4444&o(This action can't be undone.)",
                     " "
@@ -871,8 +1052,10 @@ public class CommandHandler implements CommandExecutor {
         }
 
         for (String line : confirmationLines) {
-            sender.sendMessage(ChatUtils.formatColor(line
-                    .replace("%value%", value)
+            player.sendMessage(ChatUtils.formatColor(line
+                    .replace("%team%", teamName)
+                    .replace("%dimension%", dimName)
+                    .replace("%value%", String.valueOf(value))
                     .replace("%prefix%", plugin.prefix)));
         }
     }
@@ -910,4 +1093,5 @@ public class CommandHandler implements CommandExecutor {
         sender.sendMessage(ChatUtils.formatColor("&7"));
         return false;
     }
+    private final Map<String, String> pendingTaskCancellations = new HashMap<>();
 }

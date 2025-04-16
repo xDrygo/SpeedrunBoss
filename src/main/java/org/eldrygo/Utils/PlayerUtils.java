@@ -129,37 +129,18 @@ public class PlayerUtils {
             luckPerms.getUserManager().saveUser(user);
         });
     }
+    /*
     public String getPrefix(Player player) {
+        String prefix = "";
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
         if (user != null) {
-            String group = user.getPrimaryGroup();
-            return getPrefixString(group);
+            CachedMetaData metaData = user.getCachedData().getMetaData();
+            if (metaData.getPrefix() != null) {
+                prefix = metaData.getPrefix();
+            }
         }
-        return "";
+        return ChatUtils.formatColor(prefix);
     }
-
-    public String getPrefixString(String group) {
-        switch (group) {
-            case "jose90" -> {return "ँ#ffe38e";}
-            case "staff" -> {return "ं#FFB3FA";}
-            case "team_1" -> {return "ऐ#ff7474";}
-            case "team_2" -> {return "ऑ#ff9977";}
-            case "team_3" -> {return "ऒ#ffc285";}
-            case "team_4" -> {return "ओ#ffe69e";}
-            case "team_5" -> {return "औ#ffff90";}
-            case "team_6" -> {return "क#e4ff93";}
-            case "team_7" -> {return "ख#d0ffa0";}
-            case "team_8" -> {return "ग#98ff98";}
-            case "team_9" -> {return "घ#aeffd6";}
-            case "team_10" -> {return "ङ#b4ffff";}
-            case "team_11" -> {return "च#b3d9ff";}
-            case "team_12" -> {return "छ#a6a6ff";}
-            case "team_13" -> {return "ज#b197ff";}
-            case "team_14" -> {return "झ#d2a5ff";}
-            case "team_15" -> {return "ञ#ebaeff";}
-            case "team_16" -> {return "ट#ffb3ff";}
-            default -> {return "ः#C0C0C0";}
-        }
-    }
+     */
 }

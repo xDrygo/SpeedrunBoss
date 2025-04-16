@@ -10,15 +10,16 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class CinematicSequence {
-    private final Player player;
-    private final List<SequenceAction> actions = new ArrayList<>();
+    private final List<Player> players;
     private final SpeedrunBoss plugin;
     private BukkitRunnable task;
     private boolean isRunning = false;
     private final String cinematicName;
 
-    public CinematicSequence(Player player, SpeedrunBoss plugin, String cinematicName) {
-        this.player = player;
+    private final List<SequenceAction> actions = new ArrayList<>();
+
+    public CinematicSequence(List<Player> players, SpeedrunBoss plugin, String cinematicName) {
+        this.players = players;
         this.plugin = plugin;
         this.cinematicName = cinematicName;
     }
@@ -60,7 +61,9 @@ public class CinematicSequence {
                 }
 
                 if (action.getAction() != null) {
-                    action.getAction().accept(player);
+                    for (Player p : players) {
+                        action.getAction().accept(p);
+                    }
                 }
 
                 ticksUntilNextAction = action.getDelay();
@@ -80,6 +83,7 @@ public class CinematicSequence {
     public boolean isRunning() {
         return isRunning;
     }
+
     public Optional<String> getRunningCinematic() {
         return isRunning ? Optional.of(cinematicName) : Optional.empty();
     }
@@ -87,7 +91,6 @@ public class CinematicSequence {
     public String getName() {
         return cinematicName;
     }
-
 
     private static class SequenceAction {
         private final Consumer<Player> action;

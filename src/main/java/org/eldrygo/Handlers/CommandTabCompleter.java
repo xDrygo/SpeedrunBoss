@@ -36,7 +36,7 @@ public class CommandTabCompleter implements TabCompleter {
         if (args[0].equalsIgnoreCase("admin")) {
             if (args.length == 2) {
                 completions.addAll(Arrays.asList(
-                        "pvp", "event", "graceperiod", "broadcast", "killerhandle", "reload", "help", "task", "compass", "cinematic", "bossregister", "waitingscreen"
+                        "pvp", "event", "graceperiod", "broadcast", "killerhandle", "reload", "help", "task", "compass", "cinematic", "bossregister"
                 ));
                 return filter(completions, args[1]);
             }
@@ -55,7 +55,10 @@ public class CommandTabCompleter implements TabCompleter {
                         completions.add("<team>");
                         return getMatches(args[2], getTeamsList());
                     }
-                    case "waitingscreen" -> completions.addAll(Arrays.asList("on", "off", "status"));
+                    case "spawn" -> {
+                        completions.addAll(List.of("setglobal", "setteam", "tpglobal", "tpteam"));
+                        return filter(completions, args[2]);
+                    }
                 }
                 return filter(completions, args[2]);
             }
@@ -80,10 +83,13 @@ public class CommandTabCompleter implements TabCompleter {
                     }
                 } else if (args[1].equalsIgnoreCase("bossregister")) {
                     return getMatches(args[3], List.of("wither", "warden", "elder_guardian", "ender_dragon"));
-                } else if (args[1].equalsIgnoreCase("waitingscreen") &&
-                        (args[2].equalsIgnoreCase("on") || args[2].equalsIgnoreCase("off"))) {
-                    completions.add("confirm");
-                    return filter(completions, args[3]);
+                } else if (args[1].equalsIgnoreCase("dimregister")) {
+                    return getMatches(args[3], List.of("end", "nether"));
+                } else if (args[1].equalsIgnoreCase("spawn")) {
+                    if (args[2].equalsIgnoreCase("setteam") || args[2].equalsIgnoreCase("tpteam")) {
+                        completions.addAll(getTeamsList());
+                        return filter(completions, args[3]);
+                    }
                 }
             }
 
@@ -92,6 +98,8 @@ public class CommandTabCompleter implements TabCompleter {
                     completions.addAll(Arrays.asList("true", "false"));
                     return filter(completions, args[4]);
                 } else if (args[1].equalsIgnoreCase("bossregister")) {
+                    return getMatches(args[4], List.of("true", "false", "confirm"));
+                } else if (args[1].equalsIgnoreCase("dimregister")) {
                     return getMatches(args[4], List.of("true", "false", "confirm"));
                 }
             }
