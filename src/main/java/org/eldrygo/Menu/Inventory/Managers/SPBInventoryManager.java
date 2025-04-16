@@ -76,8 +76,8 @@ public class SPBInventoryManager {
 
     private static final int[] TEAM_SLOTS = {
             11, 12, 13, 14, 15,
-         19, 20, 21, 22, 23, 24,
-         28, 29, 30, 31, 32, 33
+         19, 20, 21, 22, 23, 24, 25,
+             29, 30, 31, 32, 33
     };
 
     private static final List<String> DISPLAY_TEAMS = Arrays.asList(
@@ -271,7 +271,7 @@ public class SPBInventoryManager {
                 return "team_10";
             case 24:
                 return "team_11";
-            case 28:
+            case 25:
                 return "team_12";
             case 29:
                 return "team_13";
