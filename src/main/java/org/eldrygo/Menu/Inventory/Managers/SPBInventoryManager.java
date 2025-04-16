@@ -75,15 +75,16 @@ public class SPBInventoryManager {
     }
 
     private static final int[] TEAM_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-        18, 19, 20, 21, 22, 23, 24, 25, 26
+            11, 12, 13, 14, 15,
+         19, 20, 21, 22, 23, 24,
+         28, 29, 30, 31, 32, 33
     };
 
     private static final List<String> DISPLAY_TEAMS = Arrays.asList(
             "team_1", "team_2", "team_3", "team_4",
             "team_5", "team_6", "team_7", "team_8",
             "team_9", "team_10", "team_11", "team_12",
-            "team_13", "team_14", "team_15", "team_16"
+            "team_13", "team_14", "team_15", "team_16", "team_17"
     );
 
     private static final int[] TEAM_PLAYER_SLOTS = {
@@ -248,38 +249,40 @@ public class SPBInventoryManager {
     }
     public String getTeamForSlot(int slot) {
         switch (slot) {
-            case 10:
-                return "team_1";
             case 11:
-                return "team_2";
+                return "team_1";
             case 12:
-                return "team_3";
+                return "team_2";
             case 13:
-                return "team_4";
+                return "team_3";
             case 14:
-                return "team_5";
+                return "team_4";
             case 15:
-                return "team_6";
-            case 16:
-                return "team_7";
-            case 18:
-                return "team_8";
+                return "team_5";
             case 19:
-                return "team_9";
+                return "team_6";
             case 20:
-                return "team_10";
+                return "team_7";
             case 21:
-                return "team_11";
+                return "team_8";
             case 22:
-                return "team_12";
+                return "team_9";
             case 23:
-                return "team_13";
+                return "team_10";
             case 24:
+                return "team_11";
+            case 28:
+                return "team_12";
+            case 29:
+                return "team_13";
+            case 30:
                 return "team_14";
-            case 25:
+            case 31:
                 return "team_15";
-            case 26:
+            case 32:
                 return "team_16";
+            case 33:
+                return "team_17";
             default:
                 return "null";
         }
