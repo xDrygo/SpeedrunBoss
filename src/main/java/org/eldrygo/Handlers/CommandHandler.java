@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Cinematics.Managers.CountdownBossBarManager;
-import org.eldrygo.Cinematics.Managers.FireworkManager;
 import org.eldrygo.Cinematics.Models.CinematicSequence;
 import org.eldrygo.Compass.Managers.CompassManager;
 import org.eldrygo.Event.Managers.EventManager;
@@ -283,6 +282,14 @@ public class CommandHandler implements CommandExecutor {
                     handleTime(sender, args);
                 }
             }
+            case "winner" -> {
+                if (!sender.hasPermission("spb.admin.winner") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
+                    sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
+                    return true;
+                } else {
+                    handleWinner(sender, args);
+                }
+            }
             case "reload" -> {
                 if (!sender.hasPermission("spb.admin.reload") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
                     sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
@@ -545,7 +552,24 @@ public class CommandHandler implements CommandExecutor {
             default -> sender.sendMessage(chatUtils.getMessage("administration.spawn.error.usage", null));
         }
     }
+    private void handleWinner(CommandSender sender, String[] args) {
+        Player target = (sender instanceof Player) ? (Player) sender : null;
+        if (args.length < 3) {
+            sender.sendMessage(chatUtils.getMessage("error.invalid_usage", target));
+            return;
+        }
 
+        String teamName = args[2];
+        Team team = xTeamsAPI.getTeamByName(teamName);
+
+        if (team == null) {
+            sender.sendMessage(chatUtils.getMessage("administration.winner.invalid_team", target));
+            return;
+        }
+
+        plugin.winnerTeam = teamName;
+        sender.sendMessage(chatUtils.getMessage("administration.winner.success", target));
+    }
     private void handleEvent(CommandSender sender, String[] args) {
         Player target;
         if (!(sender instanceof Player)) {
