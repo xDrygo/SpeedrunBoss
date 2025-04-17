@@ -49,7 +49,9 @@ public class EventManager {
 
     public void startEvent(Player sender) {
         if (state == EventState.RUNNING) {
-            sender.sendMessage(chatUtils.getMessage("administration.event.start.already_started", sender));
+            if (sender != null) {
+                sender.sendMessage(chatUtils.getMessage("administration.event.start.already_started", sender));
+            }
             return;
         }
 
@@ -74,7 +76,9 @@ public class EventManager {
         cinematicManager.startCinematic("start");
 
         eventDataManager.saveEventState(state, participants);
-        sender.sendMessage(chatUtils.getMessage("administration.event.start.success", sender));
+        if (sender != null) {
+            sender.sendMessage(chatUtils.getMessage("administration.event.start.success", sender));
+        }
     }
 
     public void pauseEvent(Player sender) {
@@ -84,7 +88,9 @@ public class EventManager {
         eventDataManager.saveEventState(state, participants);
         timeManager.pause();
         timeBarManager.stop();
-        sender.sendMessage(chatUtils.getMessage("administration.event.pause.success", sender));
+        if (sender != null) {
+            sender.sendMessage(chatUtils.getMessage("administration.event.pause.success", sender));
+        }
     }
 
     public void resumeEvent(Player sender) {
@@ -93,7 +99,9 @@ public class EventManager {
         state = EventState.RUNNING;
         timeManager.resume();
         timeBarManager.startUpdating();
-        sender.sendMessage(chatUtils.getMessage("administration.event.resume.success", sender));
+        if (sender != null) {
+            sender.sendMessage(chatUtils.getMessage("administration.event.resume.success", sender));
+        }
     }
 
     public void endEvent(Player sender) {
@@ -105,7 +113,9 @@ public class EventManager {
         timeManager.stop();
         gracePeriodManager.stopGracePeriod();
         pvpManager.stopPvP();
-        sender.sendMessage(chatUtils.getMessage("administration.event.end.success", sender));
+        if (sender != null) {
+            sender.sendMessage(chatUtils.getMessage("administration.event.end.success", sender));
+        }
     }
 
     public EventState getState() {
