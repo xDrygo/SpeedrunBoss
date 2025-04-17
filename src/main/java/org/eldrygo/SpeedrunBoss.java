@@ -7,8 +7,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import org.eldrygo.BossRace.Listeners.BossKillListener;
 import org.eldrygo.BossRace.Managers.BossKillManager;
+import org.eldrygo.BossRace.Managers.DimensionBroadcastManager;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Cinematics.Managers.CountdownBossBarManager;
+import org.eldrygo.Cinematics.Managers.FireworkManager;
 import org.eldrygo.Compass.Managers.CompassManager;
 import org.eldrygo.Event.Managers.EventDataManager;
 import org.eldrygo.Event.Managers.EventManager;
@@ -22,6 +24,8 @@ import org.eldrygo.Menu.Inventory.Managers.SPBInventoryManager;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.Spawn.Managers.SpawnManager;
+import org.eldrygo.Time.Managers.TimeBarManager;
+import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.Utils.*;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.eldrygo.XTeams.Managers.TeamManager;
@@ -31,6 +35,7 @@ import java.io.File;
 
 public class SpeedrunBoss extends JavaPlugin {
     public String prefix;
+    public String winnerTeam = null;
     public FileConfiguration messagesConfig;
     public String version = getDescription().getVersion();
     public ConfigManager configManager;
@@ -43,7 +48,6 @@ public class SpeedrunBoss extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Primero inicializa todas las dependencias de manera ordenada
         TeamGroupLinker teamGroupLinker = new TeamGroupLinker(this);
         XTeamsAPI xTeamsAPI = new XTeamsAPI(this);
         TeamDataManager teamDataManager = new TeamDataManager(this, xTeamsAPI);
@@ -57,26 +61,26 @@ public class SpeedrunBoss extends JavaPlugin {
         ChatUtils chatUtils = new ChatUtils(this, configManager, teamConfigManager);
         SpawnManager spawnManager = new SpawnManager(this, xTeamsAPI, chatUtils);
         EventDataManager eventDataManager = new EventDataManager(this);
-        BroadcastManager broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI, null);
-
-
-        // Inicializa PVPManager después de las dependencias necesarias
-        PVPManager pvpManager = new PVPManager(0L, this, broadcastManager, chatUtils, xTeamsAPI, null);
-        GracePeriodManager gracePeriodManager = new GracePeriodManager(this, xTeamsAPI, broadcastManager, chatUtils, null);
-
-        // Asegúrate de inicializar ModifierManager después de PVPManager
+        TimeManager timeManager = new TimeManager(this);
+        TimeBarManager timeBarManager = new TimeBarManager(timeManager, configManager, this);
+        BroadcastManager broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI, null, timeManager);
+        DimensionBroadcastManager dimensionBroadcastManager = new DimensionBroadcastManager(xTeamsAPI, teamDataManager, broadcastManager);
+        PVPManager pvpManager = new PVPManager(0L, this, broadcastManager, chatUtils, xTeamsAPI, null, timeManager);
+        GracePeriodManager gracePeriodManager = new GracePeriodManager(this, xTeamsAPI, broadcastManager, chatUtils, null, timeManager);
         CountdownBossBarManager countdownBossBarManager = new CountdownBossBarManager(chatUtils);
         StunManager stunManager = new StunManager(this, xTeamsAPI, null);
-        BossKillManager bossKillManager = new BossKillManager(xTeamsAPI, teamDataManager, broadcastManager);
-        BossKillListener bossKillListener = new BossKillListener(bossKillManager, xTeamsAPI, chatUtils);
+        PlayerUtils playerUtils = new PlayerUtils(null, xTeamsAPI, teamGroupLinker, this);
+        FireworkManager fireworkManager = new FireworkManager();
+        OtherUtils otherUtils = new OtherUtils(this, xTeamsAPI, configManager);
+        CinematicManager cinematicManager = new CinematicManager(this, chatUtils, stunManager, countdownBossBarManager, gracePeriodManager, pvpManager, playerUtils, timeManager, timeBarManager, fireworkManager, otherUtils);
+        EventManager eventManager = new EventManager(chatUtils, xTeamsAPI, cinematicManager, playerUtils, timeManager, timeBarManager, broadcastManager, eventDataManager, this);
+        BossKillManager bossKillManager = new BossKillManager(xTeamsAPI, teamDataManager, broadcastManager, eventManager, timeManager);
+        BossKillListener bossKillListener = new BossKillListener(bossKillManager, xTeamsAPI, chatUtils, eventManager);
         SettingsUtils settingsUtils = new SettingsUtils(this, pvpManager, gracePeriodManager, bossKillListener);
-        PlayerUtils playerUtils = new PlayerUtils(settingsUtils, xTeamsAPI, teamGroupLinker);
-        CinematicManager cinematicManager = new CinematicManager(this, chatUtils, stunManager, countdownBossBarManager, gracePeriodManager, pvpManager, playerUtils);
-        EventManager eventManager = new EventManager(chatUtils, xTeamsAPI, cinematicManager, playerUtils, broadcastManager, eventDataManager, this);
         CompassManager compassManager = new CompassManager(this, configManager, chatUtils);
+        setSettingsUtilsToClasses(settingsUtils, playerUtils);
         setPlayerUtilsToClasses(stunManager, gracePeriodManager, broadcastManager, pvpManager, playerUtils);
-        // Inicializa loadUtils después de modifierManager
-        this.loadUtils = new LoadUtils(this, bossKillManager, broadcastManager, chatUtils, eventManager, eventDataManager, gracePeriodManager, pvpManager, teamDataManager, cinematicManager, configManager, xTeamsAPI, teamConfigManager, stunManager, countdownBossBarManager, settingsUtils, teamGroupLinker, compassManager, playerUtils, spbInventoryManager, spawnManager);
+        this.loadUtils = new LoadUtils(this, bossKillManager, broadcastManager, chatUtils, eventManager, eventDataManager, gracePeriodManager, pvpManager, teamDataManager, cinematicManager, configManager, xTeamsAPI, teamConfigManager, stunManager, countdownBossBarManager, settingsUtils, teamGroupLinker, compassManager, playerUtils, spbInventoryManager, spawnManager, timeManager, timeBarManager, dimensionBroadcastManager);
 
         loadUtils.loadFeatures();
         logsUtils.sendStartupMessage();
@@ -99,11 +103,13 @@ public class SpeedrunBoss extends JavaPlugin {
     public TeamManager getTeamManager() { return teamManager; }
     public org.eldrygo.XTeams.Managers.ConfigManager getTeamConfigManager() { return teamConfigManager; }
     public void setTeamManager(TeamManager teamManager) { this.teamManager = teamManager; }
-    private void setPlayerUtilsToClasses(StunManager stunManager, GracePeriodManager gracePeriodManager,
-                                         BroadcastManager broadcastManager, PVPManager pvpManager, PlayerUtils playerUtils) {
+    private void setPlayerUtilsToClasses(StunManager stunManager, GracePeriodManager gracePeriodManager, BroadcastManager broadcastManager, PVPManager pvpManager, PlayerUtils playerUtils) {
         stunManager.playerUtils = playerUtils;
         gracePeriodManager.playerUtils = playerUtils;
         broadcastManager.playerUtils = playerUtils;
         pvpManager.playerUtils = playerUtils;
+    }
+    private void setSettingsUtilsToClasses(SettingsUtils settingsUtils, PlayerUtils playerUtils) {
+        playerUtils.setSettingsUtils(settingsUtils);
     }
 }

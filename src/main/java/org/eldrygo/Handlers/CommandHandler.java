@@ -7,14 +7,16 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.eldrygo.Cinematics.CinematicSequence;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Cinematics.Managers.CountdownBossBarManager;
+import org.eldrygo.Cinematics.Managers.FireworkManager;
+import org.eldrygo.Cinematics.Models.CinematicSequence;
 import org.eldrygo.Compass.Managers.CompassManager;
 import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Managers.BroadcastManager;
@@ -27,6 +29,8 @@ import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.Spawn.Managers.SpawnManager;
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Time.Managers.TimeBarManager;
+import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.LoadUtils;
 import org.eldrygo.Utils.PlayerUtils;
@@ -55,8 +59,11 @@ public class CommandHandler implements CommandExecutor {
     private final PlayerUtils playerUtils;
     private final SPBInventoryManager spbInventoryManager;
     private final SpawnManager spawnManager;
+    private final TimeManager timeManager;
+    private final TimeBarManager timeBarManager;
+    private Map<String, String> pendingTaskCancellations = new HashMap<>();
 
-    public CommandHandler(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, ConfigManager configManager, GracePeriodManager gracePeriodManager, SpeedrunBoss plugin, EventManager eventManager, PVPManager pvpManager, BroadcastManager broadcastManager, LoadUtils loadUtils, StunManager stunManager, CountdownBossBarManager countdownBossBarManager, CinematicManager cinematicManager, CompassManager compassManager, PlayerUtils playerUtils, SPBInventoryManager spbInventoryManager, SpawnManager spawnManager) {
+    public CommandHandler(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, ConfigManager configManager, GracePeriodManager gracePeriodManager, SpeedrunBoss plugin, EventManager eventManager, PVPManager pvpManager, BroadcastManager broadcastManager, LoadUtils loadUtils, StunManager stunManager, CountdownBossBarManager countdownBossBarManager, CinematicManager cinematicManager, CompassManager compassManager, PlayerUtils playerUtils, SPBInventoryManager spbInventoryManager, SpawnManager spawnManager, TimeManager timeManager, TimeBarManager timeBarManager) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
         this.teamDataManager = teamDataManager;
@@ -74,8 +81,9 @@ public class CommandHandler implements CommandExecutor {
         this.playerUtils = playerUtils;
         this.spbInventoryManager = spbInventoryManager;
         this.spawnManager = spawnManager;
+        this.timeManager = timeManager;
+        this.timeBarManager = timeBarManager;
     }
-
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
@@ -267,12 +275,28 @@ public class CommandHandler implements CommandExecutor {
                     return handleDimRegister(sender, args);
                 }
             }
+            case "time" -> {
+                if (!sender.hasPermission("spb.admin.time") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
+                    sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
+                    return true;
+                } else {
+                    handleTime(sender, args);
+                }
+            }
             case "reload" -> {
                 if (!sender.hasPermission("spb.admin.reload") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
                     sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
                     return true;
                 } else {
                     return handleReload(sender);
+                }
+            }
+            case "reset" -> {
+                if (!sender.hasPermission("spb.admin.reset") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
+                    sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
+                    return true;
+                } else {
+                    handleReset(sender);
                 }
             }
             case "help" -> {
@@ -285,6 +309,54 @@ public class CommandHandler implements CommandExecutor {
             }
         }
         return false;
+    }
+    private void handleTime(CommandSender sender, String[] args) {
+        Player target;
+        if (!(sender instanceof Player)) {
+            target = null;
+        } else {
+            target = (Player) sender;
+        }
+        if (args.length == 2) {
+            sender.sendMessage(chatUtils.getMessage("error.invalid_usage", target));
+        }
+        String scope = args[2].toLowerCase();
+        switch (scope) {
+            case "time" -> {
+                String action = args[3].toLowerCase();
+                switch (action) {
+                    case "start" -> {
+                        timeManager.start();
+                        sender.sendMessage(chatUtils.getMessage("administration.time.time.start", null));
+                    }
+                    case "stop" -> {
+                        timeManager.stop();
+                        sender.sendMessage(chatUtils.getMessage("administration.time.time.pause", null));
+                    }
+                    case "resume" -> {
+                        timeManager.resume();
+                        sender.sendMessage(chatUtils.getMessage("administration.time.time.resume", null));
+                    }
+                    case "pause" -> {
+                        timeManager.pause();
+                        sender.sendMessage(chatUtils.getMessage("administration.time.time.pause", null));
+                    }
+                }
+            }
+            case "bossbar" -> {
+                String action = args[3].toLowerCase();
+                switch (action) {
+                    case "show" -> {
+                        sender.sendMessage(chatUtils.getMessage("administration.time.bossbar.show", null));
+                        timeBarManager.showAllBars();
+                    }
+                    case "hide" -> {
+                        sender.sendMessage(chatUtils.getMessage("administration.time.bossbar.hide", null));
+                        timeBarManager.hideAllBars();
+                    }
+                }
+            }
+        }
     }
     private boolean handleBroadcast(CommandSender sender, String[] args) {
         Player target = (sender instanceof Player) ? (Player) sender : null;
@@ -354,27 +426,24 @@ public class CommandHandler implements CommandExecutor {
 
                 switch (type) {
                     case "global" -> {
+                        Location loc = spawnManager.getGlobalSpawn();
+                        if (loc == null) {
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.error.global_spawn_not_defined", null));
+                            return;
+                        }
+
                         if (args.length == 4) {
                             if (player == null) {
                                 sender.sendMessage(chatUtils.getMessage("administration.spawn.error.only_players", null));
                                 return;
                             }
-                            Location loc = spawnManager.getGlobalSpawn();
-                            if (loc == null) {
-                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.global_spawn_not_defined", null));
-                                return;
-                            }
+
                             player.teleport(loc);
                             sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.global.success", null));
                             return;
                         }
 
                         String target = args[4];
-                        Location loc = spawnManager.getGlobalSpawn();
-                        if (loc == null) {
-                            sender.sendMessage(chatUtils.getMessage("administration.spawn.error.global_spawn_not_defined", null));
-                            return;
-                        }
 
                         if (target.equalsIgnoreCase("*")) {
                             spawnManager.teleportAllToGlobalSpawn();
@@ -407,14 +476,14 @@ public class CommandHandler implements CommandExecutor {
                     }
 
                     case "team" -> {
-                        if (args.length >= 4 && args[3].equalsIgnoreCase("self")) {
+                        if (args.length < 5) {
+                            sender.sendMessage(chatUtils.getMessage("administration.spawn.tp.usage", null));
+                            return;
+                        }
+
+                        if (args[3].equalsIgnoreCase("self")) {
                             if (player == null) {
                                 sender.sendMessage(chatUtils.getMessage("administration.spawn.error.only_players", null));
-                                return;
-                            }
-
-                            if (args.length < 5) {
-                                sender.sendMessage(chatUtils.getMessage("administration.spawn.error.team_not_specified", null));
                                 return;
                             }
 
@@ -428,7 +497,7 @@ public class CommandHandler implements CommandExecutor {
                             player.teleport(loc);
                             sender.sendMessage(chatUtils.getMessage("administration.spawn.teleport.team.self.success", null).replace("%team%", targetTeam));
                             return;
-                        };
+                        }
 
                         String target = args[4];
 
@@ -442,7 +511,7 @@ public class CommandHandler implements CommandExecutor {
 
                         Player targetPlayer = Bukkit.getPlayerExact(target);
                         if (targetPlayer != null && targetPlayer.isOnline()) {
-                            String teamName = xTeamsAPI.getPlayerTeamName(player);
+                            String teamName = xTeamsAPI.getPlayerTeamName(targetPlayer);
                             if (teamName == null) {
                                 sender.sendMessage(chatUtils.getMessage("administration.spawn.error.player_not_in_a_team", null).replace("%target%", targetPlayer.getName()));
                                 return;
@@ -476,6 +545,7 @@ public class CommandHandler implements CommandExecutor {
             default -> sender.sendMessage(chatUtils.getMessage("administration.spawn.error.usage", null));
         }
     }
+
     private void handleEvent(CommandSender sender, String[] args) {
         Player target;
         if (!(sender instanceof Player)) {
@@ -606,7 +676,7 @@ public class CommandHandler implements CommandExecutor {
                     if (gracePeriodManager.isGracePeriodActive()) {
                         sender.sendMessage(chatUtils.getMessage("administration.graceperiod.forcestart.already", target));
                     } else {
-                        GracePeriodManager gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils, playerUtils);
+                        GracePeriodManager gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils, playerUtils, timeManager);
                         gracePeriodManager.startGracePeriod();
                         sender.sendMessage(chatUtils.getMessage("administration.graceperiod.forcestart.success", target));
                     }
@@ -660,7 +730,7 @@ public class CommandHandler implements CommandExecutor {
 
         if (meta != null) {
             // Establecer el nombre de la espada
-            meta.setDisplayName(ChatUtils.formatColor("&r%prefix% #ffd085Kill Handle ⚔").replace("%prefix%", plugin.prefix));
+            meta.setDisplayName(ChatUtils.formatColor("&r&f%prefix% #ffd085Kill Handle ⚔").replace("%prefix%", plugin.prefix));
 
             // Agregar el encantamiento
             meta.addEnchant(Enchantment.SHARPNESS, 999, true);
@@ -743,50 +813,53 @@ public class CommandHandler implements CommandExecutor {
         return (sender instanceof Player player) ? player : null;
     }
     private boolean handleStartCinematic(CommandSender sender, String cinematic) {
-        CinematicSequence sequence = cinematicManager.getSequence(cinematic);
-        if (sequence == null) {
-            sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.failed", getTargetPlayer(sender)));
-            return false;
-        }
-
-        if (sequence.isRunning()) {
+        CinematicSequence current = cinematicManager.getRunningSequence();
+        if (current != null) {
             sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.cinematic_already_running", getTargetPlayer(sender)));
             return false;
         }
 
         cinematicManager.startCinematic(cinematic);
+
+        // Si después de iniciar no hay secuencia activa, asumimos que algo falló
+        if (cinematicManager.getRunningSequence() == null) {
+            sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.failed", getTargetPlayer(sender)));
+            return false;
+        }
+
         sender.sendMessage(chatUtils.getMessage("administration.cinematic.start.success", getTargetPlayer(sender))
                 .replace("%cinematic%", cinematic));
         return true;
     }
     private void handleStopCinematic(CommandSender sender) {
         CinematicSequence sequence = cinematicManager.getRunningSequence();
-        if (sequence == null || !sequence.isRunning()) {
+        if (sequence == null) {
             sender.sendMessage(chatUtils.getMessage("administration.cinematic.stop.no_cinematic_running", getTargetPlayer(sender)));
             return;
         }
 
-        String cinematic = sequence.getRunningCinematic().orElse("none");
+        String cinematic = sequence.getCinematicId();
 
         if (sender instanceof Player player) {
             sendStopConfirmationRequest(player, cinematic);
         } else {
-            // Si es consola, se confirma automáticamente
             confirmStopCinematic(sender);
         }
     }
     private boolean confirmStopCinematic(CommandSender sender) {
         CinematicSequence sequence = cinematicManager.getRunningSequence();
-        if (sequence == null || !sequence.isRunning()) {
+        if (sequence == null) {
             sender.sendMessage(chatUtils.getMessage("administration.cinematic.stop.no_cinematic_running", getTargetPlayer(sender)));
             return false;
         }
 
-        String cinematic = sequence.getRunningCinematic().orElse("none");
+        String cinematic = sequence.getCinematicId();
+
         sequence.stop();
         cinematicManager.stopCinematic();
         countdownBossBarManager.bossBar.setVisible(false);
         countdownBossBarManager.voidBossBar.setVisible(false);
+
         sender.sendMessage(chatUtils.getMessage("administration.cinematic.stop.success", getTargetPlayer(sender))
                 .replace("%cinematic%", cinematic));
         return true;
@@ -1093,5 +1166,32 @@ public class CommandHandler implements CommandExecutor {
         sender.sendMessage(ChatUtils.formatColor("&7"));
         return false;
     }
-    private final Map<String, String> pendingTaskCancellations = new HashMap<>();
+    private void handleReset(CommandSender sender) {
+        if (sender instanceof ConsoleCommandSender) {
+            plugin.getLogger().warning("Resetting all event features...");
+            timeManager.stop();
+            timeBarManager.hideAllBars();
+            eventManager.endEvent(null);
+            pvpManager.stopPvP();
+            stunManager.unStunAllPlayers();
+            if (gracePeriodManager != null) { gracePeriodManager.stopGracePeriod(); }
+            CinematicSequence sequence = cinematicManager.getRunningSequence();
+            if (sequence != null) {
+                sequence.stop();
+                cinematicManager.stopCinematic();
+                countdownBossBarManager.bossBar.setVisible(false);
+                countdownBossBarManager.voidBossBar.setVisible(false);
+            }
+            assert gracePeriodManager != null;
+            gracePeriodManager.gracePeriodTask.cancel();
+            gracePeriodManager.gracePeriodTask = null;
+            pvpManager.pvpTask.cancel();
+            pvpManager.pvpTask = null;
+            teamDataManager.removeAllDimensionsAndBosses();
+            sender.sendMessage(chatUtils.getMessage("administration.reset.success", null));
+        } else {
+            sender.sendMessage(chatUtils.getMessage("administration.reset.only_console", null));
+            plugin.getLogger().warning("Player " + sender.getName() + " tried to use reset command.");
+        }
+    }
 }

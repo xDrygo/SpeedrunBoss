@@ -2,10 +2,12 @@ package org.eldrygo.Utils;
 
 import org.bukkit.Bukkit;
 import org.eldrygo.API.SpeedrunBossExtension;
+import org.eldrygo.BossRace.Listeners.AdvancementListener;
 import org.eldrygo.BossRace.Listeners.BossKillListener;
 import org.eldrygo.BossRace.Listeners.PortalEnterListener;
 import org.eldrygo.BossRace.Listeners.WitherSkullListener;
 import org.eldrygo.BossRace.Managers.BossKillManager;
+import org.eldrygo.BossRace.Managers.DimensionBroadcastManager;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Cinematics.Managers.CountdownBossBarManager;
 import org.eldrygo.Compass.Listeners.CompassListener;
@@ -14,7 +16,6 @@ import org.eldrygo.Event.Managers.EventDataManager;
 import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Handlers.CommandHandler;
 import org.eldrygo.Handlers.CommandTabCompleter;
-import org.eldrygo.Listeners.PlayerJoinListener;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Managers.Files.ConfigManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
@@ -26,6 +27,8 @@ import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.Spawn.Managers.SpawnManager;
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Time.Managers.TimeBarManager;
+import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.eldrygo.XTeams.Command.XTeamsCommand;
 import org.eldrygo.XTeams.Command.XTeamsTabCompleter;
@@ -54,6 +57,9 @@ public class LoadUtils {
     private final PlayerUtils playerUtils;
     private final SPBInventoryManager spbInventoryManager;
     private final SpawnManager spawnManager;
+    private final TimeManager timeManager;
+    private final TimeBarManager timeBarManager;
+    private final DimensionBroadcastManager dimensionBroadcastManager;
 
     public LoadUtils(SpeedrunBoss plugin, BossKillManager bossKillManager, BroadcastManager broadcastManager, ChatUtils chatUtils,
                      EventManager eventManager, EventDataManager eventDataManager, GracePeriodManager gracePeriodManager,
@@ -61,7 +67,8 @@ public class LoadUtils {
                      ConfigManager configManager, XTeamsAPI xTeamsAPI, org.eldrygo.XTeams.Managers.ConfigManager teamConfigManager,
                      StunManager stunManager, CountdownBossBarManager countdownBossBarManager,
                      SettingsUtils settingsUtils, TeamGroupLinker teamGroupLinker, CompassManager compassManager, PlayerUtils playerUtils,
-                     SPBInventoryManager spbInventoryManager, SpawnManager spawnManager) {
+                     SPBInventoryManager spbInventoryManager, SpawnManager spawnManager, TimeManager timeManager, TimeBarManager timeBarManager,
+                     DimensionBroadcastManager dimensionBroadcastManager) {
         this.plugin = plugin;
         this.bossKillManager = bossKillManager;
         this.broadcastManager = broadcastManager;
@@ -83,6 +90,9 @@ public class LoadUtils {
         this.playerUtils = playerUtils;
         this.spbInventoryManager = spbInventoryManager;
         this.spawnManager = spawnManager;
+        this.timeManager = timeManager;
+        this.timeBarManager = timeBarManager;
+        this.dimensionBroadcastManager = dimensionBroadcastManager;
     }
     public void loadFeatures() {
         loadConfig();
@@ -115,7 +125,7 @@ public class LoadUtils {
         plugin.getLogger().info("Loading event manager...");
         if (eventManager == null) {
             plugin.getLogger().warning("⚠ eventManager is null. Initializing a new EventManager...");
-            eventManager = new EventManager(chatUtils, xTeamsAPI, cinematicManager, playerUtils, broadcastManager, eventDataManager, plugin);
+            eventManager = new EventManager(chatUtils, xTeamsAPI, cinematicManager, playerUtils, timeManager, timeBarManager, broadcastManager, eventDataManager, plugin);
         }
 
         // Ahora puedes cargar el estado del evento sin problemas
@@ -163,12 +173,12 @@ public class LoadUtils {
 
     private void loadListeners(PVPManager pvpManager) {
         plugin.getServer().getPluginManager().registerEvents(new PvpListener(pvpManager), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PortalEnterListener(teamDataManager, xTeamsAPI, chatUtils), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new BossKillListener(bossKillManager, xTeamsAPI, chatUtils), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new PortalEnterListener(teamDataManager, xTeamsAPI, chatUtils, eventManager), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new BossKillListener(bossKillManager, xTeamsAPI, chatUtils, eventManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new WitherSkullListener(settingsUtils), plugin);
         plugin.getServer().getPluginManager().registerEvents(new CompassListener(configManager, compassManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new SPBInventoryListener(plugin, spbInventoryManager), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PlayerJoinListener(playerUtils), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new AdvancementListener(dimensionBroadcastManager, eventManager), plugin);
     }
     private void loadCommands() {
         plugin.getLogger().info("Loading SpeedrunBoss command...");
@@ -178,8 +188,8 @@ public class LoadUtils {
             if (xTeamsAPI == null) {
                 plugin.getLogger().warning("⚠ xTeamsAPI is not initialized. Commands will not work succesfully.");
             } else {
-                plugin.getCommand("speedrunboss").setExecutor(new CommandHandler(chatUtils, xTeamsAPI, teamDataManager, configManager, gracePeriodManager, plugin, eventManager, pvpManager, broadcastManager, this, stunManager, countdownBossBarManager, cinematicManager, compassManager, playerUtils, spbInventoryManager, spawnManager));
-                plugin.getCommand("speedrunboss").setTabCompleter(new CommandTabCompleter(cinematicManager, xTeamsAPI, plugin));}
+                plugin.getCommand("speedrunboss").setExecutor(new CommandHandler(chatUtils, xTeamsAPI, teamDataManager, configManager, gracePeriodManager, plugin, eventManager, pvpManager, broadcastManager, this, stunManager, countdownBossBarManager, cinematicManager, compassManager, playerUtils, spbInventoryManager, spawnManager, timeManager, timeBarManager));
+                plugin.getCommand("speedrunboss").setTabCompleter(new CommandTabCompleter(cinematicManager, plugin));}
             plugin.getLogger().info("✅ SpeedrunBoss command was successfully loaded.");
         }
     }

@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.eldrygo.BossRace.Managers.BossKillManager;
+import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
@@ -21,11 +22,13 @@ public class BossKillListener implements Listener {
     private final XTeamsAPI xTeamsAPI;
     private double checkRadius = 30.0; // Radio por defecto
     private final ChatUtils chatUtils;
+    private final EventManager eventManager;
 
-    public BossKillListener(BossKillManager bossKillManager, XTeamsAPI xTeamsAPI, ChatUtils chatUtils) {
+    public BossKillListener(BossKillManager bossKillManager, XTeamsAPI xTeamsAPI, ChatUtils chatUtils, EventManager eventManager) {
         this.bossKillManager = bossKillManager;
         this.xTeamsAPI = xTeamsAPI;
         this.chatUtils = chatUtils;
+        this.eventManager = eventManager;
     }
 
     // Setter para configurar el radio desde otra clase
@@ -43,20 +46,6 @@ public class BossKillListener implements Listener {
 
         String team = xTeamsAPI.getPlayerTeamName(killer);
         if (team == null) return;
-
-        Set<String> teamMembers = xTeamsAPI.getTeamMembers(team);
-        Location bossLocation = entity.getLocation();
-
-        boolean allNearby = teamMembers.stream()
-                .map(Bukkit::getPlayer)
-                .filter(p -> p != null && p.isOnline())
-                .allMatch(p -> p.getWorld().equals(bossLocation.getWorld())
-                        && p.getLocation().distanceSquared(bossLocation) <= checkRadius * checkRadius);
-
-        if (!allNearby) {
-            killer.sendMessage("§cNo todos los miembros de tu equipo están cerca del boss.");
-            return;
-        }
 
         bossKillManager.onBossKilled(entity, killer);
     }
@@ -77,7 +66,7 @@ public class BossKillListener implements Listener {
 
         if (finalHealth > 0) return; // No va a morir, así que ignoramos
 
-        // Revisamos si el daño fue causado por un jugador directamente o indirectamente
+
         if (event instanceof EntityDamageByEntityEvent) {
             Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
 
@@ -98,6 +87,13 @@ public class BossKillListener implements Listener {
 
         Set<String> teamMembers = xTeamsAPI.getTeamMembers(team);
         Location killerLocation = killer.getLocation();
+
+        if (eventManager.getState() != EventManager.EventState.RUNNING) {
+            killer.playSound(killerLocation, Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 10f, 0.1f);
+            killer.sendMessage(chatUtils.getMessage("warning.event_ended", null));
+            event.setCancelled(true);
+            return;
+        }
 
         boolean allNearby = teamMembers.stream()
                 .map(Bukkit::getPlayer)

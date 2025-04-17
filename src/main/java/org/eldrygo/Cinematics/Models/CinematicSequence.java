@@ -1,4 +1,4 @@
-package org.eldrygo.Cinematics;
+package org.eldrygo.Cinematics.Models;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,16 +12,15 @@ import java.util.function.Consumer;
 public class CinematicSequence {
     private final List<Player> players;
     private final SpeedrunBoss plugin;
+    private final CinematicType cinematicType;
+    private final List<SequenceAction> actions = new ArrayList<>();
     private BukkitRunnable task;
     private boolean isRunning = false;
-    private final String cinematicName;
 
-    private final List<SequenceAction> actions = new ArrayList<>();
-
-    public CinematicSequence(List<Player> players, SpeedrunBoss plugin, String cinematicName) {
+    public CinematicSequence(List<Player> players, SpeedrunBoss plugin, CinematicType cinematicType) {
         this.players = players;
         this.plugin = plugin;
-        this.cinematicName = cinematicName;
+        this.cinematicType = cinematicType;
     }
 
     public CinematicSequence addAction(Consumer<Player> action) {
@@ -84,12 +83,16 @@ public class CinematicSequence {
         return isRunning;
     }
 
-    public Optional<String> getRunningCinematic() {
-        return isRunning ? Optional.of(cinematicName) : Optional.empty();
+    public Optional<CinematicType> getRunningCinematicType() {
+        return isRunning ? Optional.of(cinematicType) : Optional.empty();
     }
 
-    public String getName() {
-        return cinematicName;
+    public String getCinematicId() {
+        return cinematicType.getId();
+    }
+
+    public CinematicType getType() {
+        return cinematicType;
     }
 
     private static class SequenceAction {

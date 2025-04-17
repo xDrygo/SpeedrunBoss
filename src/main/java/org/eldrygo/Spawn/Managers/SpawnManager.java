@@ -31,6 +31,8 @@ public class SpawnManager {
         }
     }
 
+    // -------- GLOBAL SPAWN --------
+
     public void setGlobalSpawn(Location location) {
         JSONObject data = loadData();
         data.put("global", LocationUtils.serializeLocation(location));
@@ -39,40 +41,8 @@ public class SpawnManager {
 
     public Location getGlobalSpawn() {
         JSONObject data = loadData();
-        return LocationUtils.deserializeLocation((String) data.get("global"));
-    }
-
-    public void setTeamSpawn(String teamName, Location location) {
-        JSONObject data = loadData();
-        JSONObject teams = (JSONObject) data.getOrDefault("teams", new JSONObject());
-        teams.put(teamName, LocationUtils.serializeLocation(location));
-        data.put("teams", teams);
-        saveData(data);
-    }
-
-    public Location getTeamSpawn(String teamName) {
-        JSONObject data = loadData();
-        JSONObject teams = (JSONObject) data.getOrDefault("teams", new JSONObject());
-        String serialized = (String) teams.get(teamName);
-        return serialized == null ? null : LocationUtils.deserializeLocation(serialized);
-    }
-
-    public boolean teleportTeam(String teamName) {
-        Location location = getTeamSpawn(teamName);
-        if (location == null) {
-            Bukkit.getLogger().warning("[SpawnManager] No spawn found for team: " + teamName);
-            return false;
-        }
-
-        Set<String> members = xTeamsAPI.getTeamMembers(teamName); // nicknames
-        for (String nickname : members) {
-            Player player = Bukkit.getPlayerExact(nickname);
-            if (player != null && player.isOnline()) {
-                player.teleport(location);
-                player.sendMessage(ChatUtils.formatColor(chatUtils.getMessage("spawn.teleport.team", null)));
-            }
-        }
-        return false;
+        Object serialized = data.get("global");
+        return (serialized instanceof String str) ? LocationUtils.deserializeLocation(str) : null;
     }
 
     public void teleportAllToGlobalSpawn() {
@@ -87,6 +57,50 @@ public class SpawnManager {
             player.sendMessage(ChatUtils.formatColor(chatUtils.getMessage("spawn.teleport.global", null)));
         }
     }
+
+    // -------- TEAM SPAWN --------
+
+    public void setTeamSpawn(String teamName, Location location) {
+        JSONObject data = loadData();
+        JSONObject teams = (JSONObject) data.getOrDefault("teams", new JSONObject());
+        teams.put(teamName.toLowerCase(), LocationUtils.serializeLocation(location));
+        data.put("teams", teams);
+        saveData(data);
+    }
+
+    public Location getTeamSpawn(String teamName) {
+        JSONObject data = loadData();
+        JSONObject teams = (JSONObject) data.getOrDefault("teams", new JSONObject());
+        Object serialized = teams.get(teamName.toLowerCase());
+        return (serialized instanceof String str) ? LocationUtils.deserializeLocation(str) : null;
+    }
+
+    public boolean teleportTeam(String teamName) {
+        Location location = getTeamSpawn(teamName);
+        if (location == null) {
+            Bukkit.getLogger().warning("[SpawnManager] No spawn found for team: " + teamName);
+            return false;
+        }
+
+        Set<String> members = xTeamsAPI.getTeamMembers(teamName); // nicknames
+        if (members == null || members.isEmpty()) {
+            Bukkit.getLogger().warning("[SpawnManager] No members found for team: " + teamName);
+            return false;
+        }
+
+        boolean teleported = false;
+        for (String nickname : members) {
+            Player player = Bukkit.getPlayerExact(nickname);
+            if (player != null && player.isOnline()) {
+                player.teleport(location);
+                player.sendMessage(ChatUtils.formatColor(chatUtils.getMessage("spawn.teleport.team", null)));
+                teleported = true;
+            }
+        }
+        return teleported;
+    }
+
+    // -------- JSON LOAD & SAVE --------
 
     private JSONObject loadData() {
         try (FileReader reader = new FileReader(file)) {

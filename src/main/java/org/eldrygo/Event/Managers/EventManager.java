@@ -5,6 +5,8 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Managers.BroadcastManager;
+import org.eldrygo.Time.Managers.TimeBarManager;
+import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
@@ -20,7 +22,9 @@ public class EventManager {
     private final ChatUtils chatUtils;
     private final CinematicManager cinematicManager;
     private final XTeamsAPI xTeamsAPI;
-    private PlayerUtils playerUtils;
+    private final PlayerUtils playerUtils;
+    private final TimeManager timeManager;
+    private final TimeBarManager timeBarManager;
 
     public enum EventState { NOT_STARTED, RUNNING, PAUSED, ENDED }
     private EventState state;
@@ -29,16 +33,18 @@ public class EventManager {
     private final GracePeriodManager gracePeriodManager;
     private final PVPManager pvpManager;
 
-    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, CinematicManager cinematicManager, PlayerUtils playerUtils, BroadcastManager broadcastManager, EventDataManager eventDataManager, SpeedrunBoss plugin) {
+    public EventManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, CinematicManager cinematicManager, PlayerUtils playerUtils, TimeManager timeManager, TimeBarManager timeBarManager, BroadcastManager broadcastManager, EventDataManager eventDataManager, SpeedrunBoss plugin) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
         this.cinematicManager = cinematicManager;
         this.playerUtils = playerUtils;
+        this.timeManager = timeManager;
+        this.timeBarManager = timeBarManager;
         this.eventDataManager = eventDataManager;
         this.state = EventState.NOT_STARTED;
         this.participants = new HashSet<>();
-        this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils, playerUtils);
-        this.pvpManager = new PVPManager(10 * 20L, plugin, broadcastManager, chatUtils, xTeamsAPI, playerUtils);
+        this.gracePeriodManager = new GracePeriodManager(plugin, xTeamsAPI, broadcastManager, chatUtils, playerUtils, timeManager);
+        this.pvpManager = new PVPManager(10 * 20L, plugin, broadcastManager, chatUtils, xTeamsAPI, playerUtils, timeManager);
     }
 
     public void startEvent(Player sender) {
@@ -76,6 +82,8 @@ public class EventManager {
 
         state = EventState.PAUSED;
         eventDataManager.saveEventState(state, participants);
+        timeManager.pause();
+        timeBarManager.stop();
         sender.sendMessage(chatUtils.getMessage("administration.event.pause.success", sender));
     }
 
@@ -83,6 +91,8 @@ public class EventManager {
         if (state != EventState.PAUSED) return;
 
         state = EventState.RUNNING;
+        timeManager.resume();
+        timeBarManager.startUpdating();
         sender.sendMessage(chatUtils.getMessage("administration.event.resume.success", sender));
     }
 
@@ -91,6 +101,8 @@ public class EventManager {
 
         state = EventState.ENDED;
         eventDataManager.clearEventData();
+        timeBarManager.stop();
+        timeManager.stop();
         gracePeriodManager.stopGracePeriod();
         pvpManager.stopPvP();
         sender.sendMessage(chatUtils.getMessage("administration.event.end.success", sender));

@@ -145,6 +145,26 @@ public class TeamDataManager {
         return killedBosses.contains(bossName);
     }
 
+    public void removeAllDimensionsAndBosses() {
+        JSONObject json = readJsonFile();
+
+        // Iterar sobre todos los equipos registrados en el archivo JSON
+        for (Object teamKeyObj : json.keySet()) {
+            String teamName = (String) teamKeyObj;
+
+            // Eliminar todas las dimensiones registradas
+            json.put(teamName, new JSONArray()); // Vaciamos las dimensiones
+
+            // Eliminar todos los bosses registrados
+            json.put(teamName, new JSONArray()); // Vaciamos los bosses
+
+            // Guardamos los cambios en el archivo
+            saveJsonFile(json);
+        }
+
+        System.out.println("[TeamDataManager] All dimensions and bosses have been removed for all teams.");
+    }
+
     public JSONObject readJsonFile() {
         if (!dataFile.exists() || dataFile.length() == 0) {
             System.out.println("[TeamDataManager] Archivo vacío o inexistente: " + dataFile.getAbsolutePath());

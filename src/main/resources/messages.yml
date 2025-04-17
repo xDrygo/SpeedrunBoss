@@ -15,6 +15,8 @@
 
 prefix: "&r&lSpeedrun#fd3c9e&lBoss &8»&r"
 
+time_bar:
+  bossbar: "#cccccc⏳ &fTiempo transcurrido: #ff82c1%time% #cccccc⏳"
 compass:
   item:
     name:
@@ -26,7 +28,7 @@ compass:
     enchanted: true
   structure:
     ancient_city: "#43BEC3&lAncient City"
-    monument: "#85D2FF&lMonument"
+    monument: "#85D2FF&lMonumento Oceánico"
     null: "#FF3535Invalid structure."
   use:
     update:
@@ -39,20 +41,17 @@ commands:
       success:  "%prefix% #a0ff72✔ You have successfully received the compass."
 playerutils:
   spbinfo:
-    no_members: "#FF4444No members."
+    no_members: "#FF4444Sin miembros."
     members: "#fff18d%member_name%"
     members_separator: "&7, "
     string:
       - " "
-      - "&r&lSpeedrun#fd3c9e&lBoss &8- #fff18dTeam: &r%team_display_name% &7(&r%team_name%&7)"
+      - "&r&lSP#fd3c9e&lB &8- #fff18dEquipo: &r%team_display_name%"
       - " "
-      - "&7‣ &fKilled Bosses:"
-      - "#16705d  &lWarden %warden_killed%"
-      - "#4a2d2d  &lWither %wither_killed%"
-      - "#D98E44  &lElder Guardian %elderguardian_killed%"
-      - "#a745ed  &lEnder Dragon %enderdragon_killed%"
+      - "&7‣ &fʙᴏꜱꜱᴇꜱ ʀᴇꜱᴛᴀɴᴛᴇꜱ"
+      - "&r%spb_tab_remainingbosses_warden% #fff18d＋&r %spb_tab_remainingbosses_elderguardian% #fff18d＋ &r%spb_tab_remainingbosses_wither% #fff18d→&r %spb_tab_remainingbosses_enderdragon%"
       - " "
-      - "&7‣ &fMembers:"
+      - "&7‣ &fMiembros:"
       - "  %team_members%"
       - " "
 broadcast:
@@ -60,10 +59,10 @@ broadcast:
     nether: "#ffd659🔔 &8» #ff634a✈ El equipo &r%team% #ff634aha entrado al &lNETHER en &r%time%"
     end: "#ffd659🔔 &8» #daa6ff✈ El equipo &r%team% #daa6ffha entrado al &lEND en &r%time%"
   boss_kill:
-    warden: "#ffd659🔔 &8» #3bebbc⚔️ El jugador #ffffff%player%#3bebbc del equipo #ffffff%team%#3bebbc derrotó al #409986&lWarden #3bebbcen #ffffff%time%" # NAME: #16705d  HIGHLIGHT: #ffffff  BASE: #3bebbc
-    wither: "#ffd659🔔 &8» #ff634a⚔️ El jugador #ffffff%player%#ff634a del equipo #ffffff%team%#ff634a derrotó al #ff492b&lWither #ff634aen #ffffff%time%" # NAME: #4a2d2d  HIGHLIGHT: #ffffff  BASE: #7d5454
-    elder_guardian: "#ffd659🔔 &8» #ffbf80⚔️ El jugador #ffffff%player%#ffbf80 del equipo '#ffffff%team%#ffbf80 derrotó al #eba765&lElder Guardian #ffbf80en #ffffff%time%" # NAME: #D98E44  HIGHLIGHT: #ffffff  BASE: #ffbf80
-    ender_dragon: "#ffd659🔔 &8» #daa6ff⚔️ El jugador #ffffff%player%#daa6ff del equipo '#ffffff%team%#daa6ff derrotó al #cb8df7&lEnder Dragon en #ffffff%time%" # NAME: #a745ed  HIGHLIGHT: #ffffff  BASE: #d191ff
+    warden: "#ffd659🔔 &8» #3bebbc⚔ El jugador #ffffff%player%#3bebbc del equipo #ffffff%team%#3bebbc derrotó al #409986&lWarden #3bebbcen #ffffff%time%" # NAME: #16705d  HIGHLIGHT: #ffffff  BASE: #3bebbc
+    wither: "#ffd659🔔 &8» #ff634a⚔ El jugador #ffffff%player%#ff634a del equipo #ffffff%team%#ff634a derrotó al #ff492b&lWither #ff634aen #ffffff%time%" # NAME: #4a2d2d  HIGHLIGHT: #ffffff  BASE: #7d5454
+    elder_guardian: "#ffd659🔔 &8» #ffbf80⚔ El jugador #ffffff%player%#ffbf80 del equipo #ffffff%team%#ffbf80 derrotó al #eba765&lElder Guardian #ffbf80en #ffffff%time%" # NAME: #D98E44  HIGHLIGHT: #ffffff  BASE: #ffbf80
+    ender_dragon: "#ffd659🔔 &8» #daa6ff⚔ El jugador #ffffff%player%#daa6ff del equipo #ffffff%team%#daa6ff derrotó al #cb8df7&lEnder Dragon en #ffffff%time%" # NAME: #a745ed  HIGHLIGHT: #ffffff  BASE: #d191ff
   pvp:
     enable: "#ffd659🔔 &8» #ff4f7eEl &lPvP &r#ff4f7eha sido &lACTIVADO&r#ff4f7e."
     disable: "#ffd659🔔 &8» #ff4f7eEl &lPvP &r#ff4f7eha sido &lDESACTIVADO&r#ff4f7e."
@@ -115,6 +114,13 @@ cinematics:
         - " "
     bossbar_countdown:
       string: "#cccccc▪ &fIniciando en #fff18d%time% #cccccc▪"
+  winner:
+    titles:
+      winner:
+        title: "#ff8cc7☆ &r#fd3c9e&lɢᴀɴᴀᴅᴏʀᴇꜱ: &r%winner_team% &r#ff8cc7☆"
+        subtitle: "#fff18dFelicidades a &r%winner_members% &r#fff18dpor ganar!"
+        members: "&f%member_name%"
+        members_separator: "&r#fff18d y "
 administration:
   event:
     start:
@@ -126,6 +132,15 @@ administration:
       success: "%prefix% #a0ff72✔ The event has been resumed."
     end:
       success: "%prefix% #ff7272❌ The event ended."
+  time:
+    time:
+      start: "%prefix% #a0ff72✔ The time has been started."
+      stop: "%prefix% #ff7272❌ The time has been stopped."
+      resume: "%prefix% #a0ff72✔ The time has been resumed."
+      pause: "%prefix% #ff7272❌ The time has been paused."
+    bossbar:
+      show: "%prefix% #a0ff72✔ The time bar is now shown."
+      hide: "%prefix% #ff7272❌ The time bar is now hided."
   graceperiod:
     forcestart:
       already: "%prefix% #FF0000🚫 The Grace Period is already active."
@@ -158,6 +173,7 @@ administration:
       task_not_found: "%prefix% #FF0000🚫 Can't find task %task%."
       success: "%prefix% #ff7272❌ Task %task% was canceled succesfully."
       no_pending_confirmation: "%prefix% #FF0000🚫 You have no tasks pending confirmation."
+      confirmation_request_expired: "%prefix% #FF0000🚫 Your task confirmation request expired."
       confirmation_request:
         - " "
         - "%prefix% #FF3535&lTask Cancel Confirmation ⚠"
@@ -175,6 +191,8 @@ administration:
       success: "%prefix% #a0ff72✔ The cinematic %cinematic% was successfully started."
     stop:
       no_cinematic_running: "%prefix% #FF0000🚫 There is no running cinematic."
+      no_confirmation_pending: "%prefix% #FF0000🚫 There is no pending stop confirmation request."
+      confirmation_request_expired: "%prefix% #FF0000🚫 Your cinematic confirmation request expired."
       success: "%prefix% #ff7272❌ The cinematic %cinematic% was succesfully stopped."
       confirmation_request:
         - " "
@@ -189,6 +207,8 @@ administration:
         - " "
   bossregister:
     success: "%prefix% #a0ff72✔ Successfully set boss '%boss%' to '%value%' for team '%team%'."
+    already_pending: "%prefix% #FF0000🚫 There is an pending confirmation."
+    confirmation_request_expired: "%prefix% #FF0000🚫 Your bossregister confirmation request expired."
     confirmation_request:
       - " "
       - "%prefix% #FF3535&lBoss Registration Confirmation ⚠"
@@ -202,6 +222,8 @@ administration:
       - " "
   dimregister:
     success: "%prefix% #a0ff72✔ Successfully set dimension '%dimension%' to '%value%' for team '%team%'."
+    already_pending: "%prefix% #FF0000🚫 There is an pending confirmation."
+    confirmation_request_expired: "%prefix% #FF0000🚫 Your dimregister confirmation request expired."
     confirmation_request:
       - " "
       - "%prefix% #FF3535&lDimension Registration Confirmation ⚠"
@@ -249,6 +271,9 @@ administration:
         all:
           success: "%prefix% #a0ff72✔ All teams has been teleported to their team spawn."
         success: "%prefix% #a0ff72✔ Teleported %team% team members to his spawn."
+  reset:
+    only_console: "%prefix% #FF0000🚫 This command can only be used by the console. (This try was notificated to admins.)"
+    success: "%prefix% #a0ff72✔ All event features has been successfully reset."
 placeholders:
   tablist:
     teammates:
@@ -359,6 +384,7 @@ xteams:
         displayname_not_specified: "%prefix% #FF0000🚫 Need to add the display name. &7Use &f/xteams setdisplay <team> [New Display Name]"
         invalid_format: "%prefix% #FF0000🚫 The Display Name format is invalid. &7Remember to use double quotes: \"Display Name\"."
 warning:
+  event_ended: "#FF3566🚫 El evento ha acabado."
   try_enter_end_without_required_bosses: "#FF3566🚫 Tienes que matar a todos los jefes antes de poder entrar al &lEND&r#FF3566."
   try_to_kill_boss_without_team_nearby:
     message: "#FF3566🚫 Se canceló la muerte del jefe porque tu equipo no está en el rango necesario (el rango es en base a tu ubicación actual)."

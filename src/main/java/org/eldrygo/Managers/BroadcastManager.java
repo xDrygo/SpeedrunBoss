@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
@@ -13,22 +14,29 @@ public class BroadcastManager {
     private final ChatUtils chatUtils;
     private final XTeamsAPI xTeamsAPI;
     public PlayerUtils playerUtils;
+    private final TimeManager timeManager;
 
-    public BroadcastManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, PlayerUtils playerUtils) {
+    public BroadcastManager(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, PlayerUtils playerUtils, TimeManager timeManager) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
         this.playerUtils = playerUtils;
+        this.timeManager = timeManager;
     }
 
     public void sendBossKilledMessage(String bossName, Player player) {
         for (Player players : Bukkit.getServer().getOnlinePlayers()) {
+            String team = xTeamsAPI.getPlayerTeamDisplayName(player);
+            String teamName = xTeamsAPI.getPlayerTeamName(player);
+            String time = timeManager.getTimeForBoss(teamName, bossName);
             players.sendMessage(chatUtils.getMessage("broadcast.boss_kill." + bossName, player)
-                    .replace("%team%", (xTeamsAPI.getPlayerTeamDisplayName(player)))
-                    //.replace("%time%", <get time variable>)
+                    .replace("%team%", team)
+                    .replace("%time%", time)
             );
             Location location = players.getLocation();
             players.playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 10f, 1.5f);
         }
+    }
+    public void sendAlreadyKilledBoss(String bossName, Player player) {
     }
     public void sendPVPEnableMessage() {
         for (Player players : Bukkit.getServer().getOnlinePlayers()) {

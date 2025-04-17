@@ -7,7 +7,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.SpeedrunBoss;
-import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.eldrygo.XTeams.Models.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,7 @@ public class CommandTabCompleter implements TabCompleter {
     private final CinematicManager cinematicManager;
     private final SpeedrunBoss plugin;
 
-    public CommandTabCompleter(CinematicManager cinematicManager, XTeamsAPI xTeamsAPI, SpeedrunBoss plugin) {
+    public CommandTabCompleter(CinematicManager cinematicManager, SpeedrunBoss plugin) {
         this.cinematicManager = cinematicManager;
         this.plugin = plugin;
     }
@@ -36,7 +35,7 @@ public class CommandTabCompleter implements TabCompleter {
         if (args[0].equalsIgnoreCase("admin")) {
             if (args.length == 2) {
                 completions.addAll(Arrays.asList(
-                        "pvp", "event", "graceperiod", "broadcast", "killerhandle", "reload", "help", "task", "compass", "cinematic", "bossregister"
+                        "pvp", "event", "graceperiod", "broadcast", "killerhandle", "reload", "help", "task", "givecompass", "cinematic", "bossregister", "time", "dimregister"
                 ));
                 return filter(completions, args[1]);
             }
@@ -51,12 +50,16 @@ public class CommandTabCompleter implements TabCompleter {
                     case "stun" -> completions.addAll(Arrays.asList("enable", "disable", "player"));
                     case "task" -> completions.add("confirm");
                     case "cinematic" -> completions.addAll(Arrays.asList("start", "stop"));
-                    case "bossregister" -> {
+                    case "bossregister", "dimregister" -> {
                         completions.add("<team>");
                         return getMatches(args[2], getTeamsList());
                     }
                     case "spawn" -> {
                         completions.addAll(List.of("setglobal", "setteam", "tpglobal", "tpteam"));
+                        return filter(completions, args[2]);
+                    }
+                    case "time" -> {
+                        completions.addAll(List.of("time", "bossbar"));
                         return filter(completions, args[2]);
                     }
                 }
@@ -88,6 +91,15 @@ public class CommandTabCompleter implements TabCompleter {
                 } else if (args[1].equalsIgnoreCase("spawn")) {
                     if (args[2].equalsIgnoreCase("setteam") || args[2].equalsIgnoreCase("tpteam")) {
                         completions.addAll(getTeamsList());
+                        return filter(completions, args[3]);
+                    }
+                } else if (args[1].equalsIgnoreCase("time")) {
+                    if (args[2].equalsIgnoreCase("time")) {
+                        completions.addAll(List.of("start", "stop", "resume", "pause"));
+                        return filter(completions, args[3]);
+                    }
+                    if (args[2].equalsIgnoreCase("bossbar")) {
+                        completions.addAll(List.of("show", "hide"));
                         return filter(completions, args[3]);
                     }
                 }

@@ -6,12 +6,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.eldrygo.BossRace.Managers.DimensionBroadcastManager;
+import org.eldrygo.Event.Managers.EventManager;
 
 public class AdvancementListener implements Listener {
     private final DimensionBroadcastManager dimensionBroadcastManager;
+    private final EventManager eventManager;
 
-    public AdvancementListener(DimensionBroadcastManager dimensionBroadcastManager) {
+    public AdvancementListener(DimensionBroadcastManager dimensionBroadcastManager, EventManager eventManager) {
         this.dimensionBroadcastManager = dimensionBroadcastManager;
+        this.eventManager = eventManager;
     }
 
     @EventHandler
@@ -19,8 +22,9 @@ public class AdvancementListener implements Listener {
         Player player = event.getPlayer();
         Advancement advancement = event.getAdvancement();
 
-        // Ejemplo: detectar si el advancement es "minecraft:story/mine_diamond"
         String key = advancement.getKey().toString();
+
+        if (eventManager.getState() != EventManager.EventState.RUNNING) return;
 
         if (key.equals("minecraft:story/enter_the_nether") || key.equals("minecraft:story/enter_the_end")) {
             String dimension = getDimension(key);

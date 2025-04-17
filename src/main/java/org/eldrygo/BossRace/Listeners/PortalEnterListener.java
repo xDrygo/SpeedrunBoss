@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.entity.Player;
+import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
@@ -12,11 +13,13 @@ public class PortalEnterListener implements Listener {
     private final TeamDataManager teamDataManager;
     private final XTeamsAPI xTeamsAPI;
     private final ChatUtils chatUtils;
+    private final EventManager eventManager;
 
-    public PortalEnterListener(TeamDataManager teamDataManager, XTeamsAPI xTeamsAPI, ChatUtils chatUtils) {
+    public PortalEnterListener(TeamDataManager teamDataManager, XTeamsAPI xTeamsAPI, ChatUtils chatUtils, EventManager eventManager) {
         this.teamDataManager = teamDataManager;
         this.xTeamsAPI = xTeamsAPI;
         this.chatUtils = chatUtils;
+        this.eventManager = eventManager;
     }
 
     @EventHandler
@@ -25,6 +28,8 @@ public class PortalEnterListener implements Listener {
 
         // Verificar si el portal es un portal al End
         if (event.getCause() == PlayerPortalEvent.TeleportCause.END_PORTAL) {
+
+            if (eventManager.getState() != EventManager.EventState.RUNNING) return;
 
             // Obtener el nombre del equipo del jugador
             String teamName = xTeamsAPI.getPlayerTeamName(player);

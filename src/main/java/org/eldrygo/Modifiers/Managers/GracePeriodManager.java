@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
@@ -23,13 +24,15 @@ public class GracePeriodManager {
     private BroadcastManager broadcastManager;
     private final ChatUtils chatUtils;
     public PlayerUtils playerUtils;
+    private final TimeManager timeManager;
 
-    public GracePeriodManager(SpeedrunBoss plugin, XTeamsAPI xTeamsAPI, BroadcastManager broadcastManager, ChatUtils chatUtils, PlayerUtils playerUtils) {
+    public GracePeriodManager(SpeedrunBoss plugin, XTeamsAPI xTeamsAPI, BroadcastManager broadcastManager, ChatUtils chatUtils, PlayerUtils playerUtils, TimeManager timeManager) {
         this.plugin = plugin;
         this.xTeamsAPI = xTeamsAPI;
         this.chatUtils = chatUtils;
         this.broadcastManager = broadcastManager;
         this.playerUtils = playerUtils;
+        this.timeManager = timeManager;
         this.isGracePeriodActive = false;
         this.gracePeriodPaused = false;
         this.remainingTime = gracePeriodDuration;
@@ -69,7 +72,7 @@ public class GracePeriodManager {
         isGracePeriodActive = false;
 
         if (broadcastManager == null) {
-            broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI, playerUtils);
+            broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI, playerUtils, timeManager);
             plugin.getLogger().warning("⚠ broadcastManager is null. Initializing a new BroadcastManager...");
         }
 

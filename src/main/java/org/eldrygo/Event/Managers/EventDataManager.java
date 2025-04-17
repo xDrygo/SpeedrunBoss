@@ -30,20 +30,7 @@ public class EventDataManager {
         JSONObject json = new JSONObject();
         json.put("state", EventManager.EventState.NOT_STARTED.toString());
         json.put("participants", new JSONArray());
-        json.put("waitingscreen_active", false);
         saveJson(json);
-    }
-
-    public void setWaitingScreenActive(boolean active) {
-        JSONObject json = readJson();
-        json.put("waitingscreen_active", active);
-        saveJson(json);
-    }
-
-    public boolean isWaitingScreenActive() {
-        JSONObject json = readJson();
-        Object value = json.get("waitingscreen_active");
-        return value instanceof Boolean && (boolean) value;
     }
 
     public void saveEventState(EventManager.EventState state, Set<UUID> participants) {
