@@ -274,6 +274,9 @@ administration:
   reset:
     only_console: "%prefix% #FF0000🚫 This command can only be used by the console. (This try was notificated to admins.)"
     success: "%prefix% #a0ff72✔ All event features has been successfully reset."
+  winner:
+    invalid_team: "%prefix% #FF0000🚫 Team not found."
+    success: "%prefix% #a0ff72✔ Successfully set winner team to: %team%"
 placeholders:
   tablist:
     teammates:

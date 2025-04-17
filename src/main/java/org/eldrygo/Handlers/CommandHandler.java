@@ -568,7 +568,7 @@ public class CommandHandler implements CommandExecutor {
         }
 
         plugin.winnerTeam = teamName;
-        sender.sendMessage(chatUtils.getMessage("administration.winner.success", target));
+        sender.sendMessage(chatUtils.getMessage("administration.winner.success", target).replace("%team%", teamName));
     }
     private void handleEvent(CommandSender sender, String[] args) {
         Player target;
