@@ -34,12 +34,12 @@ public class CinematicManager {
     private CinematicSequence runningSequence;
     private final FireworkManager fireworkManager;
     private final OtherUtils otherUtils;
-    private EventManager eventManager;
+    public EventManager eventManager;
 
     public CinematicManager(SpeedrunBoss plugin, ChatUtils chatUtils, StunManager stunManager,
                             CountdownBossBarManager countdownBossBarManager, GracePeriodManager gracePeriodManager,
                             PVPManager pvpManager, PlayerUtils playerUtils,
-                            TimeManager timeManager, TimeBarManager timeBarManager, FireworkManager fireworkManager, OtherUtils otherUtils) {
+                            TimeManager timeManager, TimeBarManager timeBarManager, FireworkManager fireworkManager, OtherUtils otherUtils, EventManager eventManager) {
         this.plugin = plugin;
         this.chatUtils = chatUtils;
         this.stunManager = stunManager;
@@ -51,6 +51,7 @@ public class CinematicManager {
         this.timeBarManager = timeBarManager;
         this.fireworkManager = fireworkManager;
         this.otherUtils = otherUtils;
+        this.eventManager = eventManager;
 
         cinematicTemplates.put(CinematicType.START, null); // Puedes registrar templates estáticos aquí
     }

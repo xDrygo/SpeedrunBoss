@@ -166,8 +166,8 @@ public class TeamDataManager {
     }
 
     public JSONObject readJsonFile() {
-        if (!dataFile.exists() || dataFile.length() == 0) {
-            System.out.println("[TeamDataManager] Archivo vacío o inexistente: " + dataFile.getAbsolutePath());
+        if (!dataFile.exists()) {
+            System.out.println("[TeamDataManager] Archivo vacío: " + dataFile.getAbsolutePath());
             return new JSONObject();
         }
 

@@ -69,8 +69,8 @@ broadcast:
   graceperiod_ended: "#ffd659🔔 &8» #bafffdEl Tiempo de Gracia ha &lACABADO&r#bafffd."
 spawn:
   teleport:
-    team: "#ffd659✈️ Fuiste transportado al spawn de tu equipo."
-    global: "#ffd659✈️ Fuiste transportado al spawn del mundo."
+    team: "#ffd659✈ Fuiste transportado al spawn de tu equipo."
+    global: "#ffd659✈ Fuiste transportado al spawn del mundo."
 cinematics:
   start:
     titles:
@@ -253,7 +253,7 @@ administration:
       team:
         success: "%prefix% #a0ff72✔ Set team %team% spawn to your location."
         usage: "%prefix% #FF0000🚫 Incorrect usage. &7/spb admin spawn setteam <team>"
-    tp:
+    teleport:
       usage: "%prefix% #FF0000🚫 Incorrect usage. &7/spb admin spawn tp <global/team> <target/*>"
       global:
         success: "%prefix% #a0ff72✔ Teleported to global spawn."
