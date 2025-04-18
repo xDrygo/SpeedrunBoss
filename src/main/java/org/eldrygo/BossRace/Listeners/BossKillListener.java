@@ -9,11 +9,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.eldrygo.BossRace.Managers.BossKillManager;
 import org.eldrygo.Event.Managers.EventManager;
+import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class BossKillListener implements Listener {
@@ -23,18 +27,21 @@ public class BossKillListener implements Listener {
     private double checkRadius = 30.0; // Radio por defecto
     private final ChatUtils chatUtils;
     private final EventManager eventManager;
+    private final SpeedrunBoss plugin;
 
-    public BossKillListener(BossKillManager bossKillManager, XTeamsAPI xTeamsAPI, ChatUtils chatUtils, EventManager eventManager) {
+    public BossKillListener(BossKillManager bossKillManager, XTeamsAPI xTeamsAPI, ChatUtils chatUtils, EventManager eventManager, SpeedrunBoss plugin) {
         this.bossKillManager = bossKillManager;
         this.xTeamsAPI = xTeamsAPI;
         this.chatUtils = chatUtils;
         this.eventManager = eventManager;
+        this.plugin = plugin;
     }
 
     // Setter para configurar el radio desde otra clase
     public void setCheckRadius(double radius) {
         this.checkRadius = radius;
     }
+    private final Map<Location, Player> playerBedExplosionMap = new HashMap<>();
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
@@ -62,6 +69,7 @@ public class BossKillListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         LivingEntity entity = (LivingEntity) event.getEntity();
+        if (!isBoss(entity)) return;
         double finalHealth = entity.getHealth() - event.getFinalDamage();
 
         if (finalHealth > 0) return; // No va a morir, así que ignoramos
@@ -96,26 +104,20 @@ public class BossKillListener implements Listener {
         }
 
         boolean allNearby = teamMembers.stream()
-                .map(Bukkit::getPlayer)
-                .filter(p -> p != null && p.isOnline() && !p.getName().equals(killer.getName()))
-                .allMatch(p -> p.getWorld().equals(killerLocation.getWorld()) &&
-                        p.getLocation().distanceSquared(killerLocation) <= checkRadius * checkRadius);
+                .filter(name -> !name.equalsIgnoreCase(killer.getName())) // Excluye al killer
+                .allMatch(name -> {
+                    Player p = Bukkit.getPlayer(name);
+                    if (p == null || !p.isOnline()) return false; // Si no está online, no está cerca
+                    return p.getWorld().equals(killerLocation.getWorld()) &&
+                            p.getLocation().distanceSquared(killerLocation) <= checkRadius * checkRadius;
+                });
 
         if (!allNearby) {
             entity.setHealth(1.0);
             event.setCancelled(true);
             killer.playSound(killerLocation, Sound.ENTITY_WITHER_BREAK_BLOCK, 10f, 1.75f);
-            killer.sendMessage(chatUtils.getMessage("try_to_kill_boss_without_team_nearby.message", killer));
-            killer.sendTitle(chatUtils.getTitle("try_to_kill_boss_without_team_nearby.title", killer), chatUtils.getSubtitle("try_to_kill_boss_without_team_nearby.subtitle", killer), 5, 40, 10);
+            killer.sendMessage(chatUtils.getMessage("warning.try_to_kill_boss_without_team_nearby.message", killer));
+            killer.sendTitle(chatUtils.getTitle("warning.try_to_kill_boss_without_team_nearby.title", killer), chatUtils.getSubtitle("warning.try_to_kill_boss_without_team_nearby.subtitle", killer), 5, 40, 10);
         }
-    }
-
-    @EventHandler
-    private void onElderGuardianDeath(EntityDeathEvent event) {
-        Entity entity = event.getEntity();
-
-        if (entity.getType() != EntityType.ELDER_GUARDIAN) return;
-
-        entity.getWorld().spawnEntity(entity.getLocation(), EntityType.ELDER_GUARDIAN);
     }
 }

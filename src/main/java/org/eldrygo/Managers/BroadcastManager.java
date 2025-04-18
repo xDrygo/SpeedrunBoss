@@ -62,10 +62,12 @@ public class BroadcastManager {
     public void sendDimensionEnterMessage(String teamName, Player player, String dimension) {
         for (Player players : Bukkit.getServer().getOnlinePlayers()) {
             Location location = players.getLocation();
+            String time = timeManager.getTimeForDimension(teamName, dimension);
             switch (dimension) {
                 case "nether" -> {
                     players.sendMessage(chatUtils.getMessage("broadcast.dimension_enter.nether", players)
                             .replace("%team%", teamName)
+                            .replace("%time%", time)
                             .replace("%target%", String.valueOf(player)));
                     players.playSound(location, Sound.BLOCK_ANCIENT_DEBRIS_PLACE, 10f, 2f);
                     players.playSound(location, Sound.BLOCK_NOTE_BLOCK_BASS, 10f, 2f);
@@ -73,6 +75,7 @@ public class BroadcastManager {
                 case "end" -> {
                     players.sendMessage(chatUtils.getMessage("broadcast.dimension_enter.end", players)
                             .replace("%team%", teamName)
+                            .replace("%time%", time)
                             .replace("%target%", String.valueOf(player)));
                     players.playSound(location, Sound.BLOCK_PORTAL_TRAVEL, 10f, 2f);
                     players.playSound(location, Sound.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, 10f, 2f);

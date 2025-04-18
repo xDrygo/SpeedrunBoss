@@ -29,111 +29,110 @@ settings:
       list:
         - xDrygo
 teams:
-  team_1:
-    members:
-      - FrannCano
-      - Fepo5302
-    displayName: ऐ
-    priority: 1
-  team_2:
-    members:
-      - Minerexking
-      - CrisNow2k
-    displayName: ऑ
-    priority: 2
-  team_3:
-    members:
-      - VictormvvOficial
-      - Flycken12
-    displayName: ऒ
-    priority: 3
   team_4:
     members:
-      - JolterGG
+      - Master62_
       - SoyPepon
     displayName: ओ
     priority: 4
-  team_5:
+  team_17:
     members:
-      - SoyNilo
-      - FerGRDC
-    displayName: औ
-    priority: 5
-  team_6:
+      - FraxterYT
+      - imDarh
+    displayName: ठ
+    priority: 17
+  team_2:
     members:
-      - SrpSeba
-      - LastGodGG
-    displayName: क
-    priority: 6
-  team_7:
-    members:
-      - BurritoRiv
-      - ATR3X_
-    displayName: ख
-    priority: 7
-  team_8:
-    members:
-      - Limonxrd
-      - DaniTrembl4y
-    displayName: ग
-    priority: 8
-  team_9:
-    members:
-      - LaKpi
-      - OwencinNashe_
-    displayName: घ
-    priority: 9
-  team_10:
-    members:
-      - Boscarvidios
-      - ELAPRHttv
-    displayName: ङ
-    priority: 10
-  team_11:
-    members:
-      - Morbux
-      - Santiibuxi
-    displayName: च
-    priority: 11
+      - CrisNow2k
+      - Minerexking
+    displayName: ऑ
+    priority: 2
   team_12:
     members:
       - 4quiles
       - TheYeiYT
     displayName: छ
     priority: 12
-  team_13:
+  team_6:
     members:
-      - bemnja
-      - AimSunny
-    displayName: ज
-    priority: 13
+      - LastGodGG
+      - SrpSeba
+    displayName: क
+    priority: 6
   team_14:
     members:
       - Javierixmon
       - OOKAMIIVT
     displayName: झ
     priority: 14
+  team_9:
+    members:
+      - LaKpi
+      - OwencinNashe_
+    displayName: घ
+    priority: 9
+  team_7:
+    members:
+      - BurritoRiv
+      - DarkWitch
+    displayName: ख
+    priority: 7
+  team_5:
+    members:
+      - SoyNilo
+      - FerGRDC
+    displayName: औ
+    priority: 5
+  team_3:
+    members:
+      - VictormvvOficial
+      - Flycken12
+    displayName: ऒ
+    priority: 3
+  team_10:
+    members:
+      - ELAPRHttv
+      - OsvaGamer
+    displayName: ङ
+    priority: 10
+  team_13:
+    members:
+      - AimSunny
+      - bemnja
+    displayName: ज
+    priority: 13
+  team_16:
+    members:
+      - Nicole077
+      - Khipa
+    displayName: ट
+    priority: 16
+  team_1:
+    members:
+      - Fepo5302
+      - FrannCano
+    displayName: ऐ
+    priority: 1
+  staff:
+    members:
+      - xDrygo
+    displayName: ं
+    priority: 99
+  team_8:
+    members:
+      - DaniTrembl4y
+      - Limonxrd
+    displayName: ग
+    priority: 8
   team_15:
     members:
       - KansuDeAsura
       - AsuraDKansu
     displayName: ञ
     priority: 15
-  team_16:
+  team_11:
     members:
-      - Khipa
-      - Nicole077
-    displayName: ट
-    priority: 16
-  team_17:
-    members:
-      - imDarh
-      - FraxterYT
-    displayName: ठ
-    priority: 17
-  staff:
-    members:
-      - xDrygo
-      - Dr_Ygo
-    displayName: ं
-    priority: 99
+      - Morbux
+      - Santiibuxi
+    displayName: च
+    priority: 11

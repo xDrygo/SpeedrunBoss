@@ -10,12 +10,14 @@ import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Managers.StunManager;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
+import org.eldrygo.Spawn.Managers.SpawnManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Time.Managers.TimeBarManager;
 import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.OtherUtils;
 import org.eldrygo.Utils.PlayerUtils;
+import org.eldrygo.XTeams.Models.Team;
 
 import java.util.*;
 
@@ -35,11 +37,12 @@ public class CinematicManager {
     private final FireworkManager fireworkManager;
     private final OtherUtils otherUtils;
     public EventManager eventManager;
+    private final SpawnManager spawnManager;
 
     public CinematicManager(SpeedrunBoss plugin, ChatUtils chatUtils, StunManager stunManager,
                             CountdownBossBarManager countdownBossBarManager, GracePeriodManager gracePeriodManager,
                             PVPManager pvpManager, PlayerUtils playerUtils,
-                            TimeManager timeManager, TimeBarManager timeBarManager, FireworkManager fireworkManager, OtherUtils otherUtils, EventManager eventManager) {
+                            TimeManager timeManager, TimeBarManager timeBarManager, FireworkManager fireworkManager, OtherUtils otherUtils, EventManager eventManager, SpawnManager spawnManager) {
         this.plugin = plugin;
         this.chatUtils = chatUtils;
         this.stunManager = stunManager;
@@ -52,6 +55,7 @@ public class CinematicManager {
         this.fireworkManager = fireworkManager;
         this.otherUtils = otherUtils;
         this.eventManager = eventManager;
+        this.spawnManager = spawnManager;
 
         cinematicTemplates.put(CinematicType.START, null); // Puedes registrar templates estáticos aquí
     }
@@ -104,8 +108,8 @@ public class CinematicManager {
                 for (int i = 60; i >= 1; i--) {
                     final int num = i;
                     sequence
-                            .then(p -> countdownBossBarManager.updateVoidBossBar())
-                            .then(p -> countdownBossBarManager.updateBossBar(60, num))
+                            .thenGlobal(countdownBossBarManager::updateVoidBossBar)
+                            .thenGlobal(() -> countdownBossBarManager.updateBossBar(60, num))
                             .then(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, num < 11 ? 10f : 0f, 1.5f))
                             .addDelay(20);
                 }
@@ -114,10 +118,11 @@ public class CinematicManager {
                         .then(p -> countdownBossBarManager.bossBar.setVisible(false))
                         .then(p -> countdownBossBarManager.voidBossBar.setVisible(false))
                         .then(p -> stunManager.stunAllPlayers())
-                        .then(p -> p.sendMessage(ChatUtils.formatColor("&eAquí empieza el stun para hacer el TP...")))
-                        .addDelay(20)
-                        .then(p -> p.sendMessage(ChatUtils.formatColor("&eAquí sería el TP de los equipos...")))
-                        .addDelay(100);
+                        .addDelay(20);
+                for (Team t : plugin.getTeamManager().getAllTeams()) {
+                    sequence.thenGlobal(() -> spawnManager.teleportTeam(t.getName()));
+                }
+                sequence.addDelay(100);
 
                 for (int i = 10; i >= 1; i--) {
                     final int num = i;
@@ -140,22 +145,22 @@ public class CinematicManager {
                             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10f, 1.5f);
                         })
                         .then(this::sendStartCinematicGoString)
-                        .then(p -> p.sendMessage(ChatUtils.formatColor("&eInicia el periodo de gracia, inicia el delay para que se active el PVP, se quita el stun e inicia el evento...")))
-                        .then(p -> stunManager.unStunAllPlayers())
-                        .then(p -> gracePeriodManager.startGracePeriod())
-                        .then(p -> pvpManager.startPvPWithDelay())
-                        .then(p -> timeManager.start())
-                        .then(p -> timeBarManager.startUpdating())
-                        .then(p -> timeBarManager.showAllBars());
+                        .thenGlobal(stunManager::unStunAllPlayers)
+                        .thenGlobal(gracePeriodManager::startGracePeriod)
+                        .thenGlobal(pvpManager::startPvPWithDelay)
+                        .thenGlobal(timeManager::start)
+                        .thenGlobal(timeBarManager::startUpdating)
+                        .thenGlobal(timeBarManager::showAllBars);
             }
             case WINNER -> {
-                sequence.then(p -> eventManager.endEvent(null))
-                        .addDelay(400)
-                        .then(p -> throwWinnerFireworks())
+                sequence.thenGlobal(() -> eventManager.endEvent(null))
+                        .then(otherUtils::giveInvisibility)
+                        .addDelay(240)
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .then(p -> p.playSound(p.getLocation(), Sound.BLOCK_VAULT_OPEN_SHUTTER, 10f, 1.5f))
                         .addDelay(10)
                         .then(p -> p.sendTitle(
@@ -164,35 +169,36 @@ public class CinematicManager {
                                 10, 200, 30))
                         .then(p -> p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 10f, 1.5f))
                         .addDelay(10)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(20)
-                        .then(p -> throwWinnerFireworks())
+                        .thenGlobal(this::throwWinnerFireworks)
                         .addDelay(10)
                         .then(playerUtils::resetPlayerState)
-                        .then(p -> playerUtils.tpPlayersToLobby())
-                ;
+                        .thenGlobal(playerUtils::tpPlayersToLobby)
+                        .addDelay(20)
+                        .thenGlobal(otherUtils::giveTrophy);
             }
         }
 

@@ -22,7 +22,7 @@ public class TimeBarManager {
     public TimeBarManager(TimeManager timeManager, ConfigManager configManager, SpeedrunBoss plugin) {
         this.plugin = plugin;
         this.timeManager = timeManager;
-        this.titleTemplate = configManager.getMessageConfig().getString("time_bar.bossbar", "&f%time%");
+        this.titleTemplate = configManager.getMessageConfig().getString("time_bar.bossbar", "#cccccc⏳ &fTiempo transcurrido: #ff82c1%time% #cccccc⏳");
         this.timeBar = Bukkit.createBossBar(" ", BarColor.YELLOW, BarStyle.SOLID);
         this.timeBar.setVisible(false);
         this.decorativeBar = Bukkit.createBossBar(" ", BarColor.YELLOW, BarStyle.SOLID);

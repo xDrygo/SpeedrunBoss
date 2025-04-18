@@ -71,11 +71,11 @@ public class SpeedrunBoss extends JavaPlugin {
         StunManager stunManager = new StunManager(this, xTeamsAPI, null);
         PlayerUtils playerUtils = new PlayerUtils(null, xTeamsAPI, teamGroupLinker, this);
         FireworkManager fireworkManager = new FireworkManager();
-        OtherUtils otherUtils = new OtherUtils(this, xTeamsAPI, configManager);
-        CinematicManager cinematicManager = new CinematicManager(this, chatUtils, stunManager, countdownBossBarManager, gracePeriodManager, pvpManager, playerUtils, timeManager, timeBarManager, fireworkManager, otherUtils, null);
+        OtherUtils otherUtils = new OtherUtils(this, xTeamsAPI, configManager, chatUtils);
+        CinematicManager cinematicManager = new CinematicManager(this, chatUtils, stunManager, countdownBossBarManager, gracePeriodManager, pvpManager, playerUtils, timeManager, timeBarManager, fireworkManager, otherUtils, null, spawnManager);
         EventManager eventManager = new EventManager(chatUtils, xTeamsAPI, cinematicManager, playerUtils, timeManager, timeBarManager, broadcastManager, eventDataManager, this);
-        BossKillManager bossKillManager = new BossKillManager(xTeamsAPI, teamDataManager, broadcastManager, eventManager, timeManager);
-        BossKillListener bossKillListener = new BossKillListener(bossKillManager, xTeamsAPI, chatUtils, eventManager);
+        BossKillManager bossKillManager = new BossKillManager(xTeamsAPI, teamDataManager, broadcastManager, eventManager, timeManager, cinematicManager, this);
+        BossKillListener bossKillListener = new BossKillListener(bossKillManager, xTeamsAPI, chatUtils, eventManager, this);
         SettingsUtils settingsUtils = new SettingsUtils(this, pvpManager, gracePeriodManager, bossKillListener);
         CompassManager compassManager = new CompassManager(this, configManager, chatUtils);
         setNullClasses(playerUtils, settingsUtils, stunManager, gracePeriodManager, broadcastManager, pvpManager, cinematicManager, eventManager);

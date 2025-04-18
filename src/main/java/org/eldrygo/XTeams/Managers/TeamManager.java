@@ -223,6 +223,6 @@ public class TeamManager {
 
     public String getTeamDisplayName(String teamName) {
         Team team = getTeam(teamName);
-        return team.getDisplayName();
+        return (team != null) ? team.getDisplayName() : teamName;
     }
 }

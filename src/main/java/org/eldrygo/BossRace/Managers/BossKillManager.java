@@ -3,9 +3,11 @@ package org.eldrygo.BossRace.Managers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Event.Managers.EventManager;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
+import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.eldrygo.XTeams.Models.Team;
@@ -18,14 +20,18 @@ public class BossKillManager {
     private final XTeamsAPI xTeamsAPI;
     private final EventManager eventManager;
     private final TimeManager timerManager;
+    private final CinematicManager cinematicManager;
+    private final SpeedrunBoss plugin;
 
     // Constructor que recibe las dependencias necesarias
-    public BossKillManager(XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, BroadcastManager broadcastManager, EventManager eventManager, TimeManager timerManager) {
+    public BossKillManager(XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, BroadcastManager broadcastManager, EventManager eventManager, TimeManager timerManager, CinematicManager cinematicManager, SpeedrunBoss plugin) {
         this.xTeamsAPI = xTeamsAPI;
         this.teamDataManager = teamDataManager;
         this.broadcastManager = broadcastManager;
         this.eventManager = eventManager;
         this.timerManager = timerManager;
+        this.cinematicManager = cinematicManager;
+        this.plugin = plugin;
     }
 
     // Este método se llama cuando un boss es asesinado
@@ -44,6 +50,10 @@ public class BossKillManager {
                         teamDataManager.addKilledBoss(teamName, bossName);
                         timerManager.recordBossKill(teamName, bossName);
                         broadcastManager.sendBossKilledMessage(bossName, player);
+                        if (bossName.equalsIgnoreCase("ender_dragon")) {
+                            plugin.winnerTeam = teamName;
+                            cinematicManager.startCinematic("winner");
+                        }
                     } else {
                         broadcastManager.sendAlreadyKilledBoss(bossName, player);
                     }

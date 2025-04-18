@@ -13,10 +13,10 @@ import org.eldrygo.Managers.Files.ConfigManager;
 import org.eldrygo.Managers.Files.PlayerDataManager;
 
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 

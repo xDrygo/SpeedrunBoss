@@ -49,6 +49,7 @@ playerutils:
       - "&r&lSP#fd3c9e&lB &8- #fff18dEquipo: &r%team_display_name%"
       - " "
       - "&7‣ &fʙᴏꜱꜱᴇꜱ ʀᴇꜱᴛᴀɴᴛᴇꜱ"
+      - " "
       - "&r%spb_tab_remainingbosses_warden% #fff18d＋&r %spb_tab_remainingbosses_elderguardian% #fff18d＋ &r%spb_tab_remainingbosses_wither% #fff18d→&r %spb_tab_remainingbosses_enderdragon%"
       - " "
       - "&7‣ &fMiembros:"
@@ -117,10 +118,10 @@ cinematics:
   winner:
     titles:
       winner:
-        title: "#ff8cc7☆ &r#fd3c9e&lɢᴀɴᴀᴅᴏʀᴇꜱ: &r%winner_team% &r#ff8cc7☆"
+        title: "#ff8cc7☆ &r#ff75bb&lɢᴀɴᴀᴅᴏʀᴇꜱ: &r%winner_team% &r#ff8cc7☆"
         subtitle: "#fff18dFelicidades a &r%winner_members% &r#fff18dpor ganar!"
-        members: "&f%member_name%"
-        members_separator: "&r#fff18d y "
+        teammates: "&f%member_name%"
+        teammates_separator: "&r#fff18d y "
 administration:
   event:
     start:
@@ -283,6 +284,27 @@ placeholders:
       no_members: "&r#FF4444ɴᴏ ᴛɪᴇɴᴇꜱ ᴇqᴜɪᴘᴏ"
       members: "&r#fff18d%member_name%"
       members_separator: "&r&7, "
+trophy:
+  givemessage:
+    winner: "#ffa1ca✰ Haz sido recompensado por ganar con el trofeo de ganador!"
+    player: "#ffe499✰ Haz sido recompensado con un trofeo por participar!"
+  winner:
+    name: "#ffa1ca✰ Trofeo de #ff72b0&lGanador &r#ffa1ca✰"
+    lore:
+      - "#ccccccTrofeo otorgado a &f%player%"
+      - "#ccccccdel team &f%team% #ccccccpor derrotar"
+      - "#ccccccjunto a &f%teammate% #ccccccal"
+      - "#cb8df7&lEnder Dragon&r#cccccc, ganando"
+      - "#ccccccSpeedrun Boss."
+      - " "
+      - "#ffe55e&lᴄʟɪᴄᴋ ᴘᴀʀᴀ ʟᴀ ʜᴀʙɪʟɪᴅᴀᴅ"
+  player:
+    name: "#ffe499✰ Trofeo de #ffd45c&lParticipación &r#ffe499✰"
+    lore:
+      - "#ccccccTrofeo otorgado a &f%player%"
+      - "#ccccccdel team &f%team% #ccccccpor participar"
+      - "#ccccccjunto a &f%teammate% #ccccccen"
+      - "#ccccccSpeedrun Boss."
 xteams:
   prefix: "#ffbaff&lx&r&lTeams &8»&r"
   commands:

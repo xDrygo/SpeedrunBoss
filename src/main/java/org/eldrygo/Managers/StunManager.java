@@ -68,7 +68,7 @@ public class StunManager implements Listener {
         for (Player players : Bukkit.getOnlinePlayers()) {
             String vaultGroup = playerUtils.getPrimaryGroup(players);
             String teamName = xTeamsAPI.getPlayerTeamName(players);
-            if (!(players.getGameMode() == SPECTATOR) && !(vaultGroup.contains("team_")) && !(teamName == null) && !(teamName.isEmpty())) {
+            if (!(players.getGameMode() == SPECTATOR) && vaultGroup.contains("team_") && teamName != null && !(teamName.isEmpty())) {
                 stunPlayerIndefinitely(players);
             }
         }

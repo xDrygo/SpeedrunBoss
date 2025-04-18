@@ -19,7 +19,8 @@ public class PVPManager {
     public PlayerUtils playerUtils;
     private final TimeManager timeManager;
 
-    public PVPManager(long pvpStartDelay, SpeedrunBoss plugin, BroadcastManager broadcastManager, ChatUtils chatUtils, XTeamsAPI xTeamsAPI, PlayerUtils playerUtils, TimeManager timeManager) {
+    public PVPManager(long pvpStartDelay, SpeedrunBoss plugin, BroadcastManager broadcastManager, ChatUtils chatUtils,
+                      XTeamsAPI xTeamsAPI, PlayerUtils playerUtils, TimeManager timeManager) {
         this.plugin = plugin;
         this.broadcastManager = broadcastManager;
         this.chatUtils = chatUtils;

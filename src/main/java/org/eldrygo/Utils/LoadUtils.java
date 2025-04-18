@@ -174,7 +174,7 @@ public class LoadUtils {
     private void loadListeners(PVPManager pvpManager) {
         plugin.getServer().getPluginManager().registerEvents(new PvpListener(pvpManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new PortalEnterListener(teamDataManager, xTeamsAPI, chatUtils, eventManager), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new BossKillListener(bossKillManager, xTeamsAPI, chatUtils, eventManager), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new BossKillListener(bossKillManager, xTeamsAPI, chatUtils, eventManager, plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new WitherSkullListener(settingsUtils), plugin);
         plugin.getServer().getPluginManager().registerEvents(new CompassListener(configManager, compassManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new SPBInventoryListener(plugin, spbInventoryManager), plugin);

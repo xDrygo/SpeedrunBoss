@@ -29,12 +29,26 @@ public class CinematicSequence {
     }
 
     public CinematicSequence addDelay(long ticks) {
-        actions.add(new SequenceAction(null, ticks));
+        actions.add(new SequenceAction((Consumer<Player>) null, ticks));
+        return this;
+    }
+
+    public CinematicSequence addGlobalAction(Runnable action) {
+        actions.add(new SequenceAction(action, 0));
+        return this;
+    }
+
+    public CinematicSequence addGlobalDelay(long ticks) {
+        actions.add(new SequenceAction((Runnable) null, ticks));
         return this;
     }
 
     public CinematicSequence then(Consumer<Player> action) {
         return addAction(action);
+    }
+
+    public CinematicSequence thenGlobal(Runnable action) {
+        return addGlobalAction(action);
     }
 
     public void start() {
@@ -59,10 +73,12 @@ public class CinematicSequence {
                     return;
                 }
 
-                if (action.getAction() != null) {
+                if (action.getPlayerAction() != null) {
                     for (Player p : players) {
-                        action.getAction().accept(p);
+                        action.getPlayerAction().accept(p);
                     }
+                } else if (action.getGlobalAction() != null) {
+                    action.getGlobalAction().run();
                 }
 
                 ticksUntilNextAction = action.getDelay();
@@ -96,16 +112,28 @@ public class CinematicSequence {
     }
 
     private static class SequenceAction {
-        private final Consumer<Player> action;
+        private final Consumer<Player> playerAction;
+        private final Runnable globalAction;
         private final long delay;
 
         public SequenceAction(Consumer<Player> action, long delay) {
-            this.action = action;
+            this.playerAction = action;
+            this.globalAction = null;
             this.delay = delay;
         }
 
-        public Consumer<Player> getAction() {
-            return action;
+        public SequenceAction(Runnable action, long delay) {
+            this.playerAction = null;
+            this.globalAction = action;
+            this.delay = delay;
+        }
+
+        public Consumer<Player> getPlayerAction() {
+            return playerAction;
+        }
+
+        public Runnable getGlobalAction() {
+            return globalAction;
         }
 
         public long getDelay() {

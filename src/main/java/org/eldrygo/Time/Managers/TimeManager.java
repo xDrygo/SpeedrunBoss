@@ -15,9 +15,11 @@ public class TimeManager {
     private long pauseTime;
     private boolean running;
     private boolean paused;
+    private final SpeedrunBoss plugin;
 
     public TimeManager(SpeedrunBoss plugin) {
         this.file = new File(plugin.getDataFolder(), "data/times.json");
+        this.plugin = plugin;
         this.startTime = 0;
         this.pauseTime = 0;
         this.running = false;
@@ -108,6 +110,8 @@ public class TimeManager {
         long elapsedTime = getElapsedTime();
         String formatted = formatTime(elapsedTime);
 
+        plugin.getLogger().warning("[SPLITS] El equipo " + teamName + "ha derrotado al " + bossName + " en: " + formatted);
+
         teamData.put(bossName, formatted);
 
         data.put(teamName, teamData);
@@ -135,5 +139,39 @@ public class TimeManager {
         long minutes = (seconds % 3600) / 60;
         long secs = seconds % 60;
         return String.format("%02d:%02d:%02d", hours, minutes, secs);
+    }
+
+    public String getTimeForDimension(String teamName, String dimension) {
+        JSONObject data = loadData();
+        JSONObject teamData = (JSONObject) data.get(teamName);
+
+        if (teamData == null) {
+            return "N/A"; // No se encontró el equipo
+        }
+
+        String time = (String) teamData.get(dimension);
+        if (time == null) {
+            return "N/A"; // No se encontró el boss
+        }
+
+        return time; // Ej: "01:22:34"
+    }
+
+    public void recordDimension(String teamName, String dimension) {
+        if (!running) return;
+
+        JSONObject data = loadData();
+        JSONObject teamData = (JSONObject) data.getOrDefault(teamName, new JSONObject());
+
+        // Registro del tiempo formateado
+        long elapsedTime = getElapsedTime();
+        String formatted = formatTime(elapsedTime);
+
+        plugin.getLogger().warning("[SPLITS] El equipo " + teamName + "ha entrado al " + dimension + " en: " + formatted);
+
+        teamData.put(dimension, formatted);
+
+        data.put(teamName, teamData);
+        saveData(data);
     }
 }
