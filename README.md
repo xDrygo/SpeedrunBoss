@@ -4,8 +4,9 @@
 > 
 >This plugin has all the features that the event needs, and make it work.  
 ## Special Thanks.
->Thanks to Jose90 and ZephyHosting for allowing me to create this event, and thanks to all the participants for their participation.
+>Thanks to Jose90 and ZephyHosting for allowing me to create this event, and thanks to all the participants for their participation.  
 >**GG BurritoRiv and DarkWitch** ⭐
+>  
 >![Speedrun Boss Final Screenshot](https://i.imgur.com/4yFMNGh.png)
 
 ## Jose90 links.
