@@ -2,22 +2,20 @@ package org.eldrygo.Utils;
 
 import org.bukkit.Bukkit;
 import org.eldrygo.API.SpeedrunBossExtension;
-import org.eldrygo.BossRace.Listeners.AdvancementListener;
-import org.eldrygo.BossRace.Listeners.BossKillListener;
-import org.eldrygo.BossRace.Listeners.PortalEnterListener;
-import org.eldrygo.BossRace.Listeners.WitherSkullListener;
+import org.eldrygo.BossRace.Listeners.*;
 import org.eldrygo.BossRace.Managers.BossKillManager;
 import org.eldrygo.BossRace.Managers.DimensionBroadcastManager;
+import org.eldrygo.Cinematics.Listeners.CinematicListener;
 import org.eldrygo.Cinematics.Managers.CinematicManager;
 import org.eldrygo.Cinematics.Managers.CountdownBossBarManager;
 import org.eldrygo.Compass.Listeners.CompassListener;
 import org.eldrygo.Compass.Managers.CompassManager;
 import org.eldrygo.Event.Managers.EventDataManager;
 import org.eldrygo.Event.Managers.EventManager;
-import org.eldrygo.Handlers.CommandHandler;
-import org.eldrygo.Handlers.CommandTabCompleter;
+import org.eldrygo.Handlers.*;
 import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Managers.Files.ConfigManager;
+import org.eldrygo.Managers.Files.PlayerDataManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.Managers.StunManager;
 import org.eldrygo.Menu.Inventory.Listeners.SPBInventoryListener;
@@ -27,6 +25,7 @@ import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.Spawn.Managers.SpawnManager;
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Time.Listeners.TimeBarJoinListener;
 import org.eldrygo.Time.Managers.TimeBarManager;
 import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.XTeams.API.XTeamsAPI;
@@ -60,6 +59,8 @@ public class LoadUtils {
     private final TimeManager timeManager;
     private final TimeBarManager timeBarManager;
     private final DimensionBroadcastManager dimensionBroadcastManager;
+    private final OtherUtils otherUtils;
+    private final PlayerDataManager playerDataManager;
 
     public LoadUtils(SpeedrunBoss plugin, BossKillManager bossKillManager, BroadcastManager broadcastManager, ChatUtils chatUtils,
                      EventManager eventManager, EventDataManager eventDataManager, GracePeriodManager gracePeriodManager,
@@ -68,7 +69,7 @@ public class LoadUtils {
                      StunManager stunManager, CountdownBossBarManager countdownBossBarManager,
                      SettingsUtils settingsUtils, TeamGroupLinker teamGroupLinker, CompassManager compassManager, PlayerUtils playerUtils,
                      SPBInventoryManager spbInventoryManager, SpawnManager spawnManager, TimeManager timeManager, TimeBarManager timeBarManager,
-                     DimensionBroadcastManager dimensionBroadcastManager) {
+                     DimensionBroadcastManager dimensionBroadcastManager, OtherUtils otherUtils, PlayerDataManager playerDataManager) {
         this.plugin = plugin;
         this.bossKillManager = bossKillManager;
         this.broadcastManager = broadcastManager;
@@ -93,6 +94,8 @@ public class LoadUtils {
         this.timeManager = timeManager;
         this.timeBarManager = timeBarManager;
         this.dimensionBroadcastManager = dimensionBroadcastManager;
+        this.otherUtils = otherUtils;
+        this.playerDataManager = playerDataManager;
     }
     public void loadFeatures() {
         loadConfig();
@@ -112,7 +115,6 @@ public class LoadUtils {
         configManager.loadConfig();
         configManager.loadMessages();
         configManager.loadInventories();
-        configManager.loadWarpsConfig();
         configManager.loadPrefixes();
     }
 
@@ -179,6 +181,8 @@ public class LoadUtils {
         plugin.getServer().getPluginManager().registerEvents(new CompassListener(configManager, compassManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new SPBInventoryListener(plugin, spbInventoryManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new AdvancementListener(dimensionBroadcastManager, eventManager), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new CinematicListener(cinematicManager), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new TimeBarJoinListener(timeBarManager), plugin);
     }
     private void loadCommands() {
         plugin.getLogger().info("Loading SpeedrunBoss command...");
@@ -188,9 +192,32 @@ public class LoadUtils {
             if (xTeamsAPI == null) {
                 plugin.getLogger().warning("⚠ xTeamsAPI is not initialized. Commands will not work succesfully.");
             } else {
-                plugin.getCommand("speedrunboss").setExecutor(new CommandHandler(chatUtils, xTeamsAPI, teamDataManager, configManager, gracePeriodManager, plugin, eventManager, pvpManager, broadcastManager, this, stunManager, countdownBossBarManager, cinematicManager, compassManager, playerUtils, spbInventoryManager, spawnManager, timeManager, timeBarManager));
+                plugin.getCommand("speedrunboss").setExecutor(new CommandHandler(chatUtils, xTeamsAPI, teamDataManager, configManager, gracePeriodManager, plugin, eventManager, pvpManager, broadcastManager, this, stunManager, countdownBossBarManager, cinematicManager, compassManager, playerUtils, spbInventoryManager, spawnManager, timeManager, timeBarManager, otherUtils));
                 plugin.getCommand("speedrunboss").setTabCompleter(new CommandTabCompleter(cinematicManager, plugin));}
             plugin.getLogger().info("✅ SpeedrunBoss command was successfully loaded.");
+        }
+        plugin.getLogger().info("Loading Credits command...");
+        if (plugin.getCommand("credits") == null) {
+            plugin.getLogger().severe("❌ Error: Credits command is not registered in plugin.yml");
+        } else {
+                plugin.getCommand("credits").setExecutor(new CreditsHandler(configManager));
+                plugin.getCommand("credits").setTabCompleter(new CreditsTabCompleter());
+            plugin.getLogger().info("✅ Credits command was successfully loaded.");
+        }
+        plugin.getLogger().info("Loading Leaderboard command...");
+        if (plugin.getCommand("leaderboard") == null) {
+            plugin.getLogger().severe("❌ Error: Leaderboard command is not registered in plugin.yml");
+        } else {
+            plugin.getCommand("leaderboard").setExecutor(new LeaderboardHandler(configManager, teamDataManager, xTeamsAPI));
+            plugin.getLogger().info("✅ Leaderboard command was successfully loaded.");
+        }
+        plugin.getLogger().info("Loading Skill command...");
+        if (plugin.getCommand("skill") == null) {
+            plugin.getLogger().severe("❌ Error: Skill command is not registered in plugin.yml");
+        } else {
+            plugin.getCommand("skill").setExecutor(new SkillHandler(playerDataManager, chatUtils));
+            plugin.getCommand("skill").setTabCompleter(new SkillTabCompleter());
+            plugin.getLogger().info("✅ Skill command was successfully loaded.");
         }
     }
 

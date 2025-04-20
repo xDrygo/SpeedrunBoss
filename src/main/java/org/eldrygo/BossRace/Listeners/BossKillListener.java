@@ -115,7 +115,7 @@ public class BossKillListener implements Listener {
         if (!allNearby) {
             entity.setHealth(1.0);
             event.setCancelled(true);
-            killer.playSound(killerLocation, Sound.ENTITY_WITHER_BREAK_BLOCK, 10f, 1.75f);
+            killer.playSound(killerLocation, Sound.BLOCK_ANVIL_LAND, 10f, 0.1f);
             killer.sendMessage(chatUtils.getMessage("warning.try_to_kill_boss_without_team_nearby.message", killer));
             killer.sendTitle(chatUtils.getTitle("warning.try_to_kill_boss_without_team_nearby.title", killer), chatUtils.getSubtitle("warning.try_to_kill_boss_without_team_nearby.subtitle", killer), 5, 40, 10);
         }

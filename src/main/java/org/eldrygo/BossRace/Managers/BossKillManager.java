@@ -1,5 +1,6 @@
 package org.eldrygo.BossRace.Managers;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.eldrygo.Managers.BroadcastManager;
 import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.SpeedrunBoss;
 import org.eldrygo.Time.Managers.TimeManager;
+import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.eldrygo.XTeams.Models.Team;
 
@@ -22,9 +24,10 @@ public class BossKillManager {
     private final TimeManager timerManager;
     private final CinematicManager cinematicManager;
     private final SpeedrunBoss plugin;
+    private final ChatUtils chatUtils;
 
     // Constructor que recibe las dependencias necesarias
-    public BossKillManager(XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, BroadcastManager broadcastManager, EventManager eventManager, TimeManager timerManager, CinematicManager cinematicManager, SpeedrunBoss plugin) {
+    public BossKillManager(XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, BroadcastManager broadcastManager, EventManager eventManager, TimeManager timerManager, CinematicManager cinematicManager, SpeedrunBoss plugin, ChatUtils chatUtils) {
         this.xTeamsAPI = xTeamsAPI;
         this.teamDataManager = teamDataManager;
         this.broadcastManager = broadcastManager;
@@ -32,6 +35,7 @@ public class BossKillManager {
         this.timerManager = timerManager;
         this.cinematicManager = cinematicManager;
         this.plugin = plugin;
+        this.chatUtils = chatUtils;
     }
 
     // Este método se llama cuando un boss es asesinado
@@ -55,7 +59,8 @@ public class BossKillManager {
                             cinematicManager.startCinematic("winner");
                         }
                     } else {
-                        broadcastManager.sendAlreadyKilledBoss(bossName, player);
+                        player.sendMessage(chatUtils.getMessage("warning.try_to_kill_already_registered_boss", null));
+                        player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 10f, 1f);
                     }
                 }
             }

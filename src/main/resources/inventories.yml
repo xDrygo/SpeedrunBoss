@@ -37,10 +37,25 @@ teams:
       team_14: "&f&lᴇqᴜɪᴘᴏ&r &7› &rझ"
       team_15: "&f&lᴇqᴜɪᴘᴏ&r &7› &rञ"
       team_16: "&f&lᴇqᴜɪᴘᴏ&r &7› &rट"
-      team_17: "&f&lᴇqᴜɪᴘᴏ&r &7› &rठ"
 per_team_inv:
   title: "&8&lꜱᴘʙ - &r&8ᴇqᴜɪᴘᴏꜱ: &f%team_displayname%"
   items:
+    info:
+      name: "&f&lɪɴꜰᴏʀᴍᴀᴄɪᴏɴ&r &7› &f%team_display%"
+      lore:
+        - " "
+        - " &7‣ &f&lʙᴏꜱꜱᴇꜱ ᴅᴇʀʀᴏᴛᴀᴅᴏꜱ"
+        - " "
+        - " &r&fढ #fff18d→&r #cccccc%warden_time%"
+        - " "
+        - " &r&fद #fff18d→&r #cccccc%elder_guardian_time%"
+        - " "
+        - " &r&fत #fff18d→&r #cccccc%wither_time%"
+        - " "
+        - " &r&fन #fff18d→&r #cccccc%ender_dragon_time%"
+        - " "
+        - " "
+      boss_not_registered: "#FF0000❌"
     player:
       name: "&f&lᴊᴜɢᴀᴅᴏʀ&r &7› #fff18d%player%"
       lore:

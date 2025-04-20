@@ -75,16 +75,16 @@ public class SPBInventoryManager {
     }
 
     private static final int[] TEAM_SLOTS = {
-            11, 12, 13, 14, 15,
+             11, 12, 13, 14, 15,
          19, 20, 21, 22, 23, 24, 25,
-             29, 30, 31, 32, 33
+             29, 30,     32, 33
     };
 
     private static final List<String> DISPLAY_TEAMS = Arrays.asList(
             "team_1", "team_2", "team_3", "team_4",
             "team_5", "team_6", "team_7", "team_8",
             "team_9", "team_10", "team_11", "team_12",
-            "team_13", "team_14", "team_15", "team_16", "team_17"
+            "team_13", "team_14", "team_15", "team_16"
     );
 
     private static final int[] TEAM_PLAYER_SLOTS = {
@@ -152,6 +152,8 @@ public class SPBInventoryManager {
         inv.setItem(17, inventoryUtils.getTeamsSecondCornerItem());
         inv.setItem(19, inventoryUtils.getTeamsSecondCornerItem());
         inv.setItem(25, inventoryUtils.getTeamsSecondCornerItem());
+
+        inv.setItem(13, inventoryUtils.getTeamInfoItem(teamName));
 
         // Agrega los ítems "Vacío" por defecto
         for (int slot : memberSlots) {
@@ -277,12 +279,10 @@ public class SPBInventoryManager {
                 return "team_13";
             case 30:
                 return "team_14";
-            case 31:
-                return "team_15";
             case 32:
-                return "team_16";
+                return "team_15";
             case 33:
-                return "team_17";
+                return "team_16";
             default:
                 return "null";
         }

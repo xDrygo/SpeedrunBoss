@@ -36,8 +36,6 @@ public class BroadcastManager {
             players.playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 10f, 1.5f);
         }
     }
-    public void sendAlreadyKilledBoss(String bossName, Player player) {
-    }
     public void sendPVPEnableMessage() {
         for (Player players : Bukkit.getServer().getOnlinePlayers()) {
             players.sendMessage(chatUtils.getMessage("broadcast.pvp.enable", players));

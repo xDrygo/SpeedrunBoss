@@ -12,7 +12,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.eldrygo.Managers.Files.ConfigManager;
 import org.eldrygo.Managers.Files.PlayerDataManager;
 
+import org.eldrygo.Managers.Files.TeamDataManager;
 import org.eldrygo.SpeedrunBoss;
+import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 
 import java.util.ArrayList;
@@ -24,11 +26,17 @@ public class InventoryUtils {
     private final ConfigManager configManager;
     private final PlayerDataManager playerDataManager;
     private final SpeedrunBoss plugin;
+    private final TimeManager timeManager;
+    private final TeamDataManager teamDataManager;
+    private final XTeamsAPI xTeamsAPI;
 
-    public InventoryUtils(ConfigManager configManager, PlayerDataManager playerDataManager, SpeedrunBoss plugin) {
+    public InventoryUtils(ConfigManager configManager, PlayerDataManager playerDataManager, SpeedrunBoss plugin, TimeManager timeManager, TeamDataManager teamDataManager, XTeamsAPI xTeamsAPI) {
         this.configManager = configManager;
         this.playerDataManager = playerDataManager;
         this.plugin = plugin;
+        this.timeManager = timeManager;
+        this.teamDataManager = teamDataManager;
+        this.xTeamsAPI = xTeamsAPI;
     }
 
     public ItemStack getCloseItem() {
@@ -112,6 +120,39 @@ public class InventoryUtils {
 
         return item;
     }
+
+    public ItemStack getTeamInfoItem(String teamName) {
+        String wardenTime = getMessage("per_team_inv.items.info.boss_not_registered");
+        String elderGuardianTime = getMessage("per_team_inv.items.info.boss_not_registered");
+        String witherTime = getMessage("per_team_inv.items.info.boss_not_registered");
+        String enderDragonTime = getMessage("per_team_inv.items.info.boss_not_registered");
+        if (teamDataManager.getKilledBosses(teamName).contains("warden")) { wardenTime = timeManager.getTimeForBoss(teamName, "warden"); }
+        if (teamDataManager.getKilledBosses(teamName).contains("elder_guardian")) { elderGuardianTime = timeManager.getTimeForBoss(teamName, "elder_guardian"); }
+        if (teamDataManager.getKilledBosses(teamName).contains("wither")) { witherTime = timeManager.getTimeForBoss(teamName, "wither"); }
+        if (teamDataManager.getKilledBosses(teamName).contains("ender_dragon")) { enderDragonTime = timeManager.getTimeForBoss(teamName, "ender_dragon"); }
+
+        List<String> rawLore = configManager.getInventoriesConfig().getStringList("per_team_inv.items.info.lore");
+        List<String> lore = new ArrayList<>();
+        for (String line : rawLore) {
+            String formattedLine = line
+                    .replace("%warden_time%", wardenTime)
+                    .replace("%elder_guardian_time%", elderGuardianTime)
+                    .replace("%wither_time%", witherTime)
+                    .replace("%ender_dragon_time%", enderDragonTime);
+            lore.add(ChatUtils.formatColor(formattedLine));
+        }
+        ItemStack item = new ItemStack(Material.WRITABLE_BOOK);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(getMessage("per_team_inv.items.info.name").replace("%team_display%", xTeamsAPI.getTeamDisplayName(teamName)));
+            meta.setLore(lore);
+
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
+
     public ItemStack getPlayerHead(String playerName) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();

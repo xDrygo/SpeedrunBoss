@@ -27,6 +27,11 @@ public class CinematicSequence {
         actions.add(new SequenceAction(action, 0));
         return this;
     }
+    public void addPlayer(Player player) {
+        if (!players.contains(player)) {
+            players.add(player);
+        }
+    }
 
     public CinematicSequence addDelay(long ticks) {
         actions.add(new SequenceAction((Consumer<Player>) null, ticks));

@@ -1,6 +1,6 @@
 name: SpeedrunBoss
 main: org.eldrygo.SpeedrunBoss
-version: 0.1.95
+version: 0.2.21
 api-version: 1.21
 authors:
   - Drygo
@@ -17,11 +17,32 @@ commands:
     description: "SpeedrunBoss plugin main command."
   xteams:
     description: "xTeams feature main command"
+  credits:
+    aliases:
+      - credit
+    description: "Credits command."
+  leaderboard:
+    aliases:
+      - top
+    description: "Leaderboard command."
+  skill:
+    aliases:
+      - setskill
+    description: "Skill command."
 permissions:
   spb.admin:
     description: "Permission to execute commands related to SpeedrunBoss."
     default: false
     children:
+      spb.leaderboard:
+        description: "Permission to use Leaderboard command."
+        default: false
+      spb.skill:
+        description: "Permission to use Skill command."
+        default: false
+      spb.credits:
+        description: "Permission to use Credits command."
+        default: false
       spb.admin.pvp:
         description: "Permission to use PvP management command."
         default: false

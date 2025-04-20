@@ -1,13 +1,10 @@
 package org.eldrygo.Utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.eldrygo.BossRace.Listeners.BossKillListener;
 import org.eldrygo.Modifiers.Managers.GracePeriodManager;
 import org.eldrygo.Modifiers.Managers.PVPManager;
 import org.eldrygo.SpeedrunBoss;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsUtils {
@@ -18,7 +15,7 @@ public class SettingsUtils {
     public boolean cinematicBypassEnabled;
     public List<String> cinematicBypassPlayers;
     public double probabilityMultiplier = 0;
-    private BossKillListener bossKillListener;
+    private final BossKillListener bossKillListener;
 
     public SettingsUtils(SpeedrunBoss plugin, PVPManager pvpManager, GracePeriodManager gracePeriodManager, BossKillListener bossKillListener) {
         this.plugin = plugin;

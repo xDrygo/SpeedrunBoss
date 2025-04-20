@@ -91,4 +91,17 @@ public class TimeBarManager {
         timeBar.setVisible(false);
         decorativeBar.setVisible(false);
     }
+
+    public void addPlayerToBars(Player player) {
+        if (!timeBar.getPlayers().contains(player)) {
+            timeBar.addPlayer(player);
+        }
+        if (!decorativeBar.getPlayers().contains(player)) {
+            decorativeBar.addPlayer(player);
+        }
+    }
+
+    public boolean isBarsVisible() {
+        return timeBar.isVisible() || decorativeBar.isVisible();
+    }
 }

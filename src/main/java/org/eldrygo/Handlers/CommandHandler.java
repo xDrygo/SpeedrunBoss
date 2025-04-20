@@ -4,6 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,6 +33,7 @@ import org.eldrygo.Time.Managers.TimeBarManager;
 import org.eldrygo.Time.Managers.TimeManager;
 import org.eldrygo.Utils.ChatUtils;
 import org.eldrygo.Utils.LoadUtils;
+import org.eldrygo.Utils.OtherUtils;
 import org.eldrygo.Utils.PlayerUtils;
 import org.eldrygo.XTeams.API.XTeamsAPI;
 import org.eldrygo.XTeams.Models.Team;
@@ -61,8 +63,9 @@ public class CommandHandler implements CommandExecutor {
     private final TimeManager timeManager;
     private final TimeBarManager timeBarManager;
     private Map<String, String> pendingTaskCancellations = new HashMap<>();
+    private final OtherUtils otherUtils;
 
-    public CommandHandler(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, ConfigManager configManager, GracePeriodManager gracePeriodManager, SpeedrunBoss plugin, EventManager eventManager, PVPManager pvpManager, BroadcastManager broadcastManager, LoadUtils loadUtils, StunManager stunManager, CountdownBossBarManager countdownBossBarManager, CinematicManager cinematicManager, CompassManager compassManager, PlayerUtils playerUtils, SPBInventoryManager spbInventoryManager, SpawnManager spawnManager, TimeManager timeManager, TimeBarManager timeBarManager) {
+    public CommandHandler(ChatUtils chatUtils, XTeamsAPI xTeamsAPI, TeamDataManager teamDataManager, ConfigManager configManager, GracePeriodManager gracePeriodManager, SpeedrunBoss plugin, EventManager eventManager, PVPManager pvpManager, BroadcastManager broadcastManager, LoadUtils loadUtils, StunManager stunManager, CountdownBossBarManager countdownBossBarManager, CinematicManager cinematicManager, CompassManager compassManager, PlayerUtils playerUtils, SPBInventoryManager spbInventoryManager, SpawnManager spawnManager, TimeManager timeManager, TimeBarManager timeBarManager, OtherUtils otherUtils) {
         this.chatUtils = chatUtils;
         this.xTeamsAPI = xTeamsAPI;
         this.teamDataManager = teamDataManager;
@@ -82,6 +85,7 @@ public class CommandHandler implements CommandExecutor {
         this.spawnManager = spawnManager;
         this.timeManager = timeManager;
         this.timeBarManager = timeBarManager;
+        this.otherUtils = otherUtils;
     }
 
     @Override
@@ -290,6 +294,13 @@ public class CommandHandler implements CommandExecutor {
                     handleWinner(sender, args);
                 }
             }
+            case "trophy" -> {
+                if (!sender.hasPermission("spb.admin.trophy") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
+                    sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
+                    return true;
+                } else {
+                    handleTrophy(sender, args);
+                }}
             case "reload" -> {
                 if (!sender.hasPermission("spb.admin.reload") && !sender.hasPermission("spb.admin") && !(sender.isOp())) {
                     sender.sendMessage(chatUtils.getMessage("error.no_permission", (Player) sender));
@@ -551,6 +562,43 @@ public class CommandHandler implements CommandExecutor {
 
             default -> sender.sendMessage(chatUtils.getMessage("administration.spawn.error.usage", null));
         }
+    }
+    private void handleTrophy(CommandSender sender, String[] args) {
+        Player senderPlayer = (sender instanceof Player) ? (Player) sender : null;
+        Player target;
+        boolean targetIsSelf;
+        if (args.length == 2) {
+            target = senderPlayer;
+            targetIsSelf = true;
+        } else {
+            target = Bukkit.getPlayerExact(args[2]);
+            targetIsSelf = false;
+        }
+        if (target == null) {
+            if (targetIsSelf) {
+                sender.sendMessage(chatUtils.getMessage("administration.trophy.only_player", null));
+            } else {
+                sender.sendMessage(chatUtils.getMessage("administration.trophy.player_not_found", null));
+            }
+        }
+        String targetTeamName = xTeamsAPI.getPlayerTeamName(target);
+
+        if (!targetTeamName.equals(plugin.winnerTeam)) {
+            target.getInventory().addItem(otherUtils.getPlayerTrophy(target, targetTeamName));
+            if (targetIsSelf) {
+                sender.sendMessage(chatUtils.getMessage("administration.trophy.success.self", null));
+            } else {
+                sender.sendMessage(chatUtils.getMessage("administration.trophy.success.other", null).replace("%target%", target.getName()));
+            }
+        } else {
+            target.getInventory().addItem(otherUtils.getWinnerTrophy(target, plugin.winnerTeam));
+            if (targetIsSelf) {
+                sender.sendMessage(chatUtils.getMessage("administration.trophy.success.self", null));
+            } else {
+                sender.sendMessage(chatUtils.getMessage("administration.trophy.success.other", null).replace("%target%", target.getName()));
+            }
+        }
+
     }
     private void handleWinner(CommandSender sender, String[] args) {
         Player target = (sender instanceof Player) ? (Player) sender : null;

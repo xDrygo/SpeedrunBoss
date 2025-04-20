@@ -52,9 +52,7 @@ public class SpeedrunBoss extends JavaPlugin {
         XTeamsAPI xTeamsAPI = new XTeamsAPI(this);
         TeamDataManager teamDataManager = new TeamDataManager(this, xTeamsAPI);
         PlayerDataManager playerDataManager = new PlayerDataManager(this);
-        this.configManager = new ConfigManager(this, teamConfigManager);
-        InventoryUtils inventoryUtils = new InventoryUtils(configManager, playerDataManager, this);
-        SPBInventoryManager spbInventoryManager = new SPBInventoryManager(configManager, inventoryUtils, xTeamsAPI, this);
+        this.configManager = new ConfigManager(this);
         this.teamConfigManager = new org.eldrygo.XTeams.Managers.ConfigManager(this, teamGroupLinker);
         this.messagesConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
         this.logsUtils = new LogsUtils(this);
@@ -62,6 +60,8 @@ public class SpeedrunBoss extends JavaPlugin {
         SpawnManager spawnManager = new SpawnManager(this, xTeamsAPI, chatUtils);
         EventDataManager eventDataManager = new EventDataManager(this);
         TimeManager timeManager = new TimeManager(this);
+        InventoryUtils inventoryUtils = new InventoryUtils(configManager, playerDataManager, this, timeManager, teamDataManager, xTeamsAPI);
+        SPBInventoryManager spbInventoryManager = new SPBInventoryManager(configManager, inventoryUtils, xTeamsAPI, this);
         TimeBarManager timeBarManager = new TimeBarManager(timeManager, configManager, this);
         BroadcastManager broadcastManager = new BroadcastManager(chatUtils, xTeamsAPI, null, timeManager);
         DimensionBroadcastManager dimensionBroadcastManager = new DimensionBroadcastManager(xTeamsAPI, teamDataManager, broadcastManager);
@@ -74,12 +74,12 @@ public class SpeedrunBoss extends JavaPlugin {
         OtherUtils otherUtils = new OtherUtils(this, xTeamsAPI, configManager, chatUtils);
         CinematicManager cinematicManager = new CinematicManager(this, chatUtils, stunManager, countdownBossBarManager, gracePeriodManager, pvpManager, playerUtils, timeManager, timeBarManager, fireworkManager, otherUtils, null, spawnManager);
         EventManager eventManager = new EventManager(chatUtils, xTeamsAPI, cinematicManager, playerUtils, timeManager, timeBarManager, broadcastManager, eventDataManager, this);
-        BossKillManager bossKillManager = new BossKillManager(xTeamsAPI, teamDataManager, broadcastManager, eventManager, timeManager, cinematicManager, this);
+        BossKillManager bossKillManager = new BossKillManager(xTeamsAPI, teamDataManager, broadcastManager, eventManager, timeManager, cinematicManager, this, chatUtils);
         BossKillListener bossKillListener = new BossKillListener(bossKillManager, xTeamsAPI, chatUtils, eventManager, this);
         SettingsUtils settingsUtils = new SettingsUtils(this, pvpManager, gracePeriodManager, bossKillListener);
         CompassManager compassManager = new CompassManager(this, configManager, chatUtils);
         setNullClasses(playerUtils, settingsUtils, stunManager, gracePeriodManager, broadcastManager, pvpManager, cinematicManager, eventManager);
-        this.loadUtils = new LoadUtils(this, bossKillManager, broadcastManager, chatUtils, eventManager, eventDataManager, gracePeriodManager, pvpManager, teamDataManager, cinematicManager, configManager, xTeamsAPI, teamConfigManager, stunManager, countdownBossBarManager, settingsUtils, teamGroupLinker, compassManager, playerUtils, spbInventoryManager, spawnManager, timeManager, timeBarManager, dimensionBroadcastManager);
+        this.loadUtils = new LoadUtils(this, bossKillManager, broadcastManager, chatUtils, eventManager, eventDataManager, gracePeriodManager, pvpManager, teamDataManager, cinematicManager, configManager, xTeamsAPI, teamConfigManager, stunManager, countdownBossBarManager, settingsUtils, teamGroupLinker, compassManager, playerUtils, spbInventoryManager, spawnManager, timeManager, timeBarManager, dimensionBroadcastManager, otherUtils, playerDataManager);
 
         loadUtils.loadFeatures();
         logsUtils.sendStartupMessage();
